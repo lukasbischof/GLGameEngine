@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <ModelIO/ModelIO.h>
 #import "TexturedModel.h"
 #import "ModelTexture.h"
 #import "Loader.h"
