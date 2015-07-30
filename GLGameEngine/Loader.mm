@@ -11,6 +11,8 @@
 #include <stdio.h>
 #include <iostream>
 
+#define BUFFER_OFFSET(i) ((char *)NULL + (i))
+
 @interface Loader () {
     std::vector<GLuint> vaos;
     std::vector<GLuint> vbos;
@@ -127,6 +129,44 @@
                                        andTexture:texture];
 }
 
+- (TexturedModel *)createTexturedModelWithPositions:(GLKMeshBuffer *)positions
+                                            normlas:(GLKMeshBuffer *)normals
+                                 textureCoordinates:(GLKMeshBuffer *)texCoords
+                                        vertexCount:(NSUInteger)vertexCount
+                                          submeshes:(NSArray<GLKSubmesh *> *)submeshes
+                                         andTexture:(ModelTexture *)texture
+{
+    if (!positions || !normals || !texCoords || !submeshes || !texture) {
+        NSLog(@"[Loader]: Can't create textured model in %s", __PRETTY_FUNCTION__);
+        return nil;
+    }
+    
+    RawModel *model = [RawModel modelByCreatingVAOWithVertexCount:(GLuint)vertexCount];
+    
+    vaos.push_back(model.vaoID);
+    
+    GLKSubmesh *submesh = submeshes[0];
+    
+    [model bindVAO];
+    [self setBuffer:positions inVAOAttribIndex:0 withAttribSize:3 andType:GL_FLOAT];
+    [self setBuffer:texCoords inVAOAttribIndex:1 withAttribSize:2 andType:GL_HALF_FLOAT];
+    
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, submesh.elementBuffer.glBufferName);
+    
+    [model unbindVAO];
+    
+    return [[TexturedModel alloc] initWithRawModel:model andTexture:texture];
+}
+
+- (void)setBuffer:(GLKMeshBuffer *)buffer inVAOAttribIndex:(GLuint)attribIndex withAttribSize:(GLint)size andType:(GLenum)type
+{
+    vbos.push_back(buffer.glBufferName);
+    
+    glBindBuffer(GL_ARRAY_BUFFER, buffer.glBufferName);
+    glVertexAttribPointer(attribIndex, size, type, GL_FALSE, 0, BUFFER_OFFSET(buffer.offset));
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
 - (void)storeData:(FloatBuffer)data inVAOAttribIndex:(GLuint)attribIndex withAttribSize:(GLint)size
 {
     GLuint vboID;
@@ -153,7 +193,7 @@
 
 - (void)cleanUp
 {
-    // auto: C+11
+    // auto: C++11
     for (auto &vao : vaos) {
         glDeleteVertexArrays(1, &vao);
     }

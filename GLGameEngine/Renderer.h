@@ -54,3 +54,15 @@ INLINE RGBA RGBAMake(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
         MAX(0., MIN(alpha, 1.)),
     };
 }
+
+INLINE RGBA RGBAMakeFromRGBHex(uint32_t hex) {
+    // 0x FF   AA   88
+    //   red green blue
+    
+    return (RGBA) {
+        (hex >> 16) / 255,
+        ((hex >> 8) & 0x00FF) / 255,
+        (hex & 0x0000FF) / 255,
+        1.0
+    };
+}

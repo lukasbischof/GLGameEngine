@@ -11,7 +11,7 @@
 #include <vector>
 
 #define NO_RETURN __attribute__((noreturn))
-#define report_error(e) ([self reportError:(e)])
+#define fatal_error(e) ([self reportFatalError:(e)])
 
 @interface OBJLoader2 ()
 
@@ -19,26 +19,103 @@
 
 @implementation OBJLoader2
 
-- (instancetype)initWithURL:(NSURL *)url texture:(ModelTexture *)texture andLoader:(Loader *)loader
+- (instancetype)init
+{
+    return nil;
+}
+
+- (nullable instancetype)initWithURL:(NSURL * _Nonnull)url texture:(nonnull ModelTexture *)texture andLoader:(nonnull Loader *)loader
 {
     if ((self = [super init])) {
         if ([MDLAsset canImportFileExtension:@"obj"]) {
-            MDLAsset *asset = [[MDLAsset alloc] initWithURL:url];
-            NSLog(@"asset: %@", asset);
             
-            MDLMesh *mesh = (MDLMesh *)[asset objectAtIndex:0];
+            GLKMeshBufferAllocator *_Nonnull allocator = [[GLKMeshBufferAllocator alloc] init];
             
+            MDLAsset *asset = [[MDLAsset alloc] initWithURL:url
+                                           vertexDescriptor:[self getVertexDescriptor]
+                                            bufferAllocator:allocator];
             
-            (^void(void){})();
+            NSArray<GLKMesh *> *newMeshes    = nil;
+            NSArray<MDLMesh *> *sourceMeshes = nil;
+            NSError *error                   = nil;
+            
+            [GLKMesh newMeshesFromAsset:asset
+                              newMeshes:&newMeshes
+                           sourceMeshes:&sourceMeshes
+                                  error:&error];
+            
+            if (error) {
+                NSLog(@"<< [%@] Error >>: Can't create model: %@", NSStringFromClass([self class]), error);
+                return nil;
+            } else if (newMeshes.count <= 0) {
+                NSLog(@"<< [%@] Error >>: Can't create model array: count <= 0", NSStringFromClass([self class]));
+                return nil;
+            }
+            
+            GLKMesh *mesh = newMeshes[0];
+            NSArray<GLKMeshBuffer *> *vertexBuffers = mesh.vertexBuffers;
+            
+            if (vertexBuffers.count < 3 || vertexBuffers.count > 3) {
+                NSLog(@"<< [%@] Error >>: Invalid vertex buffer count", NSStringFromClass([self class]));
+                return nil;
+            }
+            
+            GLKMeshBuffer *positionBuffer = vertexBuffers[0];
+            GLKMeshBuffer *normalBuffer = vertexBuffers[1];
+            GLKMeshBuffer *texCoordBuffer = vertexBuffers[2];
+            
+            TexturedModel *model = [loader createTexturedModelWithPositions:positionBuffer
+                                                                    normlas:normalBuffer
+                                                         textureCoordinates:texCoordBuffer
+                                                                vertexCount:mesh.vertexCount
+                                                                  submeshes:mesh.submeshes
+                                                                 andTexture:texture];
+            self.texturedModel = model;
         } else {
-            report_error(@"Model I/O doesn't support obj?");
+            fatal_error(@"Model I/O doesn't support obj?");
         }
     }
     
     return self;
 }
 
-- (void)reportError:(nonnull NSString *)error NO_RETURN
+- (MDLVertexDescriptor *__nonnull)getVertexDescriptor
+{
+    MDLVertexDescriptor *descriptor = [MDLVertexDescriptor new];
+    NSUInteger offset = 0;
+    
+    descriptor.attributes[0].name = MDLVertexAttributePosition;
+    descriptor.attributes[0].format = MDLVertexFormatFloat3;
+    descriptor.attributes[0].offset = 0;
+    descriptor.attributes[0].bufferIndex = 0;
+    
+    NSUInteger size = sizeof(float) * 3;
+    offset += size;
+    descriptor.layouts[0].stride = size;
+    
+    descriptor.attributes[1].name = MDLVertexAttributeNormal;
+    descriptor.attributes[1].format =  MDLVertexFormatHalf3;
+    descriptor.attributes[1].offset = 0;
+    descriptor.attributes[1].bufferIndex = 1;
+    
+    size = sizeof(float) * 3 / 2;
+    offset += size;
+    descriptor.layouts[1].stride = size;
+    
+    descriptor.attributes[2].name = MDLVertexAttributeTextureCoordinate;
+    descriptor.attributes[2].format = MDLVertexFormatHalf2;
+    descriptor.attributes[2].offset = 0;
+    descriptor.attributes[2].bufferIndex = 2;
+    
+    size = sizeof(float);
+    offset += size;
+    descriptor.layouts[2].stride = size;
+    
+    
+    return descriptor;
+}
+
+- (void)reportFatalError:(nonnull NSString *)error NO_RETURN
 {
     NSAssert(NO, @"%@", error);
     abort();

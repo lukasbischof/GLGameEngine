@@ -14,8 +14,10 @@
 
 @interface OBJLoader2 : NSObject
 
-@property (strong, nonatomic) TexturedModel *texturedModel;
+@property (strong, nonatomic, nullable) TexturedModel *texturedModel;
 
-- (instancetype)initWithURL:(NSURL *)url texture:(ModelTexture *)texture andLoader:(Loader *)loader;
+/// Must initialize with resource data
+- (nullable instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithURL:(NSURL *__nonnull)url texture:(nonnull ModelTexture *)texture andLoader:(nonnull Loader *)loader;
 
 @end
