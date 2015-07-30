@@ -88,7 +88,7 @@
     ModelTexture *texture = [[ModelTexture alloc] initWithTextureID:texInfo.name andTextureTarget:texInfo.target];
     
     NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"stall" withExtension:@"obj"];
-    TexturedModel *texturedModel = [[OBJLoader alloc] initWithURL:modelURL
+    TexturedModel *texturedModel = [[OBJLoader2 alloc] initWithURL:modelURL
                                                            texture:texture
                                                          andLoader:self.loader].texturedModel;
     
