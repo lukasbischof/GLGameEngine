@@ -7,28 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <OpenGLES/ES3/gl.h>
 #import "TexturedModel.h"
 #import "Entity.h"
 #import "StaticShaderProgram.h"
-
-#if !defined(INLINE)
-    #if defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L
-        #define INLINE static inline
-    #elif defined(__cplusplus)
-        #define INLINE static inline
-    #elif defined(__GNUC__)
-        #define INLINE static __inline__
-    #else
-        #define INLINE static
-    #endif
-#endif
+#import "Buffer.h"
 
 struct _RGBA {
     GLfloat r, g, b, a;
 };
 typedef struct _RGBA RGBA;
-
 
 
 @interface Renderer : NSObject
@@ -39,30 +26,15 @@ typedef struct _RGBA RGBA;
 
 + (Renderer *)rendererWithShaderProgram:(StaticShaderProgram *)shader;
 
+/// program acitvation must be done before updating
+- (void)updateProjectionWithAspect:(float)aspect forShader:(StaticShaderProgram *)shader;
 - (void)prepare;
 - (void)render:(Entity *)entity withShaderProgram:(StaticShaderProgram *)shader;
 
 @end
 
 
-
-INLINE RGBA RGBAMake(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
-    return (RGBA) {
-        MAX(0., MIN(red, 1.)),
-        MAX(0., MIN(green, 1.)),
-        MAX(0., MIN(blue, 1.)),
-        MAX(0., MIN(alpha, 1.)),
-    };
-}
-
-INLINE RGBA RGBAMakeFromRGBHex(uint32_t hex) {
-    // 0x FF   AA   88
-    //   red green blue
-    
-    return (RGBA) {
-        (hex >> 16) / 255,
-        ((hex >> 8) & 0x00FF) / 255,
-        (hex & 0x0000FF) / 255,
-        1.0
-    };
-}
+EXPORT RGBA RGBAMake(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+EXPORT RGBA RGBAMakeFromRGBHex(uint32_t hex);
+EXPORT GLKVector4 RGBAGetGLKVector4(RGBA rgba);
+EXPORT GLKVector3 RGBAGetGLKVector3(RGBA rgba);

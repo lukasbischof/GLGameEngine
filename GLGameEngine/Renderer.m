@@ -34,8 +34,11 @@ static const GLfloat FARZ = 100;
 - (instancetype)initWithShaderProgram:(StaticShaderProgram *)shader
 {
     if ((self = [super init])) {
+        CGSize size = [UIScreen mainScreen].bounds.size;
+        float aspect = size.width / size.height;
+        
         [self setupProperties];
-        [self createProjectionMatrix];
+        [self createProjectionMatrixWithAspect:aspect];
         [shader activate];
         [shader loadProjectionMatrix:_projectionMatrix];
         [shader deactivate];
@@ -54,15 +57,25 @@ static const GLfloat FARZ = 100;
     self.clearColor = RGBAMake(0.0, 0.0, 0.0, 0.0);
 }
 
+- (void)updateProjectionWithAspect:(float)aspect forShader:(StaticShaderProgram *)shader
+{
+    [self createProjectionMatrixWithAspect:aspect];
+    [shader loadProjectionMatrix:_projectionMatrix];
+}
+
 #pragma mark - Rendering
 - (void)prepare
 {
-    glEnable(GL_DEPTH_TEST);
     glClearColor(self.clearColor.r, self.clearColor.g, self.clearColor.b, self.clearColor.a);
+    glClearDepthf(1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    glDepthFunc(GL_LESS);
+    glEnable(GL_DEPTH_TEST);
     
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
+    glCullFace(GL_BACK);
 }
 
 - (void)render:(Entity *)entity withShaderProgram:(StaticShaderProgram *)shader
@@ -88,11 +101,41 @@ static const GLfloat FARZ = 100;
 }
 
 #pragma mark - private methods
-- (void)createProjectionMatrix
+- (void)createProjectionMatrixWithAspect:(float)aspect
 {
-    CGSize size = [UIScreen mainScreen].bounds.size;
-    float aspect = size.width / size.height;
     _projectionMatrix = GLKMatrix4MakePerspective(MathUtils_DegToRad(FOVY), aspect, NEARZ, FARZ);
 }
 
 @end
+
+
+
+EXPORT RGBA RGBAMake(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
+    return (RGBA) {
+        MAX(0., MIN(red, 1.)),
+        MAX(0., MIN(green, 1.)),
+        MAX(0., MIN(blue, 1.)),
+        MAX(0., MIN(alpha, 1.)),
+    };
+}
+
+EXPORT RGBA RGBAMakeFromRGBHex(uint32_t hex) {
+    // 0x FF   AA   88
+    //   red green blue
+    
+    return (RGBA) {
+        (hex >> 16) / 255,
+        ((hex >> 8) & 0x00FF) / 255,
+        (hex & 0x0000FF) / 255,
+        1.0
+    };
+}
+
+EXPORT GLKVector4 RGBAGetGLKVector4(RGBA rgba) {
+    return GLKVector4Make(rgba.r, rgba.g, rgba.b, rgba.a);
+}
+
+EXPORT GLKVector3 RGBAGetGLKVector3(RGBA rgba) {
+    return GLKVector3Make(rgba.r, rgba.g, rgba.b);
+}
+

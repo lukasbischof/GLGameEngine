@@ -33,5 +33,6 @@
 - (void)increasePositionByVector:(GLKVector3)vec;
 - (void)increaseRotationByRotation:(Rotation)rot;
 - (void)increaseRotationByX:(GLfloat)x y:(GLfloat)y andZ:(GLfloat)z;
+- (void)setRotationX:(GLfloat)x y:(GLfloat)y andZ:(GLfloat)z;
 
 @end

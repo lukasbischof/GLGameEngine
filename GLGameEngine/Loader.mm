@@ -56,7 +56,7 @@
     
     NSError *error;
     NSDictionary *options = @{
-        GLKTextureLoaderOriginBottomLeft: @NO,
+        GLKTextureLoaderOriginBottomLeft: @YES,
     };
     GLKTextureInfo *texInfo = [GLKTextureLoader textureWithContentsOfFile:path
                                                                   options:options
@@ -150,6 +150,7 @@
     [model bindVAO];
     [self setBuffer:positions inVAOAttribIndex:0 withAttribSize:3 andType:GL_FLOAT];
     [self setBuffer:texCoords inVAOAttribIndex:1 withAttribSize:2 andType:GL_HALF_FLOAT];
+    [self setBuffer:normals inVAOAttribIndex:2 withAttribSize:3 andType:GL_FLOAT];
     
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, submesh.elementBuffer.glBufferName);
     

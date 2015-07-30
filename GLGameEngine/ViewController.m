@@ -18,16 +18,19 @@
 @interface ViewController ()
 
 @property (strong, nonatomic) EAGLContext *context;
+@property (strong, nonatomic) NSDate *renderStartDate;
 
 @property (strong, nonatomic) Loader *loader;
 @property (strong, nonatomic) Renderer *renderer;
 @property (strong, nonatomic) Entity *entity;
-@property (strong, nonatomic) StaticShaderProgram *program;
+@property (strong, nonatomic) StaticShaderProgram *shader;
 @property (strong, nonatomic) Camera *camera;
 
 @end
 
-@implementation ViewController
+@implementation ViewController {
+    BOOL _pMatrixNeedsUpdate;
+}
 
 #pragma mark - View methods
 - (void)viewDidLoad
@@ -42,6 +45,11 @@
 - (BOOL)prefersStatusBarHidden
 {
     return YES;
+}
+
+- (void)viewWillLayoutSubviews
+{
+    _pMatrixNeedsUpdate = YES;
 }
 
 #pragma mark - Rendering / OpenGL related methods
@@ -68,7 +76,7 @@
 - (void)tearDownOpenGLES
 {
     [self.loader cleanUp];
-    [self.program cleanUp];
+    [self.shader cleanUp];
     
     if ([EAGLContext currentContext] == self.context) {
         [EAGLContext setCurrentContext:nil];
@@ -80,14 +88,15 @@
 - (void)initGLObjects
 {    
     self.loader = [Loader loader];
-    self.program = [StaticShaderProgram staticShaderProgram];
-    self.renderer = [Renderer rendererWithShaderProgram:self.program];
+    self.shader = [StaticShaderProgram staticShaderProgram];
+    self.renderer = [Renderer rendererWithShaderProgram:self.shader];
     self.camera = [Camera camera];
+    self.renderStartDate = [NSDate date];
     
-    GLKTextureInfo *texInfo = [[self loader] loadTexture:@"stallTexture" withExtension:@"png"];
+    GLKTextureInfo *texInfo = [[self loader] loadTexture:@"white" withExtension:@"png"];
     ModelTexture *texture = [[ModelTexture alloc] initWithTextureID:texInfo.name andTextureTarget:texInfo.target];
     
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"stall" withExtension:@"obj"];
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"dragon" withExtension:@"obj"];
     TexturedModel *texturedModel = [[OBJLoader2 alloc] initWithURL:modelURL
                                                            texture:texture
                                                          andLoader:self.loader].texturedModel;
@@ -101,22 +110,31 @@
 
 #pragma mark GLKViewControllerDelegate
 
+const float entityRotationFrequency = 1.0 / 0.25; // 0.25 s^-1
+
 // This method gets called before the view renders
 - (void)update
 {
     if (self.camera.position.y <= 6.5)
         [self.camera move:GLKVector3Make(0, 0.004, 0)];
-    [self.entity increaseRotationByX:0.0 y:0.8 andZ:0.0];
+    
+    NSTimeInterval time = [self.renderStartDate timeIntervalSinceNow] * -1;
+    float rotations = time / entityRotationFrequency;
+    [self.entity setRotationX:0.0 y:rotations * 360 andZ:0.0];
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
     [self.renderer prepare];
+    [self.shader activate];
+        if (_pMatrixNeedsUpdate) {
+            [self.renderer updateProjectionWithAspect:rect.size.width / rect.size.height forShader:self.shader];
+            _pMatrixNeedsUpdate = NO;
+        }
     
-    [self.program activate];
-    [self.program loadViewMatrix:[self.camera getViewMatrix]];
-    [self.renderer render:self.entity withShaderProgram:self.program];
-    [self.program deactivate];
+        [self.shader loadViewMatrix:[self.camera getViewMatrix]];
+        [self.renderer render:self.entity withShaderProgram:self.shader];
+    [self.shader deactivate];
 }
 
 #pragma mark - Getters

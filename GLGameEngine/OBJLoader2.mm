@@ -82,7 +82,6 @@
 - (MDLVertexDescriptor *__nonnull)getVertexDescriptor
 {
     MDLVertexDescriptor *descriptor = [MDLVertexDescriptor new];
-    NSUInteger offset = 0;
     
     descriptor.attributes[0].name = MDLVertexAttributePosition;
     descriptor.attributes[0].format = MDLVertexFormatFloat3;
@@ -90,16 +89,14 @@
     descriptor.attributes[0].bufferIndex = 0;
     
     NSUInteger size = sizeof(float) * 3;
-    offset += size;
     descriptor.layouts[0].stride = size;
     
     descriptor.attributes[1].name = MDLVertexAttributeNormal;
-    descriptor.attributes[1].format =  MDLVertexFormatHalf3;
+    descriptor.attributes[1].format = MDLVertexFormatHalf3;
     descriptor.attributes[1].offset = 0;
     descriptor.attributes[1].bufferIndex = 1;
     
     size = sizeof(float) * 3 / 2;
-    offset += size;
     descriptor.layouts[1].stride = size;
     
     descriptor.attributes[2].name = MDLVertexAttributeTextureCoordinate;
@@ -108,9 +105,7 @@
     descriptor.attributes[2].bufferIndex = 2;
     
     size = sizeof(float);
-    offset += size;
     descriptor.layouts[2].stride = size;
-    
     
     return descriptor;
 }

@@ -99,6 +99,11 @@
     [self increaseRotationByX:rot.x y:rot.y andZ:rot.z];
 }
 
+- (void)setRotationX:(GLfloat)x y:(GLfloat)y andZ:(GLfloat)z
+{
+    _rotation = MathUtils_RotationMake(x, y, z);
+}
+
 - (GLKMatrix4)getCurrentTransformationMatrix
 {
     GLKMatrix4 mat = MathUtils_CreateTransformationMatrixr(self.position, self.rotation, self.scale);
