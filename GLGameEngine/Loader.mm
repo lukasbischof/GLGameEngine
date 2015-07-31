@@ -87,6 +87,7 @@
     [model bindVAO];
     [self bindIndicesBuffer:indices];
     [self storeData:positions inVAOAttribIndex:0 withAttribSize:3];
+    [self storeData:normals inVAOAttribIndex:2 withAttribSize:3];
     [model unbindVAO];
     
     return model;

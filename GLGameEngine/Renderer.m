@@ -55,6 +55,10 @@ static const GLfloat FARZ = 100;
 - (void)setupProperties
 {
     self.clearColor = RGBAMake(0.0, 0.0, 0.0, 0.0);
+    
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
+    glCullFace(GL_BACK);
 }
 
 - (void)updateProjectionWithAspect:(float)aspect forShader:(StaticShaderProgram *)shader
@@ -72,10 +76,6 @@ static const GLfloat FARZ = 100;
     
     glDepthFunc(GL_LESS);
     glEnable(GL_DEPTH_TEST);
-    
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
-    glCullFace(GL_BACK);
 }
 
 - (void)render:(Entity *)entity withShaderProgram:(StaticShaderProgram *)shader

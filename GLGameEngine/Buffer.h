@@ -13,8 +13,13 @@
 #include <stdlib.h> // malloc
 #include <string.h> // memcpy
 #include <sys/types.h>
-#include <OpenGLES/gltypes.h>
 #include <TargetConditionals.h>
+
+#if !(TARGET_OS_IPHONE)
+#include <OpenGL/OpenGL.h>
+#else
+#include <OpenGLES/gltypes.h>
+#endif
 
 #if TARGET_OS_WIN32
     #if !defined(EXPORT)

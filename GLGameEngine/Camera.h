@@ -7,7 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <TargetConditionals.h>
+#if TARGET_OS_IPHONE
 #import <OpenGLES/ES3/gl.h>
+#else
+#import <OpenGL/gl3.h>
+#endif
 #import <GLKit/GLKit.h>
 #import "MathUtils.h"
 

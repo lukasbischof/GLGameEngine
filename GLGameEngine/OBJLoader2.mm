@@ -92,11 +92,11 @@
     descriptor.layouts[0].stride = size;
     
     descriptor.attributes[1].name = MDLVertexAttributeNormal;
-    descriptor.attributes[1].format = MDLVertexFormatHalf3;
+    descriptor.attributes[1].format = MDLVertexFormatFloat3;
     descriptor.attributes[1].offset = 0;
     descriptor.attributes[1].bufferIndex = 1;
     
-    size = sizeof(float) * 3 / 2;
+    size = sizeof(float) * 3 ;
     descriptor.layouts[1].stride = size;
     
     descriptor.attributes[2].name = MDLVertexAttributeTextureCoordinate;

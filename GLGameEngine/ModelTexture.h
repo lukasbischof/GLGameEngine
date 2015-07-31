@@ -7,10 +7,17 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <TargetConditionals.h>
+#if TARGET_OS_IPHONE
 #import <OpenGLES/ES3/gl.h>
+#else
+#import <OpenGL/gl3.h>
+#endif
 
 @interface ModelTexture : NSObject
 
+@property (assign, nonatomic) float shineDamper;
+@property (assign, nonatomic) float reflectivity;
 @property (assign, nonatomic, readonly) GLuint textureID;
 @property (assign, nonatomic, readonly) GLenum textureTarget;
 

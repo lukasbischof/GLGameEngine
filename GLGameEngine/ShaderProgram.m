@@ -118,6 +118,11 @@
     glUniformMatrix4fv(location, 1, GL_FALSE, value.m);
 }
 
+- (void)loadMatrix3x3:(GLKMatrix3)value toLocation:(GLuint)location
+{
+    glUniformMatrix3fv(location, 1, GL_FALSE, value.m);
+}
+
 #pragma mark - binding
 - (void)activate
 {

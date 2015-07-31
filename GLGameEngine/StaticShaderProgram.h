@@ -16,6 +16,7 @@
 - (void)loadTransformationMatrix:(GLKMatrix4)transformationMatrix;
 - (void)loadProjectionMatrix:(GLKMatrix4)projectionMatrix;
 - (void)loadViewMatrix:(GLKMatrix4)viewMatrix;
+- (void)loadNormalMatrixWithModelMatrix:(GLKMatrix4)modelMatrix andViewMatrix:(GLKMatrix4)viewMatrix;
 - (void)loadLight:(Light *)light;
 
 @end

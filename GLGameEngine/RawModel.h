@@ -7,9 +7,12 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <TargetConditionals.h>
+#if TARGET_OS_IPHONE
 #import <OpenGLES/ES3/gl.h>
-#import <OpenGLES/ES3/glext.h>
-#import <OpenGLES/gltypes.h>
+#else
+#import <OpenGL/gl3.h>
+#endif
 
 @interface RawModel : NSObject
 

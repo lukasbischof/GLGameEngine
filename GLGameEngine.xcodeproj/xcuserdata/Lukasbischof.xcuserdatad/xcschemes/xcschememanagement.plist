@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>GLGameEngine Mac.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 		<key>GLGameEngine.xcscheme</key>
 		<dict>
 			<key>orderHint</key>
@@ -12,6 +17,16 @@
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
+		<key>4800F4DA1B6BA3BB009D801A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>4800F4EF1B6BA3BB009D801A</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
 		<key>802639321B0E34D2009B42D6</key>
 		<dict>
 			<key>primary</key>

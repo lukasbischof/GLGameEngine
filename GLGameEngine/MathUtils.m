@@ -70,3 +70,19 @@ GLKMatrix4 MathUtils_CreateTransformationMatrixr(GLKVector3 translation, Rotatio
     
     return matrix;
 }
+
+GLKMatrix3 MathUtils_CreateNormalMatrix(GLKMatrix4 transformationMatrix, GLKMatrix4 viewMatrix)
+{
+    bool isInvertible;
+    GLKMatrix4 mvMatrix = GLKMatrix4Multiply(viewMatrix, transformationMatrix);
+    GLKMatrix4 nMatrix = GLKMatrix4Invert(mvMatrix, &isInvertible);
+    
+    if (!isInvertible) {
+        NSLog(@"<< ERROR >>: mvMatrix isn't invertible");
+        return GLKMatrix3Identity;
+    }
+    
+    nMatrix = GLKMatrix4Transpose(nMatrix);
+    
+    return GLKMatrix4GetMatrix3(nMatrix);
+}

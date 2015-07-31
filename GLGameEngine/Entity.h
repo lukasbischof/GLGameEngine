@@ -8,6 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import "TexturedModel.h"
+#import "Camera.h"
 #import "MathUtils.h"
 
 @interface Entity : NSObject
