@@ -17,11 +17,11 @@ float saturate(float f) {
 
 void main(void) {
     vec3 lightDirection = normalize(u_lightPosition - inout_modelPosition);
-    float diffuseWeight = saturate(dot(inout_normal, lightDirection));
+    float diffuseWeight = max(dot(inout_normal, lightDirection), 0.2);
     
     vec3 reflectedLight = normalize(reflect(-lightDirection, inout_normal));
     vec3 eyeVec = normalize(-inout_modelPosition);
-    float specularWeight = pow(max(dot(eyeVec, reflectedLight), 0.0), 25.0);
+    float specularWeight = pow(max(dot(eyeVec, reflectedLight), 0.0), 45.0);
     
     out_color = texture(u_textureSampler, inout_texCoords) * vec4(diffuseWeight * u_lightColor + specularWeight * vec3(1.0, 1.0, 1.0), 1.0);
     

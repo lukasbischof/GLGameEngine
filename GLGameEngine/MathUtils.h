@@ -109,4 +109,14 @@ GLKMatrix4 MathUtils_CreateTransformationMatrixr(GLKVector3 translation, Rotatio
 EXPORT
 GLKMatrix3 MathUtils_CreateNormalMatrix(GLKMatrix4 transformationMatrix, GLKMatrix4 viewMatrix);
 
+/**
+ @function MathUtils_RandomFloat
+ @abstract Generiert eine zufällige Zahl zwischen min und max
+ @param min Die kleinste Grenze
+ @param max Die grösste Grenze
+ @return Die Zufallszahl
+*/
+EXPORT
+GLfloat MathUtils_RandomFloat(GLfloat min, GLfloat max);
+
 #endif /* defined(__GLGameEngine__MathUtils__) */

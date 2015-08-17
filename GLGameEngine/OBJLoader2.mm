@@ -79,7 +79,7 @@
     return self;
 }
 
-- (MDLVertexDescriptor *__nonnull)getVertexDescriptor
+- (MDLVertexDescriptor *_Nonnull)getVertexDescriptor
 {
     MDLVertexDescriptor *descriptor = [MDLVertexDescriptor new];
     

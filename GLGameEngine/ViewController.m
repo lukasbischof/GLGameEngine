@@ -25,7 +25,7 @@
 
 @property (strong, nonatomic) Loader *loader;
 @property (strong, nonatomic) Renderer *renderer;
-@property (strong, nonatomic) Entity *entity;
+@property (strong, nonatomic) NSMutableArray<Entity *> *entities;
 @property (strong, nonatomic) StaticShaderProgram *shader;
 @property (strong, nonatomic) Camera *camera;
 @property (strong, nonatomic) Light *light;
@@ -98,22 +98,32 @@
     self.light = [Light light];
     self.renderStartDate = [NSDate date];
     
+    self.renderer.clearColor = RGBAMakeFromRGBHex(0x1122FF);
+    
     GLKTextureInfo *texInfo = [[self loader] loadTexture:@"white" withExtension:@"png"];
     ModelTexture *texture = [[ModelTexture alloc] initWithTextureID:texInfo.name andTextureTarget:texInfo.target];
     
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"dragon" withExtension:@"obj"];
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"cube" withExtension:@"obj"];
     TexturedModel *texturedModel = [[OBJLoader2 alloc] initWithURL:modelURL
                                                            texture:texture
                                                          andLoader:self.loader].texturedModel;
     
-    GLKVector3 position = GLKVector3Make(0.0, 0.0, -20.0);
-    self.entity = [Entity entityWithTexturedModel:texturedModel
-                                         position:position
-                                         rotation:MathUtils_RotationMake(0.0, 0.0, 0.0)
-                                         andScale:1.5];
-    
-    self.entity.model.texture.shineDamper = 30;
-    self.entity.model.texture.reflectivity = 1;
+    /// @todo OpenGL 3D Game Tutorial 13: Optimizing
+    self.entities = [NSMutableArray<Entity *> new];
+    for (NSUInteger i = 0; i <= 20; i++) {
+        GLKVector3 position = GLKVector3Make(MathUtils_RandomFloat(-5, 5), MathUtils_RandomFloat(-3, 5), MathUtils_RandomFloat(-20, 30));
+        Entity *entity = [Entity entityWithTexturedModel:texturedModel
+                                                position:position
+                                                rotation:MathUtils_RotationMake(0.0, 0.0, 0.0)
+                                                andScale:1.5];
+        
+        /// @todo Zurzeit werden nur statische Lichtparameter im Shader verwendet. Damper = Specular Higlights-Exponent, Reflectivity = Gewicht (Weight)
+        /// => In den Shader laden und implementieren
+        entity.model.texture.shineDamper = 30;
+        entity.model.texture.reflectivity = 1;
+        
+        [self.entities addObject:entity];
+    }
     self.light.position = GLKVector3Make(0.0, 0.0, 2.0);
     self.light.color = GLKVector3Make(1.0, 0.0, 0.0);
 }
@@ -130,7 +140,10 @@ const float entityRotationFrequency = 1.0 / 0.25; // 0.25 s^-1
     
     NSTimeInterval time = [self.renderStartDate timeIntervalSinceNow] * -1;
     float rotations = time / entityRotationFrequency;
-    [self.entity setRotationX:0.0 y:rotations * 360 andZ:0.0];
+    
+    for (Entity *entity in self.entities) {
+        [entity setRotationX:0.0 y:rotations * 360 andZ:0.0];
+    }
 }
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
@@ -144,11 +157,13 @@ const float entityRotationFrequency = 1.0 / 0.25; // 0.25 s^-1
             _pMatrixNeedsUpdate = NO;
         }
         
-        [self.shader loadLight:self.light];
-        [self.shader loadNormalMatrixWithModelMatrix:[self.entity getCurrentTransformationMatrix]
-                                       andViewMatrix:[self.camera getViewMatrix]];
-        [self.shader loadViewMatrix:[self.camera getViewMatrix]];
-        [self.renderer render:self.entity withShaderProgram:self.shader];
+        for (Entity *entity in self.entities) {
+            [self.shader loadLight:self.light];
+            [self.shader loadViewMatrix:[self.camera getViewMatrix]];
+            [self.shader loadNormalMatrixWithModelMatrix:[entity getCurrentTransformationMatrix]
+                                           andViewMatrix:[self.camera getViewMatrix]];
+            [self.renderer render:entity withShaderProgram:self.shader];
+        }
     }
     _DEACTIVATE_SHADER_
 }

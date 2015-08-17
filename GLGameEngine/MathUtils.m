@@ -85,4 +85,11 @@ GLKMatrix3 MathUtils_CreateNormalMatrix(GLKMatrix4 transformationMatrix, GLKMatr
     nMatrix = GLKMatrix4Transpose(nMatrix);
     
     return GLKMatrix4GetMatrix3(nMatrix);
+    
+}
+
+GLfloat MathUtils_RandomFloat(GLfloat min, GLfloat max)
+{
+    float diff = max - min;
+    return (((GLfloat)rand() / RAND_MAX) * diff) + min;
 }
