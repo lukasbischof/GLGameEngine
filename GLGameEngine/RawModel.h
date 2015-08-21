@@ -20,7 +20,7 @@
 @property (assign, nonatomic) GLuint vertexCount;
 
 + (RawModel *)modelByCreatingVAOWithVertexCount:(GLuint)vertexCount;
-- (instancetype)initWithVAOID:(GLuint)vaoID andVertexCount:(GLuint)vertexCount;
+- (instancetype)initWithVAOID:(GLuint)vaoID andVertexCount:(GLuint)vertexCount NS_DESIGNATED_INITIALIZER;
 
 - (void)bindVAO;
 - (void)unbindVAO;

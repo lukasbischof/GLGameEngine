@@ -10,6 +10,11 @@
 
 @implementation TexturedModel
 
+- (instancetype)init
+{
+    return [self initWithRawModel:nil andTexture:nil];
+}
+
 - (instancetype)initWithRawModel:(RawModel *)rawModel andTexture:(ModelTexture *)texture
 {
     if ((self = [super init])) {

@@ -17,6 +17,6 @@
 + (Light *)light;
 + (Light *)lightWithPosition:(GLKVector3)position andColor:(GLKVector3)color;
 
-- (instancetype)initWithPosition:(GLKVector3)position andColor:(GLKVector3)color;
+- (instancetype)initWithPosition:(GLKVector3)position andColor:(GLKVector3)color NS_DESIGNATED_INITIALIZER;
 
 @end

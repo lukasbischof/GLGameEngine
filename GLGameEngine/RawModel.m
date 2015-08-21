@@ -20,6 +20,15 @@
     return model;
 }
 
+- (instancetype)init
+{
+    if ((self = [self initWithVAOID:0 andVertexCount:0])) {
+        
+    }
+    
+    return self;
+}
+
 - (instancetype)initWithVAOID:(GLuint)vaoID andVertexCount:(GLuint)vertexCount
 {
     if ((self = [super init])) {

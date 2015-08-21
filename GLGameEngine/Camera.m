@@ -34,9 +34,9 @@
 {
     GLKMatrix4 viewMatrix = GLKMatrix4Identity;
     
-    GLKMatrix4Rotate(viewMatrix, MathUtils_DegToRad(self.pitch), 1, 0, 0);
-    GLKMatrix4Rotate(viewMatrix, MathUtils_DegToRad(self.yaw),   0, 1, 0);
-    GLKMatrix4Rotate(viewMatrix, MathUtils_DegToRad(self.roll),  0, 0, 1);
+    viewMatrix = GLKMatrix4Rotate(viewMatrix, MathUtils_DegToRad(self.pitch), 1, 0, 0);
+    viewMatrix = GLKMatrix4Rotate(viewMatrix, MathUtils_DegToRad(self.yaw),   0, 1, 0);
+    viewMatrix = GLKMatrix4Rotate(viewMatrix, MathUtils_DegToRad(self.roll),  0, 0, 1);
     
     GLKVector3 negCameraPosition = GLKVector3Make(-self.position.x, -self.position.y, -self.position.z);
     viewMatrix = GLKMatrix4TranslateWithVector3(viewMatrix, negCameraPosition);

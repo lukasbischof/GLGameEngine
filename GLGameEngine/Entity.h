@@ -19,11 +19,16 @@
 @property (assign, nonatomic) GLfloat scale;
 @property (assign, nonatomic, readonly, getter=getCurrentTransformationMatrix) GLKMatrix4 currentTransformationMatrix;
 
+/// TEMPORARY
+#warning remove this
+@property (assign, nonatomic) float rotationSpeed;
+
 // Initializer
-- (instancetype)initWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation andScale:(GLfloat)scale;
-- (instancetype)initWithTexturedModel:(TexturedModel *)model rotation:(Rotation)rotation andScale:(GLfloat)scale;
-- (instancetype)initWithTexturedModel:(TexturedModel *)model andRotation:(Rotation)rotation;
-- (instancetype)initWithTexturedModel:(TexturedModel *)model;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation andScale:(GLfloat)scale NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTexturedModel:(TexturedModel *)model rotation:(Rotation)rotation andScale:(GLfloat)scale NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTexturedModel:(TexturedModel *)model andRotation:(Rotation)rotation NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTexturedModel:(TexturedModel *)model NS_DESIGNATED_INITIALIZER;
 
 + (Entity *)entityWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation andScale:(GLfloat)scale;
 + (Entity *)entityWithTexturedModel:(TexturedModel *)model rotation:(Rotation)rotation andScale:(GLfloat)scale;

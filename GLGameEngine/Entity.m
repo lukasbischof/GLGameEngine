@@ -35,6 +35,11 @@
     return [[Entity alloc] initWithTexturedModel:model];
 }
 
+- (instancetype)init
+{
+    return [self initWithTexturedModel:nil];
+}
+
 - (instancetype)initWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation andScale:(GLfloat)scale
 {
     if ((self = [super init])) {
@@ -108,6 +113,16 @@
 {
     GLKMatrix4 mat = MathUtils_CreateTransformationMatrixr(self.position, self.rotation, self.scale);
     return mat;
+}
+
+- (NSString *)description
+{
+    return [NSString stringWithFormat:@"<%@: %p, position: { x: %f, y: %f, z: %f }",
+                                      NSStringFromClass([self class]),
+                                      self,
+                                      self.position.x,
+                                      self.position.y,
+                                      self.position.z];
 }
 
 @end

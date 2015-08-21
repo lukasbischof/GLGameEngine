@@ -88,7 +88,7 @@ static const GLfloat FARZ = 100;
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
     
-    [shader loadTransformationMatrix:[entity getCurrentTransformationMatrix]];
+    [shader loadTransformationMatrix:entity.currentTransformationMatrix];
     
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(texturedModel.texture.textureTarget, texturedModel.texture.textureID);

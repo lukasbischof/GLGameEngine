@@ -15,6 +15,7 @@
 @property (strong, nonatomic, readonly) RawModel *rawModel;
 @property (strong, nonatomic, readonly) ModelTexture *texture;
 
-- (instancetype)initWithRawModel:(RawModel *)rawModel andTexture:(ModelTexture *)texture;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithRawModel:(RawModel *)rawModel andTexture:(ModelTexture *)texture NS_DESIGNATED_INITIALIZER;
 
 @end

@@ -10,6 +10,11 @@
 
 @implementation ModelTexture
 
+- (instancetype)init
+{
+    return [self initWithTextureID:0 andTextureTarget:GL_INVALID_ENUM];
+}
+
 - (instancetype)initWithTextureID:(GLuint)textureID andTextureTarget:(GLenum)textureTarget
 {
     if ((self = [super init])) {

@@ -28,7 +28,7 @@
 @property (assign, nonatomic, readonly) GLuint fragmentShaderID;
 
 - (instancetype)initWithVertexShaderName:(NSString *)vertexName
-                   andFragmentShaderName:(NSString *)fragmentName;
+                   andFragmentShaderName:(NSString *)fragmentName NS_DESIGNATED_INITIALIZER;
 
 // Needs to be implemented by subclasses
 - (void)bindAttributes;
@@ -53,7 +53,7 @@
 
 - (void)cleanUp;
 
-- (BOOL)validateProgram;
-- (BOOL)linkProgram;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL validateProgram;
+@property (NS_NONATOMIC_IOSONLY, readonly) BOOL linkProgram;
 
 @end

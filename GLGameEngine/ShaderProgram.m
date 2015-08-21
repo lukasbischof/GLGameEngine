@@ -11,6 +11,11 @@
 @implementation ShaderProgram
 
 #pragma mark - Init
+- (instancetype)init
+{
+    return [self initWithVertexShaderName:@"" andFragmentShaderName:@""];
+}
+
 - (instancetype)initWithVertexShaderName:(NSString *)vertexName andFragmentShaderName:(NSString *)fragmentName
 {
     if ((self = [super init])) {
@@ -156,7 +161,7 @@
     GLint status;
     const GLchar *source;
     
-    source = (GLchar *)[[NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil] UTF8String];
+    source = (GLchar *)[NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil].UTF8String;
     if (!source) {
         NSLog(@"Failed to load vertex shader");
         return NO;

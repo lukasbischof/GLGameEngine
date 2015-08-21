@@ -32,6 +32,11 @@ struct Face {
 
 @implementation OBJLoader
 
+- (instancetype)init
+{
+    return [self initWithURL:[NSURL new] texture:nil andLoader:nil];
+}
+
 - (instancetype)initWithURL:(NSURL *)url texture:(ModelTexture *)texture andLoader:(Loader *)loader
 {
     if ((self = [super init])) {
@@ -64,11 +69,11 @@ struct Face {
 {
     NSScanner *scanner = [NSScanner scannerWithString:contents];
     NSCharacterSet *skipSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];
-    NSCharacterSet *consumeSet = [skipSet invertedSet];
+    NSCharacterSet *consumeSet = skipSet.invertedSet;
     
     scanner.charactersToBeSkipped = skipSet;
     
-    while (![scanner isAtEnd]) {
+    while (!scanner.atEnd) {
         NSString *currentType;
         if (![scanner scanCharactersFromSet:consumeSet intoString:&currentType])
             break;

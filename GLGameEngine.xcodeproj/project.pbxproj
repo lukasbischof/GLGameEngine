@@ -14,8 +14,8 @@
 		4800F4EA1B6BA3BB009D801A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4800F4E81B6BA3BB009D801A /* Main.storyboard */; };
 		4800F4F51B6BA3BB009D801A /* GLGameEngine_MacTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4800F4F41B6BA3BB009D801A /* GLGameEngine_MacTests.m */; };
 		4800F4FF1B6BA9EF009D801A /* GameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4800F4FE1B6BA9EF009D801A /* GameView.m */; };
-		4887C8071B6C15CA00CFD231 /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4887C8061B6C15CA00CFD231 /* cube.obj */; };
-		4887C8081B6C15CA00CFD231 /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4887C8061B6C15CA00CFD231 /* cube.obj */; };
+		4828F8ED1B877AF5006D93CD /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4828F8EC1B877AF5006D93CD /* cube.obj */; };
+		4828F8EE1B877AF5006D93CD /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4828F8EC1B877AF5006D93CD /* cube.obj */; };
 		802639391B0E34D3009B42D6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 802639381B0E34D3009B42D6 /* main.m */; };
 		8026393C1B0E34D3009B42D6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8026393B1B0E34D3009B42D6 /* AppDelegate.m */; };
 		8026393F1B0E34D3009B42D6 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8026393E1B0E34D3009B42D6 /* ViewController.m */; };
@@ -80,7 +80,7 @@
 		4800F4F61B6BA3BB009D801A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4800F4FD1B6BA9EF009D801A /* GameView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameView.h; sourceTree = "<group>"; };
 		4800F4FE1B6BA9EF009D801A /* GameView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameView.m; sourceTree = "<group>"; };
-		4887C8061B6C15CA00CFD231 /* cube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cube.obj; sourceTree = "<group>"; };
+		4828F8EC1B877AF5006D93CD /* cube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cube.obj; sourceTree = "<group>"; };
 		802639331B0E34D3009B42D6 /* GLGameEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GLGameEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		802639371B0E34D3009B42D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		802639381B0E34D3009B42D6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -248,7 +248,7 @@
 				806778F11B18EFBB0082AF0B /* larenTexture.png */,
 				80FFE4271B1A2C0B008DE7DB /* stall.obj */,
 				80E38B7C1B1B819A006D7B30 /* dragon.obj */,
-				4887C8061B6C15CA00CFD231 /* cube.obj */,
+				4828F8EC1B877AF5006D93CD /* cube.obj */,
 				80FFE4281B1A2C0B008DE7DB /* stallTexture.png */,
 				80E38B7E1B1B9893006D7B30 /* white.png */,
 			);
@@ -491,8 +491,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4828F8EE1B877AF5006D93CD /* cube.obj in Resources */,
 				4800F4E71B6BA3BB009D801A /* Assets.xcassets in Resources */,
-				4887C8081B6C15CA00CFD231 /* cube.obj in Resources */,
 				4800F4EA1B6BA3BB009D801A /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -513,9 +513,9 @@
 				8026396F1B0E670D009B42D6 /* VertexShader.vsh in Resources */,
 				806778F21B18EFBB0082AF0B /* larenTexture.png in Resources */,
 				80FFE42A1B1A2C0B008DE7DB /* stallTexture.png in Resources */,
+				4828F8ED1B877AF5006D93CD /* cube.obj in Resources */,
 				80E38B7F1B1B9893006D7B30 /* white.png in Resources */,
 				802639421B0E34D3009B42D6 /* Main.storyboard in Resources */,
-				4887C8071B6C15CA00CFD231 /* cube.obj in Resources */,
 				80E38B7D1B1B819A006D7B30 /* dragon.obj in Resources */,
 				802639471B0E34D3009B42D6 /* LaunchScreen.xib in Resources */,
 				802639441B0E34D3009B42D6 /* Images.xcassets in Resources */,

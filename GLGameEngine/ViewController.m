@@ -100,7 +100,9 @@
     
     self.renderer.clearColor = RGBAMakeFromRGBHex(0x1122FF);
     
-    GLKTextureInfo *texInfo = [[self loader] loadTexture:@"white" withExtension:@"png"];
+    //[self.camera move:GLKVector3Make(0, 0.5, 0)];
+    
+    GLKTextureInfo *texInfo = [self.loader loadTexture:@"white" withExtension:@"png"];
     ModelTexture *texture = [[ModelTexture alloc] initWithTextureID:texInfo.name andTextureTarget:texInfo.target];
     
     NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"cube" withExtension:@"obj"];
@@ -110,38 +112,48 @@
     
     /// @todo OpenGL 3D Game Tutorial 13: Optimizing
     self.entities = [NSMutableArray<Entity *> new];
-    for (NSUInteger i = 0; i <= 20; i++) {
-        GLKVector3 position = GLKVector3Make(MathUtils_RandomFloat(-5, 5), MathUtils_RandomFloat(-3, 5), MathUtils_RandomFloat(-20, 30));
+    for (NSUInteger i = 0; i <= 1011; i++) {
+        GLKVector3 position = GLKVector3Make(MathUtils_RandomFloat(-5.6, 5.6), MathUtils_RandomFloat(-1.5, 8), MathUtils_RandomFloat(-40, -5));
         Entity *entity = [Entity entityWithTexturedModel:texturedModel
                                                 position:position
                                                 rotation:MathUtils_RotationMake(0.0, 0.0, 0.0)
-                                                andScale:1.5];
+                                                andScale:.5];
         
         /// @todo Zurzeit werden nur statische Lichtparameter im Shader verwendet. Damper = Specular Higlights-Exponent, Reflectivity = Gewicht (Weight)
         /// => In den Shader laden und implementieren
         entity.model.texture.shineDamper = 30;
         entity.model.texture.reflectivity = 1;
+        entity.rotationSpeed = MathUtils_RandomFloat(0.01, 1.0);
         
         [self.entities addObject:entity];
     }
+    
     self.light.position = GLKVector3Make(0.0, 0.0, 2.0);
     self.light.color = GLKVector3Make(1.0, 0.0, 0.0);
+    
+    printf("%s", [self getEntitiesDescription].UTF8String);
 }
 
 #pragma mark GLKViewControllerDelegate
 
-const float entityRotationFrequency = 1.0 / 0.25; // 0.25 s^-1
-
 // This method gets called before the view renders
 - (void)update
 {
-    if (self.camera.position.y <= 6.5)
-        [self.camera move:GLKVector3Make(0, 0.004, 0)];
+    if (self.camera.position.y <= 8.7)
+        [self.camera move:GLKVector3Make(0, 0.011, -0.017)];
+    else if (self.camera.position.z >= -30)
+        [self.camera move:GLKVector3Make(0, 0, -0.017)];
+    else if (self.camera.yaw <= 180)
+        self.camera.yaw += 0.11;
+    else if (self.camera.pitch <= 20)
+        self.camera.pitch += 0.14;
     
-    NSTimeInterval time = [self.renderStartDate timeIntervalSinceNow] * -1;
-    float rotations = time / entityRotationFrequency;
+    NSTimeInterval time = (self.renderStartDate).timeIntervalSinceNow * -1;
     
     for (Entity *entity in self.entities) {
+        const float entityRotationFrequency = 1.0 / entity.rotationSpeed; // x s^-1
+        const float rotations = time / entityRotationFrequency;
+        
         [entity setRotationX:0.0 y:rotations * 360 andZ:0.0];
     }
 }
@@ -159,9 +171,9 @@ const float entityRotationFrequency = 1.0 / 0.25; // 0.25 s^-1
         
         for (Entity *entity in self.entities) {
             [self.shader loadLight:self.light];
-            [self.shader loadViewMatrix:[self.camera getViewMatrix]];
-            [self.shader loadNormalMatrixWithModelMatrix:[entity getCurrentTransformationMatrix]
-                                           andViewMatrix:[self.camera getViewMatrix]];
+            [self.shader loadViewMatrix:(self.camera).viewMatrix];
+            [self.shader loadNormalMatrixWithModelMatrix:entity.currentTransformationMatrix
+                                           andViewMatrix:(self.camera).viewMatrix];
             [self.renderer render:entity withShaderProgram:self.shader];
         }
     }
@@ -179,7 +191,7 @@ const float entityRotationFrequency = 1.0 / 0.25; // 0.25 s^-1
 {
     [super didReceiveMemoryWarning];
     
-    if ([self isViewLoaded] && ([[self view] window] == nil)) {
+    if ([self isViewLoaded] && (self.view.window == nil)) {
         self.view = nil;
         
         [self tearDownOpenGLES];
@@ -189,6 +201,19 @@ const float entityRotationFrequency = 1.0 / 0.25; // 0.25 s^-1
 - (void)dealloc
 {
     [self tearDownOpenGLES];
+}
+
+#pragma mark - Information / Debugging
+- (NSString *)getEntitiesDescription
+{
+    NSMutableString *str = [(@"") mutableCopy];
+    
+    NSUInteger i = 0;
+    for (Entity *entity in self.entities) {
+        [str appendFormat:@"Entity %lu: %@\n", (unsigned long)++i, entity];
+    }
+    
+    return str;
 }
 
 @end

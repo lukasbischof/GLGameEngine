@@ -18,9 +18,28 @@
 
 @interface Camera : NSObject
 
+/**
+ @property position
+ @abstract The position of the camera.
+ */
 @property (assign, nonatomic) GLKVector3 position;
+
+/**
+ @property yaw
+ @abstract The yaw (rotation around the Y-axis) of the camera. In degrees
+*/
 @property (assign, nonatomic) GLfloat yaw;
+
+/**
+ @property pitch
+ @abstract The pitch (rotation around the X-axis) of the camera. In degrees
+ */
 @property (assign, nonatomic) GLfloat pitch;
+
+/**
+ @property roll
+ @abstract The roll (rotation around the Z-axis) of the camera. In degrees
+ */
 @property (assign, nonatomic) GLfloat roll;
 @property (assign, nonatomic, readonly, getter=getViewMatrix) GLKMatrix4 viewMatrix;
 

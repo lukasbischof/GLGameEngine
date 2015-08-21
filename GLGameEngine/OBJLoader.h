@@ -14,6 +14,6 @@
 
 @property (strong, nonatomic) TexturedModel *texturedModel;
 
-- (instancetype)initWithURL:(NSURL *)url texture:(ModelTexture *)texture andLoader:(Loader *)loader;
+- (instancetype)initWithURL:(NSURL *)url texture:(ModelTexture *)texture andLoader:(Loader *)loader NS_DESIGNATED_INITIALIZER;
 
 @end

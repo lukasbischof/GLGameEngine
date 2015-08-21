@@ -39,10 +39,7 @@
             NSArray<MDLMesh *> *sourceMeshes = nil;
             NSError *error                   = nil;
             
-            [GLKMesh newMeshesFromAsset:asset
-                              newMeshes:&newMeshes
-                           sourceMeshes:&sourceMeshes
-                                  error:&error];
+            newMeshes = [GLKMesh newMeshesFromAsset:asset sourceMeshes:&sourceMeshes error:&error];
             
             if (error) {
                 NSLog(@"<< [%@] Error >>: Can't create model: %@", NSStringFromClass([self class]), error);

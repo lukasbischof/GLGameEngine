@@ -18,6 +18,6 @@
 
 /// Must initialize with resource data
 - (nullable instancetype)init NS_UNAVAILABLE;
-- (nullable instancetype)initWithURL:(NSURL *__nonnull)url texture:(nonnull ModelTexture *)texture andLoader:(nonnull Loader *)loader;
+- (nullable instancetype)initWithURL:(NSURL *__nonnull)url texture:(nonnull ModelTexture *)texture andLoader:(nonnull Loader *)loader NS_DESIGNATED_INITIALIZER;
 
 @end

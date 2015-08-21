@@ -6,6 +6,7 @@
 //  Copyright (c) 2015 Lukas Bischof. All rights reserved.
 //
 
+#import <GameKit/GameKit.h>
 #include "MathUtils.h"
 
 const Rotation MathUtils_ZeroRotation = (Rotation) { 0.0, 0.0, 0.0 };
@@ -91,5 +92,5 @@ GLKMatrix3 MathUtils_CreateNormalMatrix(GLKMatrix4 transformationMatrix, GLKMatr
 GLfloat MathUtils_RandomFloat(GLfloat min, GLfloat max)
 {
     float diff = max - min;
-    return (((GLfloat)rand() / RAND_MAX) * diff) + min;
+    return (((GLfloat)[[GKARC4RandomSource sharedRandom] nextUniform]) * diff) + min;
 }

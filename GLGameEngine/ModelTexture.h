@@ -21,6 +21,7 @@
 @property (assign, nonatomic, readonly) GLuint textureID;
 @property (assign, nonatomic, readonly) GLenum textureTarget;
 
-- (instancetype)initWithTextureID:(GLuint)textureID andTextureTarget:(GLenum)textureTarget;
+- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)initWithTextureID:(GLuint)textureID andTextureTarget:(GLenum)textureTarget NS_DESIGNATED_INITIALIZER;
 
 @end

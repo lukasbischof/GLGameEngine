@@ -12,9 +12,8 @@
 
 - (instancetype)init
 {
-    if ((self = [super init])) {
-        self.position = GLKVector3Make(0.0, 0.0, 0.0);
-        self.color = GLKVector3Make(1.0, 1.0, 1.0);
+    if ((self = [self initWithPosition:GLKVector3Make(0, 0, 0) andColor:GLKVector3Make(1, 1, 1)])) {
+        
     }
     
     return self;
