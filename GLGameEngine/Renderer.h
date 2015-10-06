@@ -29,6 +29,7 @@ typedef struct _RGBA RGBA;
 /// program acitvation must be done before updating
 - (void)updateProjectionWithAspect:(float)aspect forShader:(StaticShaderProgram *)shader;
 - (void)prepare;
+- (void)render:(NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> *)entities withCamera:(Camera *)camera;
 - (void)render:(Entity *)entity withShaderProgram:(StaticShaderProgram *)shader;
 
 @end

@@ -14,7 +14,7 @@
 #import <OpenGL/gl3.h>
 #endif
 
-@interface ModelTexture : NSObject
+@interface ModelTexture : NSObject <NSCopying>
 
 @property (assign, nonatomic) float shineDamper;
 @property (assign, nonatomic) float reflectivity;

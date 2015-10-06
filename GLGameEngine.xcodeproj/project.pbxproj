@@ -16,6 +16,9 @@
 		4800F4FF1B6BA9EF009D801A /* GameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4800F4FE1B6BA9EF009D801A /* GameView.m */; };
 		4828F8ED1B877AF5006D93CD /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4828F8EC1B877AF5006D93CD /* cube.obj */; };
 		4828F8EE1B877AF5006D93CD /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4828F8EC1B877AF5006D93CD /* cube.obj */; };
+		4828F8F21B87BF45006D93CD /* MasterRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4828F8F11B87BF45006D93CD /* MasterRenderer.m */; };
+		4828F8F31B87BF45006D93CD /* MasterRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4828F8F11B87BF45006D93CD /* MasterRenderer.m */; };
+		48B856C91B8B9BD500336A43 /* GLKView+aspect.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B856C81B8B9BD500336A43 /* GLKView+aspect.m */; };
 		802639391B0E34D3009B42D6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 802639381B0E34D3009B42D6 /* main.m */; };
 		8026393C1B0E34D3009B42D6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8026393B1B0E34D3009B42D6 /* AppDelegate.m */; };
 		8026393F1B0E34D3009B42D6 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8026393E1B0E34D3009B42D6 /* ViewController.m */; };
@@ -81,6 +84,10 @@
 		4800F4FD1B6BA9EF009D801A /* GameView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameView.h; sourceTree = "<group>"; };
 		4800F4FE1B6BA9EF009D801A /* GameView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameView.m; sourceTree = "<group>"; };
 		4828F8EC1B877AF5006D93CD /* cube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cube.obj; sourceTree = "<group>"; };
+		4828F8F01B87BF45006D93CD /* MasterRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterRenderer.h; sourceTree = "<group>"; };
+		4828F8F11B87BF45006D93CD /* MasterRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterRenderer.m; sourceTree = "<group>"; };
+		48B856C71B8B9BD500336A43 /* GLKView+aspect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GLKView+aspect.h"; sourceTree = "<group>"; };
+		48B856C81B8B9BD500336A43 /* GLKView+aspect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GLKView+aspect.m"; sourceTree = "<group>"; };
 		802639331B0E34D3009B42D6 /* GLGameEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GLGameEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		802639371B0E34D3009B42D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		802639381B0E34D3009B42D6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -201,6 +208,17 @@
 			path = "GLGameEngine MacTests";
 			sourceTree = "<group>";
 		};
+		4828F8EF1B87BF28006D93CD /* Rendering */ = {
+			isa = PBXGroup;
+			children = (
+				802639681B0E5F5C009B42D6 /* Renderer.h */,
+				802639691B0E5F5C009B42D6 /* Renderer.m */,
+				4828F8F01B87BF45006D93CD /* MasterRenderer.h */,
+				4828F8F11B87BF45006D93CD /* MasterRenderer.m */,
+			);
+			name = Rendering;
+			sourceTree = "<group>";
+		};
 		8026392A1B0E34D2009B42D6 = {
 			isa = PBXGroup;
 			children = (
@@ -290,8 +308,7 @@
 				80FFE4251B1A2BFA008DE7DB /* OBJLoader.mm */,
 				80B72DA01B33328700394A80 /* OBJLoader2.h */,
 				80B72DA11B33328700394A80 /* OBJLoader2.mm */,
-				802639681B0E5F5C009B42D6 /* Renderer.h */,
-				802639691B0E5F5C009B42D6 /* Renderer.m */,
+				4828F8EF1B87BF28006D93CD /* Rendering */,
 				80FFE41D1B19EF73008DE7DB /* Entities */,
 				806778EC1B18EE0B0082AF0B /* Models */,
 				806778E81B18ED690082AF0B /* Textures */,
@@ -349,6 +366,8 @@
 			children = (
 				80FFE41B1B19EBAD008DE7DB /* MathUtils.h */,
 				80FFE41A1B19EBAD008DE7DB /* MathUtils.m */,
+				48B856C71B8B9BD500336A43 /* GLKView+aspect.h */,
+				48B856C81B8B9BD500336A43 /* GLKView+aspect.m */,
 			);
 			name = Utils;
 			sourceTree = "<group>";
@@ -540,6 +559,7 @@
 				4800F4E21B6BA3BB009D801A /* main.m in Sources */,
 				4800F4FF1B6BA9EF009D801A /* GameView.m in Sources */,
 				4800F4DF1B6BA3BB009D801A /* AppDelegate.m in Sources */,
+				4828F8F31B87BF45006D93CD /* MasterRenderer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -558,6 +578,7 @@
 				80FFE4231B1A1361008DE7DB /* Camera.m in Sources */,
 				80FFE4261B1A2BFA008DE7DB /* OBJLoader.mm in Sources */,
 				802639641B0E5279009B42D6 /* RawModel.m in Sources */,
+				48B856C91B8B9BD500336A43 /* GLKView+aspect.m in Sources */,
 				8026393F1B0E34D3009B42D6 /* ViewController.m in Sources */,
 				806778EF1B18EE1D0082AF0B /* TexturedModel.m in Sources */,
 				80FFE4201B19EF82008DE7DB /* Entity.m in Sources */,
@@ -571,6 +592,7 @@
 				806778EB1B18ED7E0082AF0B /* ModelTexture.m in Sources */,
 				806778E71B18D2930082AF0B /* Buffer.mm in Sources */,
 				802639751B0E77B4009B42D6 /* StaticShaderProgram.m in Sources */,
+				4828F8F21B87BF45006D93CD /* MasterRenderer.m in Sources */,
 				80FFE41C1B19EBAD008DE7DB /* MathUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

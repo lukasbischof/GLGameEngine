@@ -14,6 +14,8 @@
 #import "OBJLoader.h"
 #import "OBJLoader2.h"
 #import "Camera.h"
+#import "MasterRenderer.h"
+#import "GLKView+aspect.h"
 
 #define _ACTIVATE_SHADER_ [self.shader activate];
 #define _DEACTIVATE_SHADER_ [self.shader deactivate];
@@ -24,9 +26,8 @@
 @property (strong, nonatomic) NSDate *renderStartDate;
 
 @property (strong, nonatomic) Loader *loader;
-@property (strong, nonatomic) Renderer *renderer;
+@property (strong, nonatomic) MasterRenderer *renderer;
 @property (strong, nonatomic) NSMutableArray<Entity *> *entities;
-@property (strong, nonatomic) StaticShaderProgram *shader;
 @property (strong, nonatomic) Camera *camera;
 @property (strong, nonatomic) Light *light;
 
@@ -80,7 +81,7 @@
 - (void)tearDownOpenGLES
 {
     [self.loader cleanUp];
-    [self.shader cleanUp];
+    [self.renderer cleanUp];
     
     if ([EAGLContext currentContext] == self.context) {
         [EAGLContext setCurrentContext:nil];
@@ -90,15 +91,14 @@
 }
 
 - (void)initGLObjects
-{    
+{
+    self.renderer = [MasterRenderer renderer];
     self.loader = [Loader loader];
-    self.shader = [StaticShaderProgram staticShaderProgram];
-    self.renderer = [Renderer rendererWithShaderProgram:self.shader];
     self.camera = [Camera camera];
     self.light = [Light light];
     self.renderStartDate = [NSDate date];
     
-    self.renderer.clearColor = RGBAMakeFromRGBHex(0x1122FF);
+    [self.renderer updateProjectionForAspect:[self glview].aspect];
     
     //[self.camera move:GLKVector3Make(0, 0.5, 0)];
     
@@ -111,8 +111,14 @@
                                                          andLoader:self.loader].texturedModel;
     
     /// @todo OpenGL 3D Game Tutorial 13: Optimizing
+    /*!!
+     @todo MasterRenderer implementiert. -> ViewController fertig machen:
+      -   @resource OpenGL 3D Game Tutorial 13: Optimizing
+      -   @stopped 10:50
+      -   @implemented MasterRenderer
+    */
     self.entities = [NSMutableArray<Entity *> new];
-    for (NSUInteger i = 0; i <= 1011; i++) {
+    for (NSUInteger i = 0; i <= 300; i++) {
         GLKVector3 position = GLKVector3Make(MathUtils_RandomFloat(-5.6, 5.6), MathUtils_RandomFloat(-1.5, 8), MathUtils_RandomFloat(-40, -5));
         Entity *entity = [Entity entityWithTexturedModel:texturedModel
                                                 position:position
@@ -160,24 +166,16 @@
 
 - (void)glkView:(GLKView *)view drawInRect:(CGRect)rect
 {
-    [self.renderer prepare];
-    
-    _ACTIVATE_SHADER_
-    {
-        if (_pMatrixNeedsUpdate) {
-            [self.renderer updateProjectionWithAspect:rect.size.width / rect.size.height forShader:self.shader];
-            _pMatrixNeedsUpdate = NO;
-        }
-        
-        for (Entity *entity in self.entities) {
-            [self.shader loadLight:self.light];
-            [self.shader loadViewMatrix:(self.camera).viewMatrix];
-            [self.shader loadNormalMatrixWithModelMatrix:entity.currentTransformationMatrix
-                                           andViewMatrix:(self.camera).viewMatrix];
-            [self.renderer render:entity withShaderProgram:self.shader];
-        }
+    if (_pMatrixNeedsUpdate) {
+        [self.renderer updateProjectionForAspect:[self glview].aspect];
+        _pMatrixNeedsUpdate = NO;
     }
-    _DEACTIVATE_SHADER_
+    
+    for (Entity *entity in self.entities) {
+        [self.renderer processEntity:entity];
+    }
+    
+    [self.renderer renderWithLight:self.light andCamera:self.camera];
 }
 
 #pragma mark - Getters

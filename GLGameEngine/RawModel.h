@@ -14,7 +14,7 @@
 #import <OpenGL/gl3.h>
 #endif
 
-@interface RawModel : NSObject
+@interface RawModel : NSObject <NSCopying>
 
 @property (assign, nonatomic, readonly) GLuint vaoID;
 @property (assign, nonatomic) GLuint vertexCount;

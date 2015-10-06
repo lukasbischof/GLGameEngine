@@ -10,10 +10,11 @@
 #import "RawModel.h"
 #import "ModelTexture.h"
 
-@interface TexturedModel : NSObject
+@interface TexturedModel : NSObject <NSCopying>
 
 @property (strong, nonatomic, readonly) RawModel *rawModel;
 @property (strong, nonatomic, readonly) ModelTexture *texture;
+@property (strong, nonatomic) NSUUID *UUID;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithRawModel:(RawModel *)rawModel andTexture:(ModelTexture *)texture NS_DESIGNATED_INITIALIZER;

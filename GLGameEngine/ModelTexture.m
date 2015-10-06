@@ -25,4 +25,14 @@
     return self;
 }
 
+- (id)copyWithZone:(NSZone *)zone
+{
+    ModelTexture *copy = [[ModelTexture alloc] initWithTextureID:self.textureID andTextureTarget:self.textureTarget];
+    
+    copy.shineDamper = self.shineDamper;
+    copy.reflectivity = self.reflectivity;
+    
+    return copy;
+}
+
 @end

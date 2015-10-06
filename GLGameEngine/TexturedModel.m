@@ -20,9 +20,29 @@
     if ((self = [super init])) {
         _rawModel = rawModel;
         _texture = texture;
+        _UUID = [NSUUID UUID];
     }
     
     return self;
+}
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    TexturedModel *copy = [[TexturedModel alloc] initWithRawModel:[self.rawModel copy] andTexture:[self.texture copy]];
+    copy.UUID = self.UUID;
+    
+    return copy;
+}
+
+- (BOOL)isEqual:(id)object
+{
+    if ([object isKindOfClass:[TexturedModel class]] && object != nil) {
+        if ([((TexturedModel *)object).UUID isEqual:self.UUID]) {
+            return YES;
+        }
+    }
+    
+    return NO;
 }
 
 @end

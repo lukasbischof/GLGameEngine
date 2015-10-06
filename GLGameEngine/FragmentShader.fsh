@@ -23,7 +23,8 @@ void main(void) {
     vec3 eyeVec = normalize(-inout_modelPosition);
     float specularWeight = pow(max(dot(eyeVec, reflectedLight), 0.0), 45.0);
     
-    out_color = texture(u_textureSampler, inout_texCoords) * vec4(diffuseWeight * u_lightColor + specularWeight * vec3(1.0, 1.0, 1.0), 1.0);
+    // out_color = texture(u_textureSampler, inout_texCoords) * vec4(diffuseWeight * u_lightColor + specularWeight * vec3(1.0, 1.0, 1.0), 1.0);
+    out_color = vec4(0.7, 0.7, 0.7, 1.0) * vec4(diffuseWeight * u_lightColor + specularWeight * vec3(1.0, 1.0, 1.0), 1.0);
     
 //    vec3 lightDirection = normalize(u_lightPosition - inout_modelPosition);
 //    vec3 eyeVec = normalize(-inout_modelPosition);

@@ -49,4 +49,12 @@
     glBindVertexArray(0);
 }
 
+
+- (id)copyWithZone:(NSZone *)zone
+{
+    RawModel *copy = [[RawModel alloc] initWithVAOID:self.vaoID andVertexCount:self.vertexCount];
+    
+    return copy;
+}
+
 @end

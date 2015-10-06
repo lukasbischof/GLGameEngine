@@ -16,6 +16,7 @@ static const GLfloat FARZ = 100;
 @interface Renderer ()
 
 @property (assign, nonatomic) GLKMatrix4 projectionMatrix;
+@property (assign, nonnull) StaticShaderProgram *shaderProgram;
 
 @end
 
@@ -36,6 +37,8 @@ static const GLfloat FARZ = 100;
     if ((self = [super init])) {
         CGSize size = [UIScreen mainScreen].bounds.size;
         float aspect = size.width / size.height;
+        
+        self.shaderProgram = shader;
         
         [self setupProperties];
         [self createProjectionMatrixWithAspect:aspect];
@@ -78,6 +81,50 @@ static const GLfloat FARZ = 100;
     glEnable(GL_DEPTH_TEST);
 }
 
+#pragma mark Master-Rendering
+- (void)render:(NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> *)entities withCamera:(Camera *)camera
+{
+    [entities enumerateKeysAndObjectsUsingBlock:^(TexturedModel *_Nonnull key,
+                                                  NSMutableArray<Entity *> *_Nonnull obj,
+                                                  BOOL *_Nonnull stop) {
+        [self prepareTexturedModel:key];
+        
+        for (Entity *entity in obj) {
+            [self prepareInstance:entity withViewMatrix:camera.viewMatrix];
+            glDrawElements(GL_TRIANGLES, key.rawModel.vertexCount, GL_UNSIGNED_INT, 0);
+        }
+        
+        [self unbindTexturedModel];
+    }];
+}
+
+- (void)prepareTexturedModel:(TexturedModel *)texturedModel
+{
+    RawModel *model = texturedModel.rawModel;
+    [model bindVAO];
+    
+    glEnableVertexAttribArray(0);
+    glEnableVertexAttribArray(1);
+    glEnableVertexAttribArray(2);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(texturedModel.texture.textureTarget, texturedModel.texture.textureID);
+}
+
+- (void)unbindTexturedModel
+{
+    glDisableVertexAttribArray(0);
+    glDisableVertexAttribArray(1);
+    glDisableVertexAttribArray(2);
+}
+
+- (void)prepareInstance:(Entity *)entity withViewMatrix:(GLKMatrix4)viewMat
+{
+    [self.shaderProgram loadTransformationMatrix:entity.currentTransformationMatrix];
+    [self.shaderProgram loadNormalMatrixWithModelMatrix:entity.currentTransformationMatrix
+                                          andViewMatrix:viewMat];
+}
+
+#pragma mark Old rendering
 - (void)render:(Entity *)entity withShaderProgram:(StaticShaderProgram *)shader
 {
     TexturedModel *texturedModel = entity.model;
