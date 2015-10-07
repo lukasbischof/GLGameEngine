@@ -98,11 +98,12 @@
     self.light = [Light light];
     self.renderStartDate = [NSDate date];
     
-    [self.renderer updateProjectionForAspect:[self glview].aspect];
+    //[self.renderer updateProjectionForAspect:[self glview].aspect];
     
     //[self.camera move:GLKVector3Make(0, 0.5, 0)];
     
     GLKTextureInfo *texInfo = [self.loader loadTexture:@"white" withExtension:@"png"];
+    // texInfo = [self.loader loadTexture:@"white" withExtension:@"png"];
     ModelTexture *texture = [[ModelTexture alloc] initWithTextureID:texInfo.name andTextureTarget:texInfo.target];
     
     NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"cube" withExtension:@"obj"];
@@ -118,7 +119,7 @@
       -   @implemented MasterRenderer
     */
     self.entities = [NSMutableArray<Entity *> new];
-    for (NSUInteger i = 0; i <= 300; i++) {
+    for (NSUInteger i = 0; i < 1600; i++) {
         GLKVector3 position = GLKVector3Make(MathUtils_RandomFloat(-5.6, 5.6), MathUtils_RandomFloat(-1.5, 8), MathUtils_RandomFloat(-40, -5));
         Entity *entity = [Entity entityWithTexturedModel:texturedModel
                                                 position:position
@@ -137,7 +138,12 @@
     self.light.position = GLKVector3Make(0.0, 0.0, 2.0);
     self.light.color = GLKVector3Make(1.0, 0.0, 0.0);
     
-    printf("%s", [self getEntitiesDescription].UTF8String);
+    // printf("%s", [self getEntitiesDescription].UTF8String);
+    
+    GLenum err = glGetError();
+    if (err != GL_NO_ERROR) {
+        NSLog(@"An error occured while initializing OpenGL objects: %d", err);
+    }
 }
 
 #pragma mark GLKViewControllerDelegate

@@ -61,12 +61,14 @@
             GLKMeshBuffer *normalBuffer = vertexBuffers[1];
             GLKMeshBuffer *texCoordBuffer = vertexBuffers[2];
             
+            
             TexturedModel *model = [loader createTexturedModelWithPositions:positionBuffer
                                                                     normlas:normalBuffer
                                                          textureCoordinates:texCoordBuffer
                                                                 vertexCount:mesh.vertexCount
                                                                   submeshes:mesh.submeshes
                                                                  andTexture:texture];
+            
             self.texturedModel = model;
         } else {
             fatal_error(@"Model I/O doesn't support obj?");

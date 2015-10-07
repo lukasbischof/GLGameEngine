@@ -14,10 +14,10 @@
 		4800F4EA1B6BA3BB009D801A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 4800F4E81B6BA3BB009D801A /* Main.storyboard */; };
 		4800F4F51B6BA3BB009D801A /* GLGameEngine_MacTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 4800F4F41B6BA3BB009D801A /* GLGameEngine_MacTests.m */; };
 		4800F4FF1B6BA9EF009D801A /* GameView.m in Sources */ = {isa = PBXBuildFile; fileRef = 4800F4FE1B6BA9EF009D801A /* GameView.m */; };
-		4828F8ED1B877AF5006D93CD /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4828F8EC1B877AF5006D93CD /* cube.obj */; };
-		4828F8EE1B877AF5006D93CD /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4828F8EC1B877AF5006D93CD /* cube.obj */; };
 		4828F8F21B87BF45006D93CD /* MasterRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4828F8F11B87BF45006D93CD /* MasterRenderer.m */; };
 		4828F8F31B87BF45006D93CD /* MasterRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4828F8F11B87BF45006D93CD /* MasterRenderer.m */; };
+		4889F24F1BC42AAB0097A28F /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4889F24E1BC42AAB0097A28F /* cube.obj */; };
+		4889F2501BC42AAB0097A28F /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4889F24E1BC42AAB0097A28F /* cube.obj */; };
 		48B856C91B8B9BD500336A43 /* GLKView+aspect.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B856C81B8B9BD500336A43 /* GLKView+aspect.m */; };
 		802639391B0E34D3009B42D6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 802639381B0E34D3009B42D6 /* main.m */; };
 		8026393C1B0E34D3009B42D6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8026393B1B0E34D3009B42D6 /* AppDelegate.m */; };
@@ -83,9 +83,9 @@
 		4800F4F61B6BA3BB009D801A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		4800F4FD1B6BA9EF009D801A /* GameView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GameView.h; sourceTree = "<group>"; };
 		4800F4FE1B6BA9EF009D801A /* GameView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GameView.m; sourceTree = "<group>"; };
-		4828F8EC1B877AF5006D93CD /* cube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cube.obj; sourceTree = "<group>"; };
 		4828F8F01B87BF45006D93CD /* MasterRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MasterRenderer.h; sourceTree = "<group>"; };
 		4828F8F11B87BF45006D93CD /* MasterRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterRenderer.m; sourceTree = "<group>"; };
+		4889F24E1BC42AAB0097A28F /* cube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cube.obj; sourceTree = "<group>"; };
 		48B856C71B8B9BD500336A43 /* GLKView+aspect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GLKView+aspect.h"; sourceTree = "<group>"; };
 		48B856C81B8B9BD500336A43 /* GLKView+aspect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GLKView+aspect.m"; sourceTree = "<group>"; };
 		802639331B0E34D3009B42D6 /* GLGameEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GLGameEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -266,7 +266,7 @@
 				806778F11B18EFBB0082AF0B /* larenTexture.png */,
 				80FFE4271B1A2C0B008DE7DB /* stall.obj */,
 				80E38B7C1B1B819A006D7B30 /* dragon.obj */,
-				4828F8EC1B877AF5006D93CD /* cube.obj */,
+				4889F24E1BC42AAB0097A28F /* cube.obj */,
 				80FFE4281B1A2C0B008DE7DB /* stallTexture.png */,
 				80E38B7E1B1B9893006D7B30 /* white.png */,
 			);
@@ -510,7 +510,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4828F8EE1B877AF5006D93CD /* cube.obj in Resources */,
+				4889F2501BC42AAB0097A28F /* cube.obj in Resources */,
 				4800F4E71B6BA3BB009D801A /* Assets.xcassets in Resources */,
 				4800F4EA1B6BA3BB009D801A /* Main.storyboard in Resources */,
 			);
@@ -532,7 +532,7 @@
 				8026396F1B0E670D009B42D6 /* VertexShader.vsh in Resources */,
 				806778F21B18EFBB0082AF0B /* larenTexture.png in Resources */,
 				80FFE42A1B1A2C0B008DE7DB /* stallTexture.png in Resources */,
-				4828F8ED1B877AF5006D93CD /* cube.obj in Resources */,
+				4889F24F1BC42AAB0097A28F /* cube.obj in Resources */,
 				80E38B7F1B1B9893006D7B30 /* white.png in Resources */,
 				802639421B0E34D3009B42D6 /* Main.storyboard in Resources */,
 				80E38B7D1B1B819A006D7B30 /* dragon.obj in Resources */,

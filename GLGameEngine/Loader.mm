@@ -64,6 +64,7 @@
     
     if (error) {
         NSLog(@"[Loader]: Can't load texture: %@", error);
+        NSLog(@"OpenGL Error: %u", glGetError());
         return nil;
     }
     

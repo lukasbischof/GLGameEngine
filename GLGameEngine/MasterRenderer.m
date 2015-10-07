@@ -12,7 +12,10 @@
 
 typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityMap;
 
-@interface MasterRenderer ()
+@interface MasterRenderer () {
+    BOOL _pMatrixDirty;
+    float _pMatrixAspect;
+}
 
 @property (strong, nonatomic, nonnull) EntityMap *entities;
 
@@ -39,7 +42,8 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
 
 - (void)updateProjectionForAspect:(float)aspect
 {
-    [self.renderer updateProjectionWithAspect:aspect forShader:self.shader];
+    _pMatrixDirty = true;
+    _pMatrixAspect = aspect;
 }
 
 #pragma mark - Rendering
@@ -47,6 +51,11 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
 {
     [self.renderer prepare];
     [self.shader activate];
+    
+    if (self->_pMatrixDirty) {
+        [self.renderer updateProjectionWithAspect:self->_pMatrixAspect forShader:self.shader];
+        self->_pMatrixDirty = false;
+    }
     
     [self.shader loadLight:light];
     [self.shader loadViewMatrix:[camera getViewMatrix]];
