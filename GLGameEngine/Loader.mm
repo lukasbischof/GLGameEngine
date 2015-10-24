@@ -77,7 +77,7 @@
                                   normals:(FloatBuffer)normals
                                andIndices:(UintBuffer)indices
 {
-    if (positions.data == NULL || indices.data == NULL)
+    if (positions.data == NULL || indices.data == NULL || normals.data == NULL)
         return nil;
     
     GLuint vertexCount = (GLuint)(indices.length / UINT_BUFFER_ELEMENT_SIZE);
@@ -88,6 +88,29 @@
     [model bindVAO];
     [self bindIndicesBuffer:indices];
     [self storeData:positions inVAOAttribIndex:0 withAttribSize:3];
+    [self storeData:normals inVAOAttribIndex:2 withAttribSize:3];
+    [model unbindVAO];
+    
+    return model;
+}
+
+- (RawModel *)createRawModelWithPositions:(FloatBuffer)positions
+                                  normals:(FloatBuffer)normals
+                            textureCoords:(FloatBuffer)texCoords
+                               andIndices:(UintBuffer)indices
+{
+    if (positions.data == NULL || indices.data == NULL || normals.data == NULL || texCoords.data == NULL)
+        return nil;
+    
+    GLuint vertexCount = (GLuint)(indices.length / UINT_BUFFER_ELEMENT_SIZE);
+    RawModel *model = [RawModel modelByCreatingVAOWithVertexCount:vertexCount];
+    
+    vaos.push_back(model.vaoID);
+    
+    [model bindVAO];
+    [self bindIndicesBuffer:indices];
+    [self storeData:positions inVAOAttribIndex:0 withAttribSize:3];
+    [self storeData:texCoords inVAOAttribIndex:1 withAttribSize:2];
     [self storeData:normals inVAOAttribIndex:2 withAttribSize:3];
     [model unbindVAO];
     
@@ -107,6 +130,10 @@
     [rawModel unbindVAO];
     
     return [[TexturedModel alloc] initWithRawModel:rawModel andTexture:texture];
+    
+//    RawModel *rawModel = [self createRawModelWithPositions:positions normals:normals textureCoords:texCoords andIndices:indices];
+//    
+//    return [[TexturedModel alloc] initWithRawModel:rawModel andTexture:texture];
 }
 
 - (TexturedModel *)createTexturedModelWithPositions:(GLfloat *)positions

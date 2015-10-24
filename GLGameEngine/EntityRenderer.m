@@ -6,27 +6,21 @@
 //  Copyright (c) 2015 Lukas Bischof. All rights reserved.
 //
 
-#import "Renderer.h"
+#import "EntityRenderer.h"
 
-// Field of View in degrees
-static const GLfloat FOVY = 45;
-static const GLfloat NEARZ = 0.1;
-static const GLfloat FARZ = 100;
+@interface EntityRenderer ()
 
-@interface Renderer ()
-
-@property (assign, nonatomic) GLKMatrix4 projectionMatrix;
 @property (assign, nonnull) StaticShaderProgram *shaderProgram;
 
 @end
 
-@implementation Renderer
+@implementation EntityRenderer
 
 #pragma mark - Initialization
 - (instancetype)init
 {
     if ((self = [super init])) {
-        [self setupProperties];
+
     }
     
     return self;
@@ -35,52 +29,18 @@ static const GLfloat FARZ = 100;
 - (instancetype)initWithShaderProgram:(StaticShaderProgram *)shader
 {
     if ((self = [super init])) {
-        CGSize size = [UIScreen mainScreen].bounds.size;
-        float aspect = size.width / size.height;
-        
         self.shaderProgram = shader;
-        
-        [self setupProperties];
-        [self createProjectionMatrixWithAspect:aspect];
-        [shader activate];
-        [shader loadProjectionMatrix:_projectionMatrix];
-        [shader deactivate];
     }
     
     return self;
 }
 
-+ (Renderer *)rendererWithShaderProgram:(StaticShaderProgram *)shader
++ (EntityRenderer *)rendererWithShaderProgram:(StaticShaderProgram *)shader
 {
-    return [[Renderer alloc] initWithShaderProgram:shader];
-}
-
-- (void)setupProperties
-{
-    self.clearColor = RGBAMake(0.0, 0.0, 0.0, 0.0);
-    
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
-    glCullFace(GL_BACK);
-}
-
-- (void)updateProjectionWithAspect:(float)aspect forShader:(StaticShaderProgram *)shader
-{
-    [self createProjectionMatrixWithAspect:aspect];
-    [shader loadProjectionMatrix:_projectionMatrix];
+    return [[EntityRenderer alloc] initWithShaderProgram:shader];
 }
 
 #pragma mark - Rendering
-- (void)prepare
-{
-    glClearColor(self.clearColor.r, self.clearColor.g, self.clearColor.b, self.clearColor.a);
-    glClearDepthf(1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    glDepthFunc(GL_LESS);
-    glEnable(GL_DEPTH_TEST);
-}
-
 #pragma mark Master-Rendering
 - (void)render:(NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> *)entities withCamera:(Camera *)camera
 {
@@ -92,6 +52,10 @@ static const GLfloat FARZ = 100;
         for (Entity *entity in obj) {
             [self prepareInstance:entity withViewMatrix:camera.viewMatrix];
             glDrawElements(GL_TRIANGLES, key.rawModel.vertexCount, GL_UNSIGNED_INT, 0);
+            GLenum err = glGetError();
+            if (err != GL_NO_ERROR) {
+                NSLog(@"render error: %u", err);
+            }
         }
         
         [self unbindTexturedModel];
@@ -147,42 +111,5 @@ static const GLfloat FARZ = 100;
     [model unbindVAO];
 }
 
-#pragma mark - private methods
-- (void)createProjectionMatrixWithAspect:(float)aspect
-{
-    _projectionMatrix = GLKMatrix4MakePerspective(MathUtils_DegToRad(FOVY), aspect, NEARZ, FARZ);
-}
-
 @end
-
-
-
-EXPORT RGBA RGBAMake(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
-    return (RGBA) {
-        MAX(0., MIN(red, 1.)),
-        MAX(0., MIN(green, 1.)),
-        MAX(0., MIN(blue, 1.)),
-        MAX(0., MIN(alpha, 1.)),
-    };
-}
-
-EXPORT RGBA RGBAMakeFromRGBHex(uint32_t hex) {
-    // 0x FF   AA   88
-    //   red green blue
-    
-    return (RGBA) {
-        (hex >> 16) / 255,
-        ((hex >> 8) & 0x00FF) / 255,
-        (hex & 0x0000FF) / 255,
-        1.0
-    };
-}
-
-EXPORT GLKVector4 RGBAGetGLKVector4(RGBA rgba) {
-    return GLKVector4Make(rgba.r, rgba.g, rgba.b, rgba.a);
-}
-
-EXPORT GLKVector3 RGBAGetGLKVector3(RGBA rgba) {
-    return GLKVector3Make(rgba.r, rgba.g, rgba.b);
-}
 

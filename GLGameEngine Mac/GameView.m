@@ -10,7 +10,7 @@
 #import <OpenGL/gl3.h>
 #import <GLKit/GLKit.h>
 #import "Loader.h"
-#import "Renderer.h"
+#import "EntityRenderer."
 #import "StaticShaderProgram.h"
 #import "Entity.h"
 #import "OBJLoader.h"
@@ -26,7 +26,7 @@
 }
 
 @property (strong, nonatomic) Loader *loader;
-@property (strong, nonatomic) Renderer *renderer;
+@property (strong, nonatomic) EntityRenderer *entityRenderer;
 @property (strong, nonatomic) Entity *entity;
 @property (strong, nonatomic) StaticShaderProgram *shader;
 @property (strong, nonatomic) Camera *camera;
@@ -79,7 +79,7 @@ static CVReturn cvcallback(CVDisplayLinkRef displayLink,
 {
     self.loader = [Loader loader];
     self.shader = [StaticShaderProgram staticShaderProgram];
-    self.renderer = [Renderer rendererWithShaderProgram:self.shader];
+    self.entityRenderer = [EntityRenderer rendererWithShaderProgram:self.shader];
     self.camera = [Camera camera];
     self.light = [Light light];
     
@@ -106,12 +106,12 @@ static CVReturn cvcallback(CVDisplayLinkRef displayLink,
 {
     NSLog(@"reshape");
     
-    [self.renderer updateProjectionWithAspect:self.frame.size.width / self.frame.size.height forShader:self.shader];
+    [self.entityRenderer updateProjectionWithAspect:self.frame.size.width / self.frame.size.height forShader:self.shader];
 }
 
 - (CVReturn)drawFrameForTime:(const CVTimeStamp *)time
 {
-    [self.renderer prepare];
+    [self.entityRenderer prepare];
     
     _ACTIVATE_SHADER_
     {
@@ -120,7 +120,7 @@ static CVReturn cvcallback(CVDisplayLinkRef displayLink,
         [self.shader loadNormalMatrixWithModelMatrix:[self.entity getCurrentTransformationMatrix]
                                        andViewMatrix:[self.camera getViewMatrix]];
         [self.shader loadViewMatrix:[self.camera getViewMatrix]];
-        [self.renderer render:self.entity withShaderProgram:self.shader];
+        [self.entityRenderer render:self.entity withShaderProgram:self.shader];
     }
     _DEACTIVATE_SHADER_
     

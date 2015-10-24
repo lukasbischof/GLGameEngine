@@ -10,19 +10,24 @@
 #import "TexturedModel.h"
 #import "Entity.h"
 
+// Field of View in degrees
+static const GLfloat FOVY = 45;
+static const GLfloat NEARZ = 0.1;
+static const GLfloat FARZ = 100;
+
 typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityMap;
 
-@interface MasterRenderer () {
-    BOOL _pMatrixDirty;
-    float _pMatrixAspect;
-}
+@interface MasterRenderer ()
 
+@property (assign, nonatomic) GLKMatrix4 projectionMatrix;
 @property (strong, nonatomic, nonnull) EntityMap *entities;
+@property (strong, nonnull, nonatomic) NSMutableArray<Terrain *> *terrains;
 
 @end
 
 @implementation MasterRenderer
 
+#pragma mark - init
 + (MasterRenderer *)renderer
 {
     return [[MasterRenderer alloc] init];
@@ -31,39 +36,74 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
 - (instancetype)init
 {
     if ((self = [super init])) {
+        CGSize size = [UIScreen mainScreen].bounds.size;
+        float aspect = size.width / size.height;
+        
+        [self updateProjectionForAspect:aspect];
+        
+        self.clearColor = RGBAMake(0.0, 0.0, 0.0, 0.0);
         self.shader = [StaticShaderProgram staticShaderProgram];
-        self.renderer = [Renderer rendererWithShaderProgram:self.shader];
+        self.entityRenderer = [EntityRenderer rendererWithShaderProgram:self.shader];
+        self.terrainShader = [TerrainShader terrainShaderProgram];
+        self.terrainRenderer = [TerrainRenderer terrainRendererWithShader:self.terrainShader];
+        
+        [self setupProperties];
         
         _entities = [EntityMap dictionary];
+        _terrains = [NSMutableArray<Terrain *> array];
+        
     }
     
     return self;
 }
 
+- (void)setupProperties
+{
+    glEnable(GL_CULL_FACE);
+    glFrontFace(GL_CCW);
+    glCullFace(GL_BACK);
+}
+
 - (void)updateProjectionForAspect:(float)aspect
 {
-    _pMatrixDirty = true;
-    _pMatrixAspect = aspect;
+    [self createProjectionMatrixWithAspect:aspect];
+    [self.shader activate];
+    [self.shader loadProjectionMatrix:_projectionMatrix];
+    [self.shader deactivate];
+    
+    [self.terrainShader activate];
+    [self.terrainShader loadProjectionMatrix:_projectionMatrix];
+    [self.terrainShader deactivate];
 }
 
 #pragma mark - Rendering
 - (void)renderWithLight:(Light *)light andCamera:(Camera *)camera
 {
-    [self.renderer prepare];
+    [self prepare];
     [self.shader activate];
-    
-    if (self->_pMatrixDirty) {
-        [self.renderer updateProjectionWithAspect:self->_pMatrixAspect forShader:self.shader];
-        self->_pMatrixDirty = false;
-    }
-    
     [self.shader loadLight:light];
     [self.shader loadViewMatrix:[camera getViewMatrix]];
-    
-    [self.renderer render:self.entities withCamera:camera];
-    
+    [self.entityRenderer render:self.entities withCamera:camera];
     [self.shader deactivate];
+    
+    [self.terrainShader activate];
+    [self.terrainShader loadLight:light];
+    [self.terrainShader loadViewMatrix:[camera getViewMatrix]];
+    [self.terrainRenderer render:self.terrains withCamera:camera];
+    [self.terrainShader deactivate];
+    
     [self clearEntities];
+    [self clearTerrains];
+}
+
+- (void)prepare
+{
+    glClearColor(self.clearColor.r, self.clearColor.g, self.clearColor.b, self.clearColor.a);
+    glClearDepthf(1.0);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    
+    glDepthFunc(GL_LESS);
+    glEnable(GL_DEPTH_TEST);
 }
 
 #pragma mark - Entity Map
@@ -82,15 +122,62 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
     }
 }
 
+- (void)processTerrain:(Terrain *)terrain
+{
+    [self.terrains addObject:terrain];
+}
+
 - (void)clearEntities
 {
     [self.entities removeAllObjects];
+}
+
+- (void)clearTerrains
+{
+    [self.terrains removeAllObjects];
+}
+
+#pragma mark - private methods
+- (void)createProjectionMatrixWithAspect:(float)aspect
+{
+    _projectionMatrix = GLKMatrix4MakePerspective(MathUtils_DegToRad(FOVY), aspect, NEARZ, FARZ);
 }
 
 #pragma mark - Memory
 - (void)cleanUp
 {
     [self.shader cleanUp];
+    [self.terrainShader cleanUp];
 }
 
 @end
+
+
+EXPORT RGBA RGBAMake(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
+    return (RGBA) {
+        MAX(0., MIN(red, 1.)),
+        MAX(0., MIN(green, 1.)),
+        MAX(0., MIN(blue, 1.)),
+        MAX(0., MIN(alpha, 1.)),
+    };
+}
+
+EXPORT RGBA RGBAMakeFromRGBHex(uint32_t hex) {
+    // 0x FF   AA   88
+    //   red green blue
+    
+    return (RGBA) {
+        (hex >> 16) / 255,
+        ((hex >> 8) & 0x00FF) / 255,
+        (hex & 0x0000FF) / 255,
+        1.0
+    };
+}
+
+EXPORT GLKVector4 RGBAGetGLKVector4(RGBA rgba) {
+    return GLKVector4Make(rgba.r, rgba.g, rgba.b, rgba.a);
+}
+
+EXPORT GLKVector3 RGBAGetGLKVector3(RGBA rgba) {
+    return GLKVector3Make(rgba.r, rgba.g, rgba.b);
+}

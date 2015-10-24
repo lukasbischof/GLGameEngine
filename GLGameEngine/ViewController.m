@@ -8,7 +8,7 @@
 
 #import "ViewController.h"
 #import "Loader.h"
-#import "Renderer.h"
+#import "EntityRenderer.h"
 #import "StaticShaderProgram.h"
 #import "Entity.h"
 #import "OBJLoader.h"
@@ -28,6 +28,7 @@
 @property (strong, nonatomic) Loader *loader;
 @property (strong, nonatomic) MasterRenderer *renderer;
 @property (strong, nonatomic) NSMutableArray<Entity *> *entities;
+@property (strong, nonatomic) Terrain *terrain;
 @property (strong, nonatomic) Camera *camera;
 @property (strong, nonatomic) Light *light;
 
@@ -119,7 +120,7 @@
       -   @implemented MasterRenderer
     */
     self.entities = [NSMutableArray<Entity *> new];
-    for (NSUInteger i = 0; i < 1600; i++) {
+    for (NSUInteger i = 0; i < 100; i++) {
         GLKVector3 position = GLKVector3Make(MathUtils_RandomFloat(-5.6, 5.6), MathUtils_RandomFloat(-1.5, 8), MathUtils_RandomFloat(-40, -5));
         Entity *entity = [Entity entityWithTexturedModel:texturedModel
                                                 position:position
@@ -137,6 +138,10 @@
     
     self.light.position = GLKVector3Make(0.0, 0.0, 2.0);
     self.light.color = GLKVector3Make(1.0, 0.0, 0.0);
+    
+    texInfo = [self.loader loadTexture:@"grass" withExtension:@"jpg"];
+    ModelTexture *terrTex = [[ModelTexture alloc] initWithTextureID:texInfo.name andTextureTarget:texInfo.target];
+    self.terrain = [Terrain terrainWithGridX:0 gridZ:0 loader:self.loader andTexture:terrTex];
     
     // printf("%s", [self getEntitiesDescription].UTF8String);
     
@@ -180,6 +185,8 @@
     for (Entity *entity in self.entities) {
         [self.renderer processEntity:entity];
     }
+    
+    [self.renderer processTerrain:self.terrain];
     
     [self.renderer renderWithLight:self.light andCamera:self.camera];
 }
