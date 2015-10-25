@@ -11,17 +11,13 @@
 #import "Camera.h"
 #import "MathUtils.h"
 
-@interface Entity : NSObject
+@interface Entity : NSObject <NSCopying>
 
 @property (strong, nonatomic, readonly) TexturedModel *model;
 @property (assign, nonatomic) GLKVector3 position;
 @property (assign, nonatomic) Rotation rotation;
 @property (assign, nonatomic) GLfloat scale;
 @property (assign, nonatomic, readonly, getter=getCurrentTransformationMatrix) GLKMatrix4 currentTransformationMatrix;
-
-/// TEMPORARY
-#warning remove this soon
-@property (assign, nonatomic) float rotationSpeed;
 
 // Initializer
 - (instancetype)init NS_UNAVAILABLE;

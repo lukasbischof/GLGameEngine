@@ -18,6 +18,6 @@ void main(void) {
     gl_Position = u_projectionMatrix * modelPosition;
     
     inout_modelPosition = modelPosition.xyz;
-    inout_texCoords = in_texCoords;
+    inout_texCoords = in_texCoords * 46.0;
     inout_normal = normalize(u_normalMatrix * in_normals);
 }

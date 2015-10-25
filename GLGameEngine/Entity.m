@@ -125,4 +125,15 @@
                                       self.position.z];
 }
 
+#pragma mark - NSCopying
+- (id)copyWithZone:(NSZone *)zone
+{
+    Entity *newEntity = [Entity entityWithTexturedModel:[self.model copyWithZone:zone]
+                                               position:self.position
+                                               rotation:self.rotation
+                                               andScale:self.scale];
+    
+    return newEntity;
+}
+
 @end

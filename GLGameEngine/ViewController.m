@@ -36,6 +36,12 @@
 
 @implementation ViewController {
     BOOL _pMatrixNeedsUpdate;
+    BOOL _isMoving;
+    GLfloat _movingDirectionX;
+    GLfloat _movingDirectionY;
+    GLfloat _oldYaw;
+    GLfloat _oldPitch;
+    CGPoint _startTouch;
 }
 
 #pragma mark - View methods
@@ -99,51 +105,11 @@
     self.light = [Light light];
     self.renderStartDate = [NSDate date];
     
-    //[self.renderer updateProjectionForAspect:[self glview].aspect];
+    self.renderer.clearColor = RGBAMake(0.7, 0.7, 1.0, 1.0);
     
-    //[self.camera move:GLKVector3Make(0, 0.5, 0)];
+    [self.camera move:GLKVector3Make(TERRAIN_SIZE/2.0, 0.1, -TERRAIN_SIZE/2.0)];
     
-    GLKTextureInfo *texInfo = [self.loader loadTexture:@"white" withExtension:@"png"];
-    // texInfo = [self.loader loadTexture:@"white" withExtension:@"png"];
-    ModelTexture *texture = [[ModelTexture alloc] initWithTextureID:texInfo.name andTextureTarget:texInfo.target];
-    
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"cube" withExtension:@"obj"];
-    TexturedModel *texturedModel = [[OBJLoader2 alloc] initWithURL:modelURL
-                                                           texture:texture
-                                                         andLoader:self.loader].texturedModel;
-    
-    /// @todo OpenGL 3D Game Tutorial 13: Optimizing
-    /*!!
-     @todo MasterRenderer implementiert. -> ViewController fertig machen:
-      -   @resource OpenGL 3D Game Tutorial 13: Optimizing
-      -   @stopped 10:50
-      -   @implemented MasterRenderer
-    */
-    self.entities = [NSMutableArray<Entity *> new];
-    for (NSUInteger i = 0; i < 100; i++) {
-        GLKVector3 position = GLKVector3Make(MathUtils_RandomFloat(-5.6, 5.6), MathUtils_RandomFloat(-1.5, 8), MathUtils_RandomFloat(-40, -5));
-        Entity *entity = [Entity entityWithTexturedModel:texturedModel
-                                                position:position
-                                                rotation:MathUtils_RotationMake(0.0, 0.0, 0.0)
-                                                andScale:.5];
-        
-        /// @todo Zurzeit werden nur statische Lichtparameter im Shader verwendet. Damper = Specular Higlights-Exponent, Reflectivity = Gewicht (Weight)
-        /// => In den Shader laden und implementieren
-        entity.model.texture.shineDamper = 30;
-        entity.model.texture.reflectivity = 1;
-        entity.rotationSpeed = MathUtils_RandomFloat(0.01, 1.0);
-        
-        [self.entities addObject:entity];
-    }
-    
-    self.light.position = GLKVector3Make(0.0, 0.0, 2.0);
-    self.light.color = GLKVector3Make(1.0, 0.0, 0.0);
-    
-    texInfo = [self.loader loadTexture:@"grass" withExtension:@"jpg"];
-    ModelTexture *terrTex = [[ModelTexture alloc] initWithTextureID:texInfo.name andTextureTarget:texInfo.target];
-    self.terrain = [Terrain terrainWithGridX:0 gridZ:0 loader:self.loader andTexture:terrTex];
-    
-    // printf("%s", [self getEntitiesDescription].UTF8String);
+    [self setupEntities];
     
     GLenum err = glGetError();
     if (err != GL_NO_ERROR) {
@@ -151,27 +117,118 @@
     }
 }
 
+- (void)setupEntities
+{
+    self.entities = [NSMutableArray<Entity *> new];
+    
+    // ROCK
+    GLKTextureInfo *texInfo = [self.loader loadTexture:@"Rock" withExtension:@"jpg"];
+    ModelTexture *rockTexture = [[ModelTexture alloc] initWithTextureID:texInfo.name
+                                                       andTextureTarget:texInfo.target];
+    
+    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"Rock" withExtension:@"obj"];
+    TexturedModel *rockModel = [[OBJLoader2 alloc] initWithURL:modelURL
+                                                       texture:rockTexture
+                                                     andLoader:self.loader].texturedModel;
+    
+    // TREE
+    texInfo = [self.loader loadTexture:@"tree" withExtension:@"png"];
+    ModelTexture *treeTexture = [[ModelTexture alloc] initWithTextureID:texInfo.name
+                                                       andTextureTarget:texInfo.target];
+    
+    modelURL = [[NSBundle mainBundle] URLForResource:@"tree" withExtension:@"obj"];
+    TexturedModel *treeModel = [[OBJLoader2 alloc] initWithURL:modelURL
+                                                       texture:treeTexture
+                                                     andLoader:self.loader].texturedModel;
+    
+    
+    // FARM
+    texInfo = [self.loader loadTexture:@"Farmhouse" withExtension:@"jpg"];
+    ModelTexture *farmTexture = [[ModelTexture alloc] initWithTextureID:texInfo.name
+                                                       andTextureTarget:texInfo.target];
+    
+    TexturedModel *farmModel = [[OBJLoader2 alloc] initWithURL:[[NSBundle mainBundle] URLForResource:@"Farmhouse" withExtension:@"obj"] texture:farmTexture andLoader:self.loader].texturedModel;
+    
+    Entity *farmEntity = [Entity entityWithTexturedModel:farmModel];
+    farmEntity.position = GLKVector3Make(TERRAIN_SIZE/2.0, 0.0, -TERRAIN_SIZE/2.0 - 40.0);
+    farmEntity.scale = 0.3;
+    farmEntity.rotation = MathUtils_RotationMake(0.0, 125., 0.0);
+    
+    [self.entities addObject:farmEntity];
+    
+    // WAGEN
+    texInfo = [self.loader loadTexture:@"wagen" withExtension:@"jpg"];
+    ModelTexture *wagenTexture = [[ModelTexture alloc] initWithTextureID:texInfo.name
+                                                        andTextureTarget:texInfo.target];
+    
+    modelURL = [[NSBundle mainBundle] URLForResource:@"wagen" withExtension:@"obj"];
+    TexturedModel *wagenModel = [[OBJLoader2 alloc] initWithURL:modelURL
+                                                        texture:wagenTexture
+                                                      andLoader:self.loader].texturedModel;
+    
+    Entity *wagenEntity = [Entity entityWithTexturedModel:wagenModel];
+    wagenEntity.position = (GLKVector3){ TERRAIN_SIZE/2.0 + 10, 0.0, -TERRAIN_SIZE / 2.0 - 20 };
+    
+    [self.entities addObject:wagenEntity];
+    
+    wagenEntity = [wagenEntity copy];
+    wagenEntity.position = (GLKVector3){ TERRAIN_SIZE/2.0 + 8.95, 0.0, -TERRAIN_SIZE / 2.0 - 20 };
+    
+    [self.entities addObject:wagenEntity];
+    
+    // ROCK SETUP
+    for (NSUInteger i = 0; i < 50; i++) {
+        GLKVector3 position = GLKVector3Make(MathUtils_RandomFloat(-50, 50) + TERRAIN_SIZE/2., 0.0, MathUtils_RandomFloat(0, -100) - TERRAIN_SIZE/2.);
+        Entity *entity = [Entity entityWithTexturedModel:rockModel
+                                                position:position
+                                                rotation:MathUtils_RotationMake(0.0, MathUtils_RandomFloat(0.0, 360.0), 0.0)
+                                                andScale:.3];
+        
+        /// @todo Zurzeit werden nur statische Lichtparameter im Shader verwendet. Damper = Specular Higlights-Exponent, Reflectivity = Gewicht (Weight)
+        /// => In den Shader laden und implementieren
+        entity.model.texture.shineDamper = 30;
+        entity.model.texture.reflectivity = 1;
+        
+        [self.entities addObject:entity];
+    }
+    
+    // TREE SETUP
+    for (NSUInteger i = 0; i < 50; i++) {
+        GLKVector3 position = GLKVector3Make(MathUtils_RandomFloat(-50, 50) + TERRAIN_SIZE/2., 0.0, MathUtils_RandomFloat(0, -100) - TERRAIN_SIZE/2.);
+        
+        Entity *entity = [Entity entityWithTexturedModel:treeModel
+                                                position:position
+                                                rotation:MathUtils_RotationMake(0.0, 0.0, 0.0)
+                                                andScale:MathUtils_RandomFloat(1.0, 2.0)];
+        
+        entity.model.texture.shineDamper = 30;
+        entity.model.texture.reflectivity = 1;
+        
+        [self.entities addObject:entity];
+    }
+    
+    self.light.position = GLKVector3Make(0.0, 20.0, 2.0);
+    self.light.color = GLKVector3Make(0.91, 0.91, 0.91);
+    
+    texInfo = [self.loader loadTexture:@"grass" withExtension:@"jpg"];
+    ModelTexture *terrTex = [[ModelTexture alloc] initWithTextureID:texInfo.name andTextureTarget:texInfo.target];
+    self.terrain = [Terrain terrainWithGridX:0 gridZ:-1 loader:self.loader andTexture:terrTex];
+
+}
+
 #pragma mark GLKViewControllerDelegate
 
 // This method gets called before the view renders
 - (void)update
 {
-    if (self.camera.position.y <= 8.7)
-        [self.camera move:GLKVector3Make(0, 0.011, -0.017)];
-    else if (self.camera.position.z >= -30)
-        [self.camera move:GLKVector3Make(0, 0, -0.017)];
-    else if (self.camera.yaw <= 180)
-        self.camera.yaw += 0.11;
-    else if (self.camera.pitch <= 20)
-        self.camera.pitch += 0.14;
-    
-    NSTimeInterval time = (self.renderStartDate).timeIntervalSinceNow * -1;
-    
-    for (Entity *entity in self.entities) {
-        const float entityRotationFrequency = 1.0 / entity.rotationSpeed; // x s^-1
-        const float rotations = time / entityRotationFrequency;
+    if (self->_isMoving) {
+        self.camera.yaw = self->_oldYaw + self->_movingDirectionX * 0.2;
+        self.camera.pitch = self->_oldPitch + self->_movingDirectionY * 0.2;
         
-        [entity setRotationX:0.0 y:rotations * 360 andZ:0.0];
+        GLfloat yawRadians = MathUtils_DegToRad(self.camera.yaw);
+        GLfloat pitchRadians = MathUtils_DegToRad(self.camera.pitch);
+        
+        [self.camera move:GLKVector3Make(sinf(yawRadians) * 0.05, -sinf(pitchRadians) * 0.05, -cosf(yawRadians) * 0.05)];
     }
 }
 
@@ -195,6 +252,43 @@
 - (GLKView *)glview
 {
     return (GLKView *)self.view;
+}
+
+#pragma mark - Interaction
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    self->_isMoving = YES;
+    
+    UITouch *touch = [touches anyObject];
+    CGPoint location = [touch locationInView:self.view];
+    
+    self->_startTouch = location;
+    
+    CGPoint diff = CGPointMake(location.x - self->_startTouch.x,
+                               location.y - self->_startTouch.y);
+    
+    self->_movingDirectionX = diff.x;
+    self->_movingDirectionY = diff.y;
+    
+    self->_oldPitch = self.camera.pitch;
+    self->_oldYaw = self.camera.yaw;
+}
+
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    UITouch *touch = [touches anyObject];
+    CGPoint location = [touch locationInView:self.view];
+    
+    CGPoint diff = CGPointMake(location.x - self->_startTouch.x,
+                               location.y - self->_startTouch.y);
+    
+    self->_movingDirectionX = diff.x;
+    self->_movingDirectionY = diff.y;
+}
+
+- (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    self->_isMoving = NO;
 }
 
 #pragma mark - Memory Management

@@ -9,7 +9,6 @@
 #import "Terrain.h"
 #import "Buffer.h"
 
-static const GLfloat SIZE = 800;
 static const GLint VERTEX_COUNT = 128;
 
 @interface Terrain ()
@@ -30,15 +29,19 @@ static const GLint VERTEX_COUNT = 128;
 {
     if ((self = [super init])) {
         _texture = texture;
-        self.x = gridX * SIZE;
-        self.z = gridZ * SIZE;
+        self.x = gridX * TERRAIN_SIZE;
+        self.z = gridZ * TERRAIN_SIZE;
         _model = [self generateTerrain:loader];
+        
+        glBindTexture(self.texture.textureTarget, self.texture.textureID);
+        glTexParameteri(self.texture.textureTarget, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(self.texture.textureTarget, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        glTexParameteri(self.texture.textureTarget, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(self.texture.textureTarget, GL_TEXTURE_WRAP_T, GL_REPEAT);
     }
     
     return self;
 }
-
-
 
 - (RawModel *)generateTerrain:(Loader *)loader
 {
@@ -86,9 +89,9 @@ static const GLint VERTEX_COUNT = 128;
     GLuint vertexPointer = 0;
     for (GLuint i = 0; i < VERTEX_COUNT; i++) {
         for (GLuint j = 0; j < VERTEX_COUNT; j++) {
-            vertices[vertexPointer * 3] = (GLfloat)j / ((GLfloat)VERTEX_COUNT - 1) * SIZE;
+            vertices[vertexPointer * 3] = (GLfloat)j / ((GLfloat)VERTEX_COUNT - 1) * TERRAIN_SIZE;
             vertices[vertexPointer * 3 + 1] = 0;
-            vertices[vertexPointer * 3 + 2] = (GLfloat)i / ((GLfloat)VERTEX_COUNT - 1) * SIZE;
+            vertices[vertexPointer * 3 + 2] = (GLfloat)i / ((GLfloat)VERTEX_COUNT - 1) * TERRAIN_SIZE;
             normals[vertexPointer * 3] = 0;
             normals[vertexPointer * 3 + 1] = 1;
             normals[vertexPointer * 3 + 2] = 0;

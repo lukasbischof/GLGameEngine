@@ -34,7 +34,19 @@
 		483D4F0D1BC53FA800587983 /* Terrain.mm in Sources */ = {isa = PBXBuildFile; fileRef = 483D4F0C1BC53FA800587983 /* Terrain.mm */; };
 		4889F24F1BC42AAB0097A28F /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4889F24E1BC42AAB0097A28F /* cube.obj */; };
 		4889F2501BC42AAB0097A28F /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4889F24E1BC42AAB0097A28F /* cube.obj */; };
+		4898DAAE1BDCDBC4007D2695 /* Farmhouse.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4898DAAD1BDCDBC4007D2695 /* Farmhouse.obj */; };
+		4898DAB21BDCE852007D2695 /* wagen.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4898DAB01BDCE852007D2695 /* wagen.obj */; };
+		4898DAB31BDCE852007D2695 /* wagen.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4898DAB11BDCE852007D2695 /* wagen.jpg */; };
+		4898DAB71BDD08C2007D2695 /* tree.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4898DAB51BDD08C2007D2695 /* tree.obj */; };
+		4898DAB81BDD08C2007D2695 /* tree.png in Resources */ = {isa = PBXBuildFile; fileRef = 4898DAB61BDD08C2007D2695 /* tree.png */; };
+		4898DABB1BDD0B75007D2695 /* lowPolyTree.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4898DAB91BDD0B75007D2695 /* lowPolyTree.obj */; };
+		4898DABC1BDD0B75007D2695 /* lowPolyTree.png in Resources */ = {isa = PBXBuildFile; fileRef = 4898DABA1BDD0B75007D2695 /* lowPolyTree.png */; };
 		48B856C91B8B9BD500336A43 /* GLKView+aspect.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B856C81B8B9BD500336A43 /* GLKView+aspect.m */; };
+		48DB0F121BDC1EC4003C52DC /* Rock.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 48DB0F0F1BDC1EC4003C52DC /* Rock.jpg */; };
+		48DB0F131BDC1EC4003C52DC /* Rock.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 48DB0F101BDC1EC4003C52DC /* Rock.mtl */; };
+		48DB0F141BDC1EC4003C52DC /* Rock.obj in Resources */ = {isa = PBXBuildFile; fileRef = 48DB0F111BDC1EC4003C52DC /* Rock.obj */; };
+		48DB0F1C1BDC208F003C52DC /* Farmhouse Texture Bump Map .jpg in Resources */ = {isa = PBXBuildFile; fileRef = 48DB0F181BDC208F003C52DC /* Farmhouse Texture Bump Map .jpg */; };
+		48DB0F1D1BDC208F003C52DC /* Farmhouse.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 48DB0F191BDC208F003C52DC /* Farmhouse.jpg */; };
 		802639391B0E34D3009B42D6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 802639381B0E34D3009B42D6 /* main.m */; };
 		8026393C1B0E34D3009B42D6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8026393B1B0E34D3009B42D6 /* AppDelegate.m */; };
 		8026393F1B0E34D3009B42D6 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8026393E1B0E34D3009B42D6 /* ViewController.m */; };
@@ -111,8 +123,20 @@
 		483D4F0B1BC53FA800587983 /* Terrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Terrain.h; sourceTree = "<group>"; };
 		483D4F0C1BC53FA800587983 /* Terrain.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Terrain.mm; sourceTree = "<group>"; };
 		4889F24E1BC42AAB0097A28F /* cube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cube.obj; sourceTree = "<group>"; };
+		4898DAAD1BDCDBC4007D2695 /* Farmhouse.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Farmhouse.obj; sourceTree = "<group>"; };
+		4898DAB01BDCE852007D2695 /* wagen.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wagen.obj; sourceTree = "<group>"; };
+		4898DAB11BDCE852007D2695 /* wagen.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = wagen.jpg; sourceTree = "<group>"; };
+		4898DAB51BDD08C2007D2695 /* tree.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = tree.obj; sourceTree = "<group>"; };
+		4898DAB61BDD08C2007D2695 /* tree.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tree.png; sourceTree = "<group>"; };
+		4898DAB91BDD0B75007D2695 /* lowPolyTree.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = lowPolyTree.obj; sourceTree = "<group>"; };
+		4898DABA1BDD0B75007D2695 /* lowPolyTree.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lowPolyTree.png; sourceTree = "<group>"; };
 		48B856C71B8B9BD500336A43 /* GLKView+aspect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GLKView+aspect.h"; sourceTree = "<group>"; };
 		48B856C81B8B9BD500336A43 /* GLKView+aspect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GLKView+aspect.m"; sourceTree = "<group>"; };
+		48DB0F0F1BDC1EC4003C52DC /* Rock.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Rock.jpg; sourceTree = "<group>"; };
+		48DB0F101BDC1EC4003C52DC /* Rock.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Rock.mtl; sourceTree = "<group>"; };
+		48DB0F111BDC1EC4003C52DC /* Rock.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Rock.obj; sourceTree = "<group>"; };
+		48DB0F181BDC208F003C52DC /* Farmhouse Texture Bump Map .jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "Farmhouse Texture Bump Map .jpg"; sourceTree = "<group>"; };
+		48DB0F191BDC208F003C52DC /* Farmhouse.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Farmhouse.jpg; sourceTree = "<group>"; };
 		802639331B0E34D3009B42D6 /* GLGameEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GLGameEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		802639371B0E34D3009B42D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		802639381B0E34D3009B42D6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -255,6 +279,46 @@
 			name = Terrain;
 			sourceTree = "<group>";
 		};
+		4898DAAF1BDCE849007D2695 /* wagen */ = {
+			isa = PBXGroup;
+			children = (
+				4898DAB01BDCE852007D2695 /* wagen.obj */,
+				4898DAB11BDCE852007D2695 /* wagen.jpg */,
+			);
+			name = wagen;
+			sourceTree = "<group>";
+		};
+		4898DAB41BDD08B5007D2695 /* tree */ = {
+			isa = PBXGroup;
+			children = (
+				4898DAB51BDD08C2007D2695 /* tree.obj */,
+				4898DAB61BDD08C2007D2695 /* tree.png */,
+				4898DAB91BDD0B75007D2695 /* lowPolyTree.obj */,
+				4898DABA1BDD0B75007D2695 /* lowPolyTree.png */,
+			);
+			name = tree;
+			sourceTree = "<group>";
+		};
+		48DB0F0E1BDC1EAE003C52DC /* rock */ = {
+			isa = PBXGroup;
+			children = (
+				48DB0F0F1BDC1EC4003C52DC /* Rock.jpg */,
+				48DB0F101BDC1EC4003C52DC /* Rock.mtl */,
+				48DB0F111BDC1EC4003C52DC /* Rock.obj */,
+			);
+			name = rock;
+			sourceTree = "<group>";
+		};
+		48DB0F151BDC2086003C52DC /* farm */ = {
+			isa = PBXGroup;
+			children = (
+				4898DAAD1BDCDBC4007D2695 /* Farmhouse.obj */,
+				48DB0F181BDC208F003C52DC /* Farmhouse Texture Bump Map .jpg */,
+				48DB0F191BDC208F003C52DC /* Farmhouse.jpg */,
+			);
+			name = farm;
+			sourceTree = "<group>";
+		};
 		8026392A1B0E34D2009B42D6 = {
 			isa = PBXGroup;
 			children = (
@@ -306,6 +370,10 @@
 				80FFE4281B1A2C0B008DE7DB /* stallTexture.png */,
 				80E38B7E1B1B9893006D7B30 /* white.png */,
 				4816CEE01BC56D1900F35C2E /* grass.jpg */,
+				4898DAB41BDD08B5007D2695 /* tree */,
+				4898DAAF1BDCE849007D2695 /* wagen */,
+				48DB0F151BDC2086003C52DC /* farm */,
+				48DB0F0E1BDC1EAE003C52DC /* rock */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -361,8 +429,8 @@
 			isa = PBXGroup;
 			children = (
 				8026396C1B0E66FC009B42D6 /* FragmentShader.fsh */,
-				4816CED21BC5650A00F35C2E /* TerrainFragmentShader.fsh */,
 				8026396E1B0E670D009B42D6 /* VertexShader.vsh */,
+				4816CED21BC5650A00F35C2E /* TerrainFragmentShader.fsh */,
 				4816CECE1BC564E800F35C2E /* TerrainVertexShader.vsh */,
 				802639701B0E7069009B42D6 /* ShaderProgram.h */,
 				802639711B0E7069009B42D6 /* ShaderProgram.m */,
@@ -573,9 +641,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				80FFE4291B1A2C0B008DE7DB /* stall.obj in Resources */,
+				48DB0F1D1BDC208F003C52DC /* Farmhouse.jpg in Resources */,
+				4898DAB71BDD08C2007D2695 /* tree.obj in Resources */,
 				8026396D1B0E66FC009B42D6 /* FragmentShader.fsh in Resources */,
+				48DB0F131BDC1EC4003C52DC /* Rock.mtl in Resources */,
+				48DB0F1C1BDC208F003C52DC /* Farmhouse Texture Bump Map .jpg in Resources */,
+				48DB0F141BDC1EC4003C52DC /* Rock.obj in Resources */,
+				4898DAB31BDCE852007D2695 /* wagen.jpg in Resources */,
+				4898DABC1BDD0B75007D2695 /* lowPolyTree.png in Resources */,
+				4898DAAE1BDCDBC4007D2695 /* Farmhouse.obj in Resources */,
 				8026396F1B0E670D009B42D6 /* VertexShader.vsh in Resources */,
 				806778F21B18EFBB0082AF0B /* larenTexture.png in Resources */,
+				4898DAB81BDD08C2007D2695 /* tree.png in Resources */,
+				4898DABB1BDD0B75007D2695 /* lowPolyTree.obj in Resources */,
 				4816CEE11BC56D1900F35C2E /* grass.jpg in Resources */,
 				4816CECF1BC564E800F35C2E /* TerrainVertexShader.vsh in Resources */,
 				80FFE42A1B1A2C0B008DE7DB /* stallTexture.png in Resources */,
@@ -583,6 +661,8 @@
 				4816CED31BC5650A00F35C2E /* TerrainFragmentShader.fsh in Resources */,
 				80E38B7F1B1B9893006D7B30 /* white.png in Resources */,
 				802639421B0E34D3009B42D6 /* Main.storyboard in Resources */,
+				4898DAB21BDCE852007D2695 /* wagen.obj in Resources */,
+				48DB0F121BDC1EC4003C52DC /* Rock.jpg in Resources */,
 				80E38B7D1B1B819A006D7B30 /* dragon.obj in Resources */,
 				802639471B0E34D3009B42D6 /* LaunchScreen.xib in Resources */,
 				802639441B0E34D3009B42D6 /* Images.xcassets in Resources */,

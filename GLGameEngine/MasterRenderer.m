@@ -13,7 +13,7 @@
 // Field of View in degrees
 static const GLfloat FOVY = 45;
 static const GLfloat NEARZ = 0.1;
-static const GLfloat FARZ = 100;
+static const GLfloat FARZ = 200;
 
 typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityMap;
 

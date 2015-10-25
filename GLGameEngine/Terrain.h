@@ -12,6 +12,8 @@
 #import "ModelTexture.h"
 #import "Loader.h"
 
+static const GLfloat TERRAIN_SIZE = 800;
+
 @interface Terrain : NSObject
 
 @property (assign, nonatomic) GLfloat x;
