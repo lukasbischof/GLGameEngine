@@ -16,9 +16,19 @@
 #import "Camera.h"
 #import "MasterRenderer.h"
 #import "GLKView+aspect.h"
+#import <sys/utsname.h>
 
 #define _ACTIVATE_SHADER_ [self.shader activate];
 #define _DEACTIVATE_SHADER_ [self.shader deactivate];
+
+NSString *deviceName()
+{
+    struct utsname systemInfo;
+    uname(&systemInfo);
+    
+    return [NSString stringWithCString:systemInfo.machine
+                              encoding:NSUTF8StringEncoding];
+}
 
 @interface ViewController ()
 
@@ -31,6 +41,8 @@
 @property (strong, nonatomic) Terrain *terrain;
 @property (strong, nonatomic) Camera *camera;
 @property (strong, nonatomic) Light *light;
+@property (strong, nonatomic) TerrainTexturePackage *terrainTexturePack;
+@property (strong, nonatomic) TerrainTexture *terrainBlendMap;
 
 @end
 
@@ -72,7 +84,7 @@
         NSLog(@"SORRY, OPENGL ES 3.0 ISN'T AVAILABLE ON YOUR DEVICE :(");
         exit(EXIT_SUCCESS);
     } else
-        NSLog(@"OpenGL ES 3.0 Context initialized.");
+        NSLog(@"OpenGL ES 3.0 context initialized for %@.", deviceName());
     
     self.glview.context = self.context;
     self.glview.drawableDepthFormat = GLKViewDrawableDepthFormat16;
@@ -105,9 +117,8 @@
     self.light = [Light light];
     self.renderStartDate = [NSDate date];
     
-    self.renderer.clearColor = RGBAMake(0.7, 0.7, 1.0, 1.0);
-    
-    [self.camera move:GLKVector3Make(TERRAIN_SIZE/2.0, 0.1, -TERRAIN_SIZE/2.0)];
+    [self.camera move:GLKVector3Make(TERRAIN_SIZE/2.0, 25.1, -TERRAIN_SIZE/2.0 - 10)];
+    self.renderer.fog = kNoFog;
     
     [self setupEntities];
     
@@ -121,34 +132,25 @@
 {
     self.entities = [NSMutableArray<Entity *> new];
     
-    // ROCK
-    GLKTextureInfo *texInfo = [self.loader loadTexture:@"Rock" withExtension:@"jpg"];
-    ModelTexture *rockTexture = [[ModelTexture alloc] initWithTextureID:texInfo.name
-                                                       andTextureTarget:texInfo.target];
+    NSLog(@"err before: %d", glGetError());
+    NSArray<NSString *> *names = @[@"Rock", @"tree", @"grassModel", @"grassModel", @"Farmhouse", @"wagen", @"fern"];
+    NSArray *textureNames = @[@[@"Rock", @"jpg"], @[@"tree", @"png"], @[@"grassTexture", @"png"], @[@"flower", @"png"], @[@"Farmhouse", @"jpg"], @[@"wagen", @"jpg"], @[@"fern", @"png"]];
+    NSArray<TexturedModel *> *models = [OBJLoader2 loadModelsWithNames:names
+                                                          textureNames:textureNames
+                                                             andLoader:self.loader];
     
-    NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"Rock" withExtension:@"obj"];
-    TexturedModel *rockModel = [[OBJLoader2 alloc] initWithURL:modelURL
-                                                       texture:rockTexture
-                                                     andLoader:self.loader].texturedModel;
+    if (models.count != names.count)
+        abort();
     
-    // TREE
-    texInfo = [self.loader loadTexture:@"tree" withExtension:@"png"];
-    ModelTexture *treeTexture = [[ModelTexture alloc] initWithTextureID:texInfo.name
-                                                       andTextureTarget:texInfo.target];
-    
-    modelURL = [[NSBundle mainBundle] URLForResource:@"tree" withExtension:@"obj"];
-    TexturedModel *treeModel = [[OBJLoader2 alloc] initWithURL:modelURL
-                                                       texture:treeTexture
-                                                     andLoader:self.loader].texturedModel;
-    
+    TexturedModel *rockModel   = models[0],
+                  *treeModel   = models[1],
+                  *grassModel  = models[2],
+                  *flowerModel = models[3],
+                  *farmModel   = models[4],
+                  *wagenModel  = models[5],
+                  *fernModel   = models[6];
     
     // FARM
-    texInfo = [self.loader loadTexture:@"Farmhouse" withExtension:@"jpg"];
-    ModelTexture *farmTexture = [[ModelTexture alloc] initWithTextureID:texInfo.name
-                                                       andTextureTarget:texInfo.target];
-    
-    TexturedModel *farmModel = [[OBJLoader2 alloc] initWithURL:[[NSBundle mainBundle] URLForResource:@"Farmhouse" withExtension:@"obj"] texture:farmTexture andLoader:self.loader].texturedModel;
-    
     Entity *farmEntity = [Entity entityWithTexturedModel:farmModel];
     farmEntity.position = GLKVector3Make(TERRAIN_SIZE/2.0, 0.0, -TERRAIN_SIZE/2.0 - 40.0);
     farmEntity.scale = 0.3;
@@ -157,22 +159,14 @@
     [self.entities addObject:farmEntity];
     
     // WAGEN
-    texInfo = [self.loader loadTexture:@"wagen" withExtension:@"jpg"];
-    ModelTexture *wagenTexture = [[ModelTexture alloc] initWithTextureID:texInfo.name
-                                                        andTextureTarget:texInfo.target];
-    
-    modelURL = [[NSBundle mainBundle] URLForResource:@"wagen" withExtension:@"obj"];
-    TexturedModel *wagenModel = [[OBJLoader2 alloc] initWithURL:modelURL
-                                                        texture:wagenTexture
-                                                      andLoader:self.loader].texturedModel;
-    
     Entity *wagenEntity = [Entity entityWithTexturedModel:wagenModel];
     wagenEntity.position = (GLKVector3){ TERRAIN_SIZE/2.0 + 10, 0.0, -TERRAIN_SIZE / 2.0 - 20 };
+    wagenEntity.scale = 1.6;
     
     [self.entities addObject:wagenEntity];
     
     wagenEntity = [wagenEntity copy];
-    wagenEntity.position = (GLKVector3){ TERRAIN_SIZE/2.0 + 8.95, 0.0, -TERRAIN_SIZE / 2.0 - 20 };
+    wagenEntity.position = (GLKVector3){ TERRAIN_SIZE/2.0 + 8.25, 0.0, -TERRAIN_SIZE / 2.0 - 20 };
     
     [self.entities addObject:wagenEntity];
     
@@ -182,7 +176,7 @@
         Entity *entity = [Entity entityWithTexturedModel:rockModel
                                                 position:position
                                                 rotation:MathUtils_RotationMake(0.0, MathUtils_RandomFloat(0.0, 360.0), 0.0)
-                                                andScale:.3];
+                                                andScale:MathUtils_RandomFloat(.3, .6)];
         
         /// @todo Zurzeit werden nur statische Lichtparameter im Shader verwendet. Damper = Specular Higlights-Exponent, Reflectivity = Gewicht (Weight)
         /// => In den Shader laden und implementieren
@@ -194,7 +188,7 @@
     
     // TREE SETUP
     for (NSUInteger i = 0; i < 50; i++) {
-        GLKVector3 position = GLKVector3Make(MathUtils_RandomFloat(-50, 50) + TERRAIN_SIZE/2., 0.0, MathUtils_RandomFloat(0, -100) - TERRAIN_SIZE/2.);
+        GLKVector3 position = GLKVector3Make(MathUtils_RandomFloat(-80, 80) + TERRAIN_SIZE/2., 0.0, MathUtils_RandomFloat(0, -130) - TERRAIN_SIZE/2.);
         
         Entity *entity = [Entity entityWithTexturedModel:treeModel
                                                 position:position
@@ -207,13 +201,71 @@
         [self.entities addObject:entity];
     }
     
+    // GRASS SETUP
+    NSUInteger numb = 500; //[deviceName() isEqualToString:@"iPad5,3"] ? 1100 : 650;
+    for (NSUInteger i = 0; i < numb; i++) {
+        GLKVector3 position = GLKVector3Make(MathUtils_RandomFloat(-80, 80) + TERRAIN_SIZE/2., 0.0, MathUtils_RandomFloat(0, -130) - TERRAIN_SIZE/2.);
+        
+        Entity *entity = [Entity entityWithTexturedModel:grassModel
+                                                position:position
+                                                rotation:MathUtils_RotationMake(0.0, MathUtils_RandomFloat(0.0, 360.0), 0.0)
+                                                andScale:1.0];
+        
+        entity.model.texture.shineDamper = 30;
+        entity.model.texture.reflectivity = 1;
+        
+        [self.entities addObject:entity];
+    }
+    
+    // FLOWER / FERN SETUP
+    for (NSUInteger i = 0; i < 80; i++) {
+        GLKVector3 position = GLKVector3Make(MathUtils_RandomFloat(-80, 80) + TERRAIN_SIZE/2., 0.0, MathUtils_RandomFloat(0, -130) - TERRAIN_SIZE/2.);
+        
+        BOOL isFlower = MathUtils_RandomBoolProb(.3);
+        Entity *entity = [Entity entityWithTexturedModel:isFlower ? flowerModel : fernModel
+                                                position:position
+                                                rotation:MathUtils_RotationMake(0.0, MathUtils_RandomFloat(0.0, 360.0), 0.0)
+                                                andScale:isFlower ? 1.0 : 0.35];
+        
+        entity.model.texture.shineDamper = 30;
+        entity.model.texture.reflectivity = 1;
+        
+        [self.entities addObject:entity];
+    }
+    
     self.light.position = GLKVector3Make(0.0, 20.0, 2.0);
     self.light.color = GLKVector3Make(0.91, 0.91, 0.91);
     
-    texInfo = [self.loader loadTexture:@"grass" withExtension:@"jpg"];
-    ModelTexture *terrTex = [[ModelTexture alloc] initWithTextureID:texInfo.name andTextureTarget:texInfo.target];
-    self.terrain = [Terrain terrainWithGridX:0 gridZ:-1 loader:self.loader andTexture:terrTex];
+    [self setupTerrainTexturePackage];
+    self.terrain = [Terrain terrainWithGridX:0
+                                       gridZ:-1
+                                      loader:self.loader
+                                 texturePack:self.terrainTexturePack
+                                 andBlendMap:self.terrainBlendMap];
 
+}
+
+- (void)setupTerrainTexturePackage
+{
+    TerrainTexture *back = [[TerrainTexture alloc] initWithTexInfo:[self.loader loadTexture:@"grass"
+                                                                              withExtension:@"jpg"]];
+    
+    TerrainTexture *rTex = [[TerrainTexture alloc] initWithTexInfo:[self.loader loadTexture:@"mud"
+                                                                              withExtension:@"png"]];
+    
+    TerrainTexture *gTex = [[TerrainTexture alloc] initWithTexInfo:[self.loader loadTexture:@"grassFlowers"
+                                                                              withExtension:@"png"]];
+    
+    TerrainTexture *bTex = [[TerrainTexture alloc] initWithTexInfo:[self.loader loadTexture:@"path"
+                                                                              withExtension:@"png"]];
+    
+    self.terrainTexturePack = [[TerrainTexturePackage alloc] initWithBackgroundTexture:back
+                                                                              rTexture:rTex
+                                                                              gTexture:gTex
+                                                                              bTexture:bTex];
+    
+    self.terrainBlendMap = [[TerrainTexture alloc] initWithTexInfo:[self.loader loadTexture:@"blendMap"
+                                                                              withExtension:@"png"] andTiling:NO];
 }
 
 #pragma mark GLKViewControllerDelegate

@@ -91,6 +91,18 @@ GLKMatrix3 MathUtils_CreateNormalMatrix(GLKMatrix4 transformationMatrix, GLKMatr
 
 GLfloat MathUtils_RandomFloat(GLfloat min, GLfloat max)
 {
-    float diff = max - min;
-    return (((GLfloat)[[GKARC4RandomSource sharedRandom] nextUniform]) * diff) + min;
+    return (((GLfloat)[[GKARC4RandomSource sharedRandom] nextUniform]) * (max - min)) + min;
+}
+
+GLboolean MathUtils_RandomBool()
+{
+    return [[GKARC4RandomSource sharedRandom] nextBool];
+}
+
+GLboolean MathUtils_RandomBoolProb(GLfloat probability)
+{
+    if (probability >= 1.)
+        return YES;
+    
+    return [[GKARC4RandomSource sharedRandom] nextUniform] < probability;
 }

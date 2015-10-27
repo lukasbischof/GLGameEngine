@@ -23,14 +23,30 @@ NSString *const TERRAIN_FRAGMENT_SHADER_FILE_NAME = @"TerrainFragmentShader";
 #define UNIFORM_VIEW_MATRIX_NAME "u_viewMatrix"
 #define UNIFORM_LIGHT_COLOR_NAME "u_lightColor"
 #define UNIFORM_LIGHT_POSITION_NAME "u_lightPosition"
+#define UNIFORM_SKY_COLOR_NAME "u_skyColor"
+#define UNIFORM_DENSITY_NAME "u_density"
+#define UNIFORM_GRADIENT_NAME "u_gradient"
+#define UNIFORM_BACKGROUND_SAMPLER_NAME "u_backgroundSampler"
+#define UNIFORM_R_SAMPLER_NAME "u_rSampler"
+#define UNIFORM_G_SAMPLER_NAME "u_gSampler"
+#define UNIFORM_B_SAMPLER_NAME "u_bSampler"
+#define UNIFORM_BLEND_MAP_SAMPLER_NAME "u_blendMapSampler"
 
 @implementation TerrainShader {
     GLuint uniform_transformation_matrix_location,
-    uniform_projection_matrix_location,
-    uniform_normal_matrix_location,
-    uniform_view_matrix_location,
-    uniform_light_color_location,
-    uniform_light_position_location;
+           uniform_projection_matrix_location,
+           uniform_normal_matrix_location,
+           uniform_view_matrix_location,
+           uniform_light_color_location,
+           uniform_light_position_location,
+           uniform_sky_color_location,
+           uniform_density_location,
+           uniform_gradient_location,
+           uniform_background_sampler_location,
+           uniform_r_sampler_location,
+           uniform_g_sampler_location,
+           uniform_b_sampler_location,
+           uniform_blend_map_sampler_location;
 }
 
 + (TerrainShader *)terrainShaderProgram
@@ -63,6 +79,34 @@ NSString *const TERRAIN_FRAGMENT_SHADER_FILE_NAME = @"TerrainFragmentShader";
     uniform_view_matrix_location = [super getUniformLocation:UNIFORM_VIEW_MATRIX_NAME];
     uniform_light_color_location = [super getUniformLocation:UNIFORM_LIGHT_COLOR_NAME];
     uniform_light_position_location = [super getUniformLocation:UNIFORM_LIGHT_POSITION_NAME];
+    uniform_sky_color_location = [super getUniformLocation:UNIFORM_SKY_COLOR_NAME];
+    uniform_density_location = [super getUniformLocation:UNIFORM_DENSITY_NAME];
+    uniform_gradient_location = [super getUniformLocation:UNIFORM_GRADIENT_NAME];
+    uniform_background_sampler_location = [super getUniformLocation:UNIFORM_BACKGROUND_SAMPLER_NAME];
+    uniform_r_sampler_location = [super getUniformLocation:UNIFORM_R_SAMPLER_NAME];
+    uniform_g_sampler_location = [super getUniformLocation:UNIFORM_G_SAMPLER_NAME];
+    uniform_b_sampler_location = [super getUniformLocation:UNIFORM_B_SAMPLER_NAME];
+    uniform_blend_map_sampler_location = [super getUniformLocation:UNIFORM_BLEND_MAP_SAMPLER_NAME];
+}
+
+- (void)loadTextureUnits
+{
+    [super loadInt:0 toLocation:uniform_background_sampler_location];
+    [super loadInt:1 toLocation:uniform_r_sampler_location];
+    [super loadInt:2 toLocation:uniform_g_sampler_location];
+    [super loadInt:3 toLocation:uniform_b_sampler_location];
+    [super loadInt:4 toLocation:uniform_blend_map_sampler_location];
+}
+
+- (void)loadFogDensity:(GLfloat)density andGradient:(GLfloat)gradient
+{
+    [super loadFloat:density toLocation:uniform_density_location];
+    [super loadFloat:gradient toLocation:uniform_gradient_location];
+}
+
+- (void)loadSkyColor:(GLKVector3)skyColor
+{
+    [super loadFloatVector3:skyColor toLocation:uniform_sky_color_location];
 }
 
 - (void)loadLight:(Light *)light

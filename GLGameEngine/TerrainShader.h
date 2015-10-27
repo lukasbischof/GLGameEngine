@@ -18,5 +18,8 @@
 - (void)loadViewMatrix:(GLKMatrix4)viewMatrix;
 - (void)loadNormalMatrixWithModelMatrix:(GLKMatrix4)modelMatrix andViewMatrix:(GLKMatrix4)viewMatrix;
 - (void)loadLight:(Light *)light;
+- (void)loadSkyColor:(GLKVector3)skyColor;
+- (void)loadFogDensity:(GLfloat)density andGradient:(GLfloat)gradient;
+- (void)loadTextureUnits;
 
 @end

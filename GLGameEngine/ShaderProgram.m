@@ -118,6 +118,11 @@
     glUniform1i(location, value ? 1 : 0);
 }
 
+- (void)loadInt:(GLint)value toLocation:(GLuint)location
+{
+    glUniform1i(location, value);
+}
+
 - (void)loadMatrix4x4:(GLKMatrix4)value toLocation:(GLuint)location
 {
     glUniformMatrix4fv(location, 1, GL_FALSE, value.m);
@@ -137,6 +142,13 @@
 - (void)deactivate
 {
     glUseProgram(0);
+}
+
+- (void)bind:(void (^)(void))block
+{
+    [self activate];
+    block();
+    [self deactivate];
 }
 
 #pragma mark - Memory management

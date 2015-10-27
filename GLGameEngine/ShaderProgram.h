@@ -41,6 +41,7 @@
 - (void)loadFloatVector3:(GLKVector3)value toLocation:(GLuint)location;
 - (void)loadFloatVector4:(GLKVector4)value toLocation:(GLuint)location;
 - (void)loadBool:(BOOL)value toLocation:(GLuint)location;
+- (void)loadInt:(GLint)value toLocation:(GLuint)location;
 - (void)loadMatrix4x4:(GLKMatrix4)value toLocation:(GLuint)location;
 - (void)loadMatrix3x3:(GLKMatrix3)value toLocation:(GLuint)location;
 // End Helpers.
@@ -52,6 +53,8 @@
 - (void)deactivate;
 
 - (void)cleanUp;
+
+- (void)bind:(void(^)(void))block;
 
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL validateProgram;
 @property (NS_NONATOMIC_IOSONLY, readonly) BOOL linkProgram;

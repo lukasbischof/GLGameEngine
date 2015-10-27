@@ -41,17 +41,18 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
         
         [self updateProjectionForAspect:aspect];
         
-        self.clearColor = RGBAMake(0.0, 0.0, 0.0, 0.0);
         self.shader = [StaticShaderProgram staticShaderProgram];
         self.entityRenderer = [EntityRenderer rendererWithShaderProgram:self.shader];
         self.terrainShader = [TerrainShader terrainShaderProgram];
         self.terrainRenderer = [TerrainRenderer terrainRendererWithShader:self.terrainShader];
         
+        self.skyColor = RGBAMake(0.5f, 0.5f, 0.5f, 1.f);
+        self.fog = kDefaultFog;
+        
         [self setupProperties];
         
         _entities = [EntityMap dictionary];
         _terrains = [NSMutableArray<Terrain *> array];
-        
     }
     
     return self;
@@ -59,9 +60,19 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
 
 - (void)setupProperties
 {
+    [MasterRenderer enableCulling];
+}
+
++ (void)enableCulling
+{
     glEnable(GL_CULL_FACE);
     glFrontFace(GL_CCW);
     glCullFace(GL_BACK);
+}
+
++ (void)disableCulling
+{
+    glDisable(GL_CULL_FACE);
 }
 
 - (void)updateProjectionForAspect:(float)aspect
@@ -82,12 +93,14 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
     [self prepare];
     [self.shader activate];
     [self.shader loadLight:light];
+    [self.shader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
     [self.shader loadViewMatrix:[camera getViewMatrix]];
     [self.entityRenderer render:self.entities withCamera:camera];
     [self.shader deactivate];
     
     [self.terrainShader activate];
     [self.terrainShader loadLight:light];
+    [self.terrainShader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
     [self.terrainShader loadViewMatrix:[camera getViewMatrix]];
     [self.terrainRenderer render:self.terrains withCamera:camera];
     [self.terrainShader deactivate];
@@ -98,7 +111,7 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
 
 - (void)prepare
 {
-    glClearColor(self.clearColor.r, self.clearColor.g, self.clearColor.b, self.clearColor.a);
+    glClearColor(self.skyColor.r, self.skyColor.g, self.skyColor.b, self.skyColor.a);
     glClearDepthf(1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     
@@ -150,6 +163,21 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
     [self.terrainShader cleanUp];
 }
 
+#pragma mark - getters / setters
+- (void)setFog:(Fog)fog
+{
+    NSLog(@"set");
+    _fog = fog;
+    
+    [self.shader activate];
+    [self.shader loadFogDensity:fog.density andGradient:fog.gradient];
+    [self.shader deactivate];
+    
+    [self.terrainShader activate];
+    [self.terrainShader loadFogDensity:fog.density andGradient:fog.gradient];
+    [self.terrainShader deactivate];
+}
+
 @end
 
 
@@ -180,4 +208,11 @@ EXPORT GLKVector4 RGBAGetGLKVector4(RGBA rgba) {
 
 EXPORT GLKVector3 RGBAGetGLKVector3(RGBA rgba) {
     return GLKVector3Make(rgba.r, rgba.g, rgba.b);
+}
+
+
+Fog FogMake(GLfloat density, GLfloat gradient) {
+    return (Fog) {
+        density, gradient
+    };
 }

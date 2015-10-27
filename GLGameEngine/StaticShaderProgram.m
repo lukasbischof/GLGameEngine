@@ -23,6 +23,9 @@ NSString *const FRAGMENT_SHADER_FILE_NAME = @"FragmentShader";
 #define UNIFORM_VIEW_MATRIX_NAME "u_viewMatrix"
 #define UNIFORM_LIGHT_COLOR_NAME "u_lightColor"
 #define UNIFORM_LIGHT_POSITION_NAME "u_lightPosition"
+#define UNIFORM_SKY_COLOR_NAME "u_skyColor"
+#define UNIFORM_DENSITY_NAME "u_density"
+#define UNIFORM_GRADIENT_NAME "u_gradient"
 
 @implementation StaticShaderProgram {
     GLuint uniform_transformation_matrix_location,
@@ -30,7 +33,10 @@ NSString *const FRAGMENT_SHADER_FILE_NAME = @"FragmentShader";
            uniform_normal_matrix_location,
            uniform_view_matrix_location,
            uniform_light_color_location,
-           uniform_light_position_location;
+           uniform_light_position_location,
+           uniform_sky_color_location,
+           uniform_density_location,
+           uniform_gradient_location;
 }
 
 + (StaticShaderProgram *)staticShaderProgram
@@ -63,6 +69,20 @@ NSString *const FRAGMENT_SHADER_FILE_NAME = @"FragmentShader";
     uniform_view_matrix_location = [super getUniformLocation:UNIFORM_VIEW_MATRIX_NAME];
     uniform_light_color_location = [super getUniformLocation:UNIFORM_LIGHT_COLOR_NAME];
     uniform_light_position_location = [super getUniformLocation:UNIFORM_LIGHT_POSITION_NAME];
+    uniform_sky_color_location = [super getUniformLocation:UNIFORM_SKY_COLOR_NAME];
+    uniform_density_location = [super getUniformLocation:UNIFORM_DENSITY_NAME];
+    uniform_gradient_location = [super getUniformLocation:UNIFORM_GRADIENT_NAME];
+}
+
+- (void)loadFogDensity:(GLfloat)density andGradient:(GLfloat)gradient
+{
+    [super loadFloat:density toLocation:uniform_density_location];
+    [super loadFloat:gradient toLocation:uniform_gradient_location];
+}
+
+- (void)loadSkyColor:(GLKVector3)skyColor
+{
+    [super loadFloatVector3:skyColor toLocation:uniform_sky_color_location];
 }
 
 - (void)loadLight:(Light *)light

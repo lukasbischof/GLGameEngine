@@ -25,6 +25,9 @@
 {
     if ((self = [super init])) {
         self.shader = shader;
+        [self.shader activate];
+        [self.shader loadTextureUnits];
+        [self.shader deactivate];
     }
     
     return self;
@@ -50,8 +53,24 @@
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
+    
+    [self bindTexturesForTerrain:terrain];
+}
+
+- (void)bindTexturesForTerrain:(Terrain *)terrain
+{
+    TerrainTexturePackage *pack = terrain.texturePack;
+    
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(terrain.texture.textureTarget, terrain.texture.textureID);
+    glBindTexture(pack.backgroundTexture.textureTarget, pack.backgroundTexture.textureID);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(pack.rTexture.textureTarget, pack.rTexture.textureID);
+    glActiveTexture(GL_TEXTURE2);
+    glBindTexture(pack.gTexture.textureTarget, pack.gTexture.textureID);
+    glActiveTexture(GL_TEXTURE3);
+    glBindTexture(pack.bTexture.textureTarget, pack.bTexture.textureID);
+    glActiveTexture(GL_TEXTURE4);
+    glBindTexture(terrain.blendMap.textureTarget, terrain.blendMap.textureID);
 }
 
 - (void)unbindTerrain

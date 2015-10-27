@@ -19,6 +19,58 @@
 
 @implementation OBJLoader2
 
++ (NSArray<TexturedModel *> *)loadModelsWithNames:(NSArray<NSString *> *)names
+                                     textureNames:(NSArray<NSArray<NSString *> *> *)textureNames
+                                        andLoader:(Loader *)loader
+{
+    NSAssert(names.count > 0 && names.count == textureNames.count, @"Invalid Params. Either names contains no element or names.count is not equal to textureNames.count");
+    
+    NSMutableArray<TexturedModel *> *retArr = [NSMutableArray array];
+    
+    for (NSUInteger i = 0; i < names.count; i++) {
+        NSString *name = names[i];
+        NSArray *textEl = textureNames[i];
+        
+        NSAssert(textEl.count >= 2, @"The %lu. element of textureElements has not two items", (unsigned long)i);
+        
+        NSString *textureName = textEl[0];
+        NSString *textureExt = textEl[1];
+        
+        GLKTextureInfo *textInfo = [loader loadTexture:textureName withExtension:textureExt];
+        
+        if (textInfo) {
+            ModelTexture *texture = [[ModelTexture alloc] initWithTextureID:textInfo.name
+                                                           andTextureTarget:textInfo.target];
+            TexturedModel *model = [OBJLoader2 loadModelWithName:name
+                                                         texture:texture
+                                                       andLoader:loader];
+            
+            if (model)
+                [retArr addObject:model];
+            else {
+                NSLog(@"Can't load %lu. model", (unsigned long)i);
+            }
+        }
+        
+        if (glGetError() != GL_NO_ERROR)
+            NSLog(@"GL error when loading models: %d", glGetError());
+    }
+    
+    return retArr;
+}
+
++ (TexturedModel *)loadModelWithName:(NSString *)name texture:(ModelTexture *)texture andLoader:(Loader *)loader
+{
+    NSURL *url = [[NSBundle mainBundle] URLForResource:name withExtension:@"obj"];
+    
+    if (!url)
+        return nil;
+    
+    return [[OBJLoader2 alloc] initWithURL:url
+                                   texture:texture
+                                 andLoader:loader].texturedModel;
+}
+
 - (instancetype)init
 {
     return nil;
@@ -95,7 +147,7 @@
     descriptor.attributes[1].offset = 0;
     descriptor.attributes[1].bufferIndex = 1;
     
-    size = sizeof(float) * 3 ;
+    size = sizeof(float) * 3;
     descriptor.layouts[1].stride = size;
     
     descriptor.attributes[2].name = MDLVertexAttributeTextureCoordinate;

@@ -9,20 +9,21 @@
 #import <Foundation/Foundation.h>
 #import <OpenGLES/ES3/gl.h>
 #import "RawModel.h"
-#import "ModelTexture.h"
+#import "TerrainTexturePackage.h"
 #import "Loader.h"
 
-static const GLfloat TERRAIN_SIZE = 800;
+static const GLfloat TERRAIN_SIZE = 400;
 
 @interface Terrain : NSObject
 
 @property (assign, nonatomic) GLfloat x;
 @property (assign, nonatomic) GLfloat z;
 @property (strong, nonatomic, readonly, nonnull) RawModel *model;
-@property (strong, nonatomic, readonly, nonnull) ModelTexture *texture;
+@property (strong, nonatomic, readonly, nonnull) TerrainTexturePackage *texturePack;
+@property (strong, nonatomic, readonly, nonnull) TerrainTexture *blendMap;
 
-+ (Terrain *_Nonnull)terrainWithGridX:(GLint)gridX gridZ:(GLint)gridZ loader:(Loader *_Nonnull)loader andTexture:(ModelTexture *_Nonnull)texture;
++ (Terrain *_Nonnull)terrainWithGridX:(GLint)gridX gridZ:(GLint)gridZ loader:(Loader *_Nonnull)loader texturePack:(TerrainTexturePackage *_Nonnull)texturePack andBlendMap:(TerrainTexture *_Nonnull)blendMap;
 
-- (_Nonnull instancetype)initWithGridX:(GLint)gridX gridZ:(GLint)gridZ loader:(Loader *_Nonnull)loader andTexture:(ModelTexture *_Nonnull)texture;
+- (_Nonnull instancetype)initWithGridX:(GLint)gridX gridZ:(GLint)gridZ loader:(Loader *_Nonnull)loader texturePack:(TerrainTexturePackage *_Nonnull)texturePack andBlendMap:(TerrainTexture *_Nonnull)blendMap;
 
 @end

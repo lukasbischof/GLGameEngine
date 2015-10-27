@@ -32,15 +32,26 @@
 		4828F8F21B87BF45006D93CD /* MasterRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4828F8F11B87BF45006D93CD /* MasterRenderer.m */; };
 		4828F8F31B87BF45006D93CD /* MasterRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4828F8F11B87BF45006D93CD /* MasterRenderer.m */; };
 		483D4F0D1BC53FA800587983 /* Terrain.mm in Sources */ = {isa = PBXBuildFile; fileRef = 483D4F0C1BC53FA800587983 /* Terrain.mm */; };
+		4888EAD61BDFBC02006EF15E /* blendMap.png in Resources */ = {isa = PBXBuildFile; fileRef = 4888EAD31BDFBC02006EF15E /* blendMap.png */; };
+		4888EAD71BDFBC02006EF15E /* mud.png in Resources */ = {isa = PBXBuildFile; fileRef = 4888EAD41BDFBC02006EF15E /* mud.png */; };
+		4888EAD81BDFBC02006EF15E /* path.png in Resources */ = {isa = PBXBuildFile; fileRef = 4888EAD51BDFBC02006EF15E /* path.png */; };
+		4888EADB1BDFC74B006EF15E /* TerrainTexture.m in Sources */ = {isa = PBXBuildFile; fileRef = 4888EADA1BDFC74B006EF15E /* TerrainTexture.m */; };
+		4888EADE1BDFC7F0006EF15E /* TerrainTexturePackage.m in Sources */ = {isa = PBXBuildFile; fileRef = 4888EADD1BDFC7F0006EF15E /* TerrainTexturePackage.m */; };
+		4888EAE01BDFD0DB006EF15E /* grassFlowers.png in Resources */ = {isa = PBXBuildFile; fileRef = 4888EADF1BDFD0DB006EF15E /* grassFlowers.png */; };
 		4889F24F1BC42AAB0097A28F /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4889F24E1BC42AAB0097A28F /* cube.obj */; };
 		4889F2501BC42AAB0097A28F /* cube.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4889F24E1BC42AAB0097A28F /* cube.obj */; };
 		4898DAAE1BDCDBC4007D2695 /* Farmhouse.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4898DAAD1BDCDBC4007D2695 /* Farmhouse.obj */; };
 		4898DAB21BDCE852007D2695 /* wagen.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4898DAB01BDCE852007D2695 /* wagen.obj */; };
 		4898DAB31BDCE852007D2695 /* wagen.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4898DAB11BDCE852007D2695 /* wagen.jpg */; };
 		4898DAB71BDD08C2007D2695 /* tree.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4898DAB51BDD08C2007D2695 /* tree.obj */; };
-		4898DAB81BDD08C2007D2695 /* tree.png in Resources */ = {isa = PBXBuildFile; fileRef = 4898DAB61BDD08C2007D2695 /* tree.png */; };
 		4898DABB1BDD0B75007D2695 /* lowPolyTree.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4898DAB91BDD0B75007D2695 /* lowPolyTree.obj */; };
 		4898DABC1BDD0B75007D2695 /* lowPolyTree.png in Resources */ = {isa = PBXBuildFile; fileRef = 4898DABA1BDD0B75007D2695 /* lowPolyTree.png */; };
+		4898DAC31BDD0FA3007D2695 /* tree.png in Resources */ = {isa = PBXBuildFile; fileRef = 4898DAC21BDD0FA3007D2695 /* tree.png */; };
+		4898DAC51BDD11CA007D2695 /* grassTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 4898DAC41BDD11CA007D2695 /* grassTexture.png */; };
+		4898DAC71BDD3A4E007D2695 /* grassModel.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4898DAC61BDD3A4E007D2695 /* grassModel.obj */; };
+		4898DAC91BDD3A9D007D2695 /* flower.png in Resources */ = {isa = PBXBuildFile; fileRef = 4898DAC81BDD3A9D007D2695 /* flower.png */; };
+		4898DACD1BDD3E94007D2695 /* fern.obj in Resources */ = {isa = PBXBuildFile; fileRef = 4898DACB1BDD3E94007D2695 /* fern.obj */; };
+		4898DACE1BDD3E94007D2695 /* fern.png in Resources */ = {isa = PBXBuildFile; fileRef = 4898DACC1BDD3E94007D2695 /* fern.png */; };
 		48B856C91B8B9BD500336A43 /* GLKView+aspect.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B856C81B8B9BD500336A43 /* GLKView+aspect.m */; };
 		48DB0F121BDC1EC4003C52DC /* Rock.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 48DB0F0F1BDC1EC4003C52DC /* Rock.jpg */; };
 		48DB0F131BDC1EC4003C52DC /* Rock.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 48DB0F101BDC1EC4003C52DC /* Rock.mtl */; };
@@ -66,7 +77,6 @@
 		806778E71B18D2930082AF0B /* Buffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 806778E61B18D2930082AF0B /* Buffer.mm */; };
 		806778EB1B18ED7E0082AF0B /* ModelTexture.m in Sources */ = {isa = PBXBuildFile; fileRef = 806778EA1B18ED7E0082AF0B /* ModelTexture.m */; };
 		806778EF1B18EE1D0082AF0B /* TexturedModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 806778EE1B18EE1D0082AF0B /* TexturedModel.m */; };
-		806778F21B18EFBB0082AF0B /* larenTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 806778F11B18EFBB0082AF0B /* larenTexture.png */; };
 		80B72DA21B33328700394A80 /* OBJLoader2.mm in Sources */ = {isa = PBXBuildFile; fileRef = 80B72DA11B33328700394A80 /* OBJLoader2.mm */; };
 		80E38B7D1B1B819A006D7B30 /* dragon.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80E38B7C1B1B819A006D7B30 /* dragon.obj */; };
 		80E38B7F1B1B9893006D7B30 /* white.png in Resources */ = {isa = PBXBuildFile; fileRef = 80E38B7E1B1B9893006D7B30 /* white.png */; };
@@ -122,14 +132,27 @@
 		4828F8F11B87BF45006D93CD /* MasterRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MasterRenderer.m; sourceTree = "<group>"; };
 		483D4F0B1BC53FA800587983 /* Terrain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Terrain.h; sourceTree = "<group>"; };
 		483D4F0C1BC53FA800587983 /* Terrain.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Terrain.mm; sourceTree = "<group>"; };
+		4888EAD31BDFBC02006EF15E /* blendMap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blendMap.png; sourceTree = "<group>"; };
+		4888EAD41BDFBC02006EF15E /* mud.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = mud.png; sourceTree = "<group>"; };
+		4888EAD51BDFBC02006EF15E /* path.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = path.png; sourceTree = "<group>"; };
+		4888EAD91BDFC74B006EF15E /* TerrainTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TerrainTexture.h; sourceTree = "<group>"; };
+		4888EADA1BDFC74B006EF15E /* TerrainTexture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TerrainTexture.m; sourceTree = "<group>"; };
+		4888EADC1BDFC7F0006EF15E /* TerrainTexturePackage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TerrainTexturePackage.h; sourceTree = "<group>"; };
+		4888EADD1BDFC7F0006EF15E /* TerrainTexturePackage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TerrainTexturePackage.m; sourceTree = "<group>"; };
+		4888EADF1BDFD0DB006EF15E /* grassFlowers.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grassFlowers.png; sourceTree = "<group>"; };
 		4889F24E1BC42AAB0097A28F /* cube.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cube.obj; sourceTree = "<group>"; };
 		4898DAAD1BDCDBC4007D2695 /* Farmhouse.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Farmhouse.obj; sourceTree = "<group>"; };
 		4898DAB01BDCE852007D2695 /* wagen.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = wagen.obj; sourceTree = "<group>"; };
 		4898DAB11BDCE852007D2695 /* wagen.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = wagen.jpg; sourceTree = "<group>"; };
 		4898DAB51BDD08C2007D2695 /* tree.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = tree.obj; sourceTree = "<group>"; };
-		4898DAB61BDD08C2007D2695 /* tree.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tree.png; sourceTree = "<group>"; };
 		4898DAB91BDD0B75007D2695 /* lowPolyTree.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = lowPolyTree.obj; sourceTree = "<group>"; };
 		4898DABA1BDD0B75007D2695 /* lowPolyTree.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lowPolyTree.png; sourceTree = "<group>"; };
+		4898DAC21BDD0FA3007D2695 /* tree.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = tree.png; sourceTree = "<group>"; };
+		4898DAC41BDD11CA007D2695 /* grassTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = grassTexture.png; sourceTree = "<group>"; };
+		4898DAC61BDD3A4E007D2695 /* grassModel.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = grassModel.obj; sourceTree = "<group>"; };
+		4898DAC81BDD3A9D007D2695 /* flower.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = flower.png; sourceTree = "<group>"; };
+		4898DACB1BDD3E94007D2695 /* fern.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = fern.obj; sourceTree = "<group>"; };
+		4898DACC1BDD3E94007D2695 /* fern.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fern.png; sourceTree = "<group>"; };
 		48B856C71B8B9BD500336A43 /* GLKView+aspect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "GLKView+aspect.h"; sourceTree = "<group>"; };
 		48B856C81B8B9BD500336A43 /* GLKView+aspect.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "GLKView+aspect.m"; sourceTree = "<group>"; };
 		48DB0F0F1BDC1EC4003C52DC /* Rock.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = Rock.jpg; sourceTree = "<group>"; };
@@ -170,7 +193,6 @@
 		806778EA1B18ED7E0082AF0B /* ModelTexture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ModelTexture.m; sourceTree = "<group>"; };
 		806778ED1B18EE1D0082AF0B /* TexturedModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TexturedModel.h; sourceTree = "<group>"; };
 		806778EE1B18EE1D0082AF0B /* TexturedModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TexturedModel.m; sourceTree = "<group>"; };
-		806778F11B18EFBB0082AF0B /* larenTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = larenTexture.png; sourceTree = "<group>"; };
 		80B72DA01B33328700394A80 /* OBJLoader2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OBJLoader2.h; sourceTree = "<group>"; };
 		80B72DA11B33328700394A80 /* OBJLoader2.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OBJLoader2.mm; sourceTree = "<group>"; };
 		80E38B7C1B1B819A006D7B30 /* dragon.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dragon.obj; sourceTree = "<group>"; };
@@ -279,6 +301,18 @@
 			name = Terrain;
 			sourceTree = "<group>";
 		};
+		4888EAD21BDFBBE7006EF15E /* ground */ = {
+			isa = PBXGroup;
+			children = (
+				4816CEE01BC56D1900F35C2E /* grass.jpg */,
+				4888EAD31BDFBC02006EF15E /* blendMap.png */,
+				4888EAD41BDFBC02006EF15E /* mud.png */,
+				4888EAD51BDFBC02006EF15E /* path.png */,
+				4888EADF1BDFD0DB006EF15E /* grassFlowers.png */,
+			);
+			name = ground;
+			sourceTree = "<group>";
+		};
 		4898DAAF1BDCE849007D2695 /* wagen */ = {
 			isa = PBXGroup;
 			children = (
@@ -292,11 +326,38 @@
 			isa = PBXGroup;
 			children = (
 				4898DAB51BDD08C2007D2695 /* tree.obj */,
-				4898DAB61BDD08C2007D2695 /* tree.png */,
+				4898DAC21BDD0FA3007D2695 /* tree.png */,
 				4898DAB91BDD0B75007D2695 /* lowPolyTree.obj */,
 				4898DABA1BDD0B75007D2695 /* lowPolyTree.png */,
 			);
 			name = tree;
+			sourceTree = "<group>";
+		};
+		4898DABD1BDD0D94007D2695 /* grass */ = {
+			isa = PBXGroup;
+			children = (
+				4898DAC61BDD3A4E007D2695 /* grassModel.obj */,
+				4898DAC41BDD11CA007D2695 /* grassTexture.png */,
+			);
+			name = grass;
+			sourceTree = "<group>";
+		};
+		4898DACA1BDD3E8A007D2695 /* fern */ = {
+			isa = PBXGroup;
+			children = (
+				4898DACB1BDD3E94007D2695 /* fern.obj */,
+				4898DACC1BDD3E94007D2695 /* fern.png */,
+			);
+			name = fern;
+			sourceTree = "<group>";
+		};
+		4898DAD31BDD77CB007D2695 /* stall */ = {
+			isa = PBXGroup;
+			children = (
+				80FFE4271B1A2C0B008DE7DB /* stall.obj */,
+				80FFE4281B1A2C0B008DE7DB /* stallTexture.png */,
+			);
+			name = stall;
 			sourceTree = "<group>";
 		};
 		48DB0F0E1BDC1EAE003C52DC /* rock */ = {
@@ -363,13 +424,14 @@
 			children = (
 				802639371B0E34D3009B42D6 /* Info.plist */,
 				802639381B0E34D3009B42D6 /* main.m */,
-				806778F11B18EFBB0082AF0B /* larenTexture.png */,
-				80FFE4271B1A2C0B008DE7DB /* stall.obj */,
 				80E38B7C1B1B819A006D7B30 /* dragon.obj */,
 				4889F24E1BC42AAB0097A28F /* cube.obj */,
-				80FFE4281B1A2C0B008DE7DB /* stallTexture.png */,
 				80E38B7E1B1B9893006D7B30 /* white.png */,
-				4816CEE01BC56D1900F35C2E /* grass.jpg */,
+				4888EAD21BDFBBE7006EF15E /* ground */,
+				4898DAC81BDD3A9D007D2695 /* flower.png */,
+				4898DAD31BDD77CB007D2695 /* stall */,
+				4898DACA1BDD3E8A007D2695 /* fern */,
+				4898DABD1BDD0D94007D2695 /* grass */,
 				4898DAB41BDD08B5007D2695 /* tree */,
 				4898DAAF1BDCE849007D2695 /* wagen */,
 				48DB0F151BDC2086003C52DC /* farm */,
@@ -456,6 +518,10 @@
 			children = (
 				806778E91B18ED7E0082AF0B /* ModelTexture.h */,
 				806778EA1B18ED7E0082AF0B /* ModelTexture.m */,
+				4888EAD91BDFC74B006EF15E /* TerrainTexture.h */,
+				4888EADA1BDFC74B006EF15E /* TerrainTexture.m */,
+				4888EADC1BDFC7F0006EF15E /* TerrainTexturePackage.h */,
+				4888EADD1BDFC7F0006EF15E /* TerrainTexturePackage.m */,
 			);
 			name = Textures;
 			sourceTree = "<group>";
@@ -640,9 +706,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4888EAD71BDFBC02006EF15E /* mud.png in Resources */,
+				4898DAC71BDD3A4E007D2695 /* grassModel.obj in Resources */,
+				4888EAD81BDFBC02006EF15E /* path.png in Resources */,
 				80FFE4291B1A2C0B008DE7DB /* stall.obj in Resources */,
 				48DB0F1D1BDC208F003C52DC /* Farmhouse.jpg in Resources */,
 				4898DAB71BDD08C2007D2695 /* tree.obj in Resources */,
+				4898DAC91BDD3A9D007D2695 /* flower.png in Resources */,
+				4898DAC31BDD0FA3007D2695 /* tree.png in Resources */,
+				4898DACD1BDD3E94007D2695 /* fern.obj in Resources */,
+				4898DACE1BDD3E94007D2695 /* fern.png in Resources */,
 				8026396D1B0E66FC009B42D6 /* FragmentShader.fsh in Resources */,
 				48DB0F131BDC1EC4003C52DC /* Rock.mtl in Resources */,
 				48DB0F1C1BDC208F003C52DC /* Farmhouse Texture Bump Map .jpg in Resources */,
@@ -651,18 +724,19 @@
 				4898DABC1BDD0B75007D2695 /* lowPolyTree.png in Resources */,
 				4898DAAE1BDCDBC4007D2695 /* Farmhouse.obj in Resources */,
 				8026396F1B0E670D009B42D6 /* VertexShader.vsh in Resources */,
-				806778F21B18EFBB0082AF0B /* larenTexture.png in Resources */,
-				4898DAB81BDD08C2007D2695 /* tree.png in Resources */,
 				4898DABB1BDD0B75007D2695 /* lowPolyTree.obj in Resources */,
+				4888EAE01BDFD0DB006EF15E /* grassFlowers.png in Resources */,
 				4816CEE11BC56D1900F35C2E /* grass.jpg in Resources */,
 				4816CECF1BC564E800F35C2E /* TerrainVertexShader.vsh in Resources */,
 				80FFE42A1B1A2C0B008DE7DB /* stallTexture.png in Resources */,
 				4889F24F1BC42AAB0097A28F /* cube.obj in Resources */,
 				4816CED31BC5650A00F35C2E /* TerrainFragmentShader.fsh in Resources */,
+				4888EAD61BDFBC02006EF15E /* blendMap.png in Resources */,
 				80E38B7F1B1B9893006D7B30 /* white.png in Resources */,
 				802639421B0E34D3009B42D6 /* Main.storyboard in Resources */,
 				4898DAB21BDCE852007D2695 /* wagen.obj in Resources */,
 				48DB0F121BDC1EC4003C52DC /* Rock.jpg in Resources */,
+				4898DAC51BDD11CA007D2695 /* grassTexture.png in Resources */,
 				80E38B7D1B1B819A006D7B30 /* dragon.obj in Resources */,
 				802639471B0E34D3009B42D6 /* LaunchScreen.xib in Resources */,
 				802639441B0E34D3009B42D6 /* Images.xcassets in Resources */,
@@ -708,9 +782,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4888EADB1BDFC74B006EF15E /* TerrainTexture.m in Sources */,
 				80FFE4231B1A1361008DE7DB /* Camera.m in Sources */,
 				80FFE4261B1A2BFA008DE7DB /* OBJLoader.mm in Sources */,
 				802639641B0E5279009B42D6 /* RawModel.m in Sources */,
+				4888EADE1BDFC7F0006EF15E /* TerrainTexturePackage.m in Sources */,
 				48B856C91B8B9BD500336A43 /* GLKView+aspect.m in Sources */,
 				8026393F1B0E34D3009B42D6 /* ViewController.m in Sources */,
 				483D4F0D1BC53FA800587983 /* Terrain.mm in Sources */,

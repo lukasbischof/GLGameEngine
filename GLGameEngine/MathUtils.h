@@ -119,4 +119,21 @@ GLKMatrix3 MathUtils_CreateNormalMatrix(GLKMatrix4 transformationMatrix, GLKMatr
 EXPORT
 GLfloat MathUtils_RandomFloat(GLfloat min, GLfloat max);
 
+/**
+ @function MathUtils_RandomBool
+ @abstract Generiert ein zufälligen Boolean
+ @return Der Zufallsboolean
+*/
+EXPORT
+GLboolean MathUtils_RandomBool();
+
+/**
+ @function MathUtils_RandomBoolProb
+ @abstract Generiert ein zufälligen Boolean mit einer Wahrscheinlichkeit von 0 bis 1, dass er true ist
+ @param probability Die Wahrscheinlichkeit
+ @return Der Zufallsboolean
+*/
+EXPORT
+GLboolean MathUtils_RandomBoolProb(GLfloat probability);
+
 #endif /* defined(__GLGameEngine__MathUtils__) */

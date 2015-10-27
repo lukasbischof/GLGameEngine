@@ -7,6 +7,7 @@
 //
 
 #import "EntityRenderer.h"
+#import "MasterRenderer.h"
 
 @interface EntityRenderer ()
 
@@ -70,12 +71,21 @@
     glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
+
+    if (texturedModel.texture.hasAlpha && glIsEnabled(GL_CULL_FACE)) {
+        [MasterRenderer disableCulling];
+    }
+    
     glActiveTexture(GL_TEXTURE0);
     glBindTexture(texturedModel.texture.textureTarget, texturedModel.texture.textureID);
 }
 
 - (void)unbindTexturedModel
 {
+    if (!glIsEnabled(GL_CULL_FACE)) {
+        [MasterRenderer enableCulling];
+    }
+    
     glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
     glDisableVertexAttribArray(2);
