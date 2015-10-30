@@ -38,6 +38,7 @@
 - (void)bindAttribute:(GLuint)index toVariableName:(const GLchar *)variableName;
 - (GLuint)getUniformLocation:(const GLchar *)uniformName;
 - (void)loadFloat:(GLfloat)value toLocation:(GLuint)location;
+- (void)loadFloatVector2:(GLKVector2)value toLocation:(GLuint)location;
 - (void)loadFloatVector3:(GLKVector3)value toLocation:(GLuint)location;
 - (void)loadFloatVector4:(GLKVector4)value toLocation:(GLuint)location;
 - (void)loadBool:(BOOL)value toLocation:(GLuint)location;

@@ -19,6 +19,10 @@ uniform mat3 u_normalMatrix;
 uniform float u_density;
 uniform float u_gradient;
 
+// TEXTURE ATLAS
+uniform float u_numberOfRows;
+uniform vec2 u_offset;
+
 // Die Property useFakeLighting fehlt, da ich der Meinung bin, dass es einfacher ist, Objekte direkt mit (0,1,0) Normalen zu exportieren...
 
 void main(void) {
@@ -26,7 +30,7 @@ void main(void) {
     gl_Position = u_projectionMatrix * modelPosition;
     
     inout_modelPosition = modelPosition.xyz;
-    inout_texCoords = in_texCoords;
+    inout_texCoords = (in_texCoords / u_numberOfRows) + u_offset;
     inout_normal = normalize(u_normalMatrix * in_normals);
     
     float vertDistance = length(modelPosition.xyz);

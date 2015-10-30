@@ -15,6 +15,11 @@
 @implementation Entity
 
 #pragma mark - Initializer
++ (Entity *)entityWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation scale:(GLfloat)scale andTextureIndex:(GLuint)index
+{
+    return [[Entity alloc] initWithTexturedModel:model position:position rotation:rotation scale:scale andTextureIndex:index];
+}
+
 + (Entity *)entityWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation andScale:(GLfloat)scale
 {
     return [[Entity alloc] initWithTexturedModel:model position:position rotation:rotation andScale:scale];
@@ -40,50 +45,42 @@
     return [self initWithTexturedModel:nil];
 }
 
-- (instancetype)initWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation andScale:(GLfloat)scale
+- (instancetype)initWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation scale:(GLfloat)scale andTextureIndex:(GLuint)index
 {
     if ((self = [super init])) {
         _model = model;
         _position = position;
         _rotation = rotation;
         _scale = scale;
+        _textureIndex = index;
     }
     
     return self;
 }
 
+- (instancetype)initWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation andScale:(GLfloat)scale
+{
+    self = [self initWithTexturedModel:model position:position rotation:rotation scale:scale andTextureIndex:0];
+    return self;
+}
+
 - (instancetype)initWithTexturedModel:(TexturedModel *)model rotation:(Rotation)rotation andScale:(GLfloat)scale
 {
-    if ((self = [super init])) {
-        _model = model;
-        self.position = GLKVector3Make(0.0f, 0.0f, 0.0f);
-        self.rotation = rotation;
-        self.scale = scale;
-    }
+    self = [self initWithTexturedModel:model position:GLKVector3Make(0, 0, 0) rotation:rotation scale:scale andTextureIndex:0];
     
     return self;
 }
 
 - (instancetype)initWithTexturedModel:(TexturedModel *)model andRotation:(Rotation)rotation
 {
-    if ((self = [super init])) {
-        _model = model;
-        self.position = GLKVector3Make(0.0f, 0.0f, 0.0f);
-        self.rotation = rotation;
-        self.scale = 1.0f;
-    }
+    self = [self initWithTexturedModel:model position:GLKVector3Make(0, 0, 0) rotation:rotation scale:1.0 andTextureIndex:0];
     
     return self;
 }
 
 - (instancetype)initWithTexturedModel:(TexturedModel *)model
 {
-    if ((self = [super init])) {
-        _model = model;
-        self.position = GLKVector3Make(0.0f, 0.0f, 0.0f);
-        self.rotation = MathUtils_ZeroRotation;
-        self.scale = 1.f;
-    }
+    self = [self initWithTexturedModel:model position:GLKVector3Make(0, 0, 0) rotation:MathUtils_ZeroRotation scale:1.0 andTextureIndex:0];
     
     return self;
 }
@@ -115,9 +112,21 @@
     return mat;
 }
 
+- (GLfloat)getTextureXOffset
+{
+    GLint column = self.textureIndex % self.model.texture.numberOfRows;
+    return (GLfloat)column / (GLfloat)self.model.texture.numberOfRows;
+}
+
+- (GLfloat)getTextureYOffset
+{
+    GLint row = self.textureIndex / self.model.texture.numberOfRows;
+    return (GLfloat)row / self.model.texture.numberOfRows;
+}
+
 - (NSString *)description
 {
-    return [NSString stringWithFormat:@"<%@: %p, position: { x: %f, y: %f, z: %f }",
+    return [NSString stringWithFormat:@"<%@ %p, position: { x: %f, y: %f, z: %f }>",
                                       NSStringFromClass([self class]),
                                       self,
                                       self.position.x,

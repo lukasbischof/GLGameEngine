@@ -103,6 +103,11 @@
     glUniform1f(location, value);
 }
 
+- (void)loadFloatVector2:(GLKVector2)value toLocation:(GLuint)location
+{
+    glUniform2f(location, value.x, value.y);
+}
+
 - (void)loadFloatVector3:(GLKVector3)value toLocation:(GLuint)location
 {
     glUniform3f(location, value.x, value.y, value.z);

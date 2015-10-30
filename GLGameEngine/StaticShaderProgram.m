@@ -26,6 +26,8 @@ NSString *const FRAGMENT_SHADER_FILE_NAME = @"FragmentShader";
 #define UNIFORM_SKY_COLOR_NAME "u_skyColor"
 #define UNIFORM_DENSITY_NAME "u_density"
 #define UNIFORM_GRADIENT_NAME "u_gradient"
+#define UNIFORM_NUMBER_OF_ROWS_NAME "u_numberOfRows"
+#define UNIFORM_OFFSET_NAME "u_offset"
 
 @implementation StaticShaderProgram {
     GLuint uniform_transformation_matrix_location,
@@ -36,7 +38,9 @@ NSString *const FRAGMENT_SHADER_FILE_NAME = @"FragmentShader";
            uniform_light_position_location,
            uniform_sky_color_location,
            uniform_density_location,
-           uniform_gradient_location;
+           uniform_gradient_location,
+           uniform_number_of_rows_location,
+           uniform_offset_location;
 }
 
 + (StaticShaderProgram *)staticShaderProgram
@@ -72,6 +76,18 @@ NSString *const FRAGMENT_SHADER_FILE_NAME = @"FragmentShader";
     uniform_sky_color_location = [super getUniformLocation:UNIFORM_SKY_COLOR_NAME];
     uniform_density_location = [super getUniformLocation:UNIFORM_DENSITY_NAME];
     uniform_gradient_location = [super getUniformLocation:UNIFORM_GRADIENT_NAME];
+    uniform_number_of_rows_location = [super getUniformLocation:UNIFORM_NUMBER_OF_ROWS_NAME];
+    uniform_offset_location = [super getUniformLocation:UNIFORM_OFFSET_NAME];
+}
+
+- (void)loadOffset:(GLKVector2)offset
+{
+    [super loadFloatVector2:offset toLocation:uniform_offset_location];
+}
+
+- (void)loadNumberOfRows:(GLint)numberOfRows
+{
+    [super loadFloat:numberOfRows toLocation:uniform_number_of_rows_location];
 }
 
 - (void)loadFogDensity:(GLfloat)density andGradient:(GLfloat)gradient

@@ -72,6 +72,8 @@
     glEnableVertexAttribArray(1);
     glEnableVertexAttribArray(2);
 
+    [self.shaderProgram loadNumberOfRows:texturedModel.texture.numberOfRows];
+    
     if (texturedModel.texture.hasAlpha && glIsEnabled(GL_CULL_FACE)) {
         [MasterRenderer disableCulling];
     }
@@ -96,6 +98,7 @@
     [self.shaderProgram loadTransformationMatrix:entity.currentTransformationMatrix];
     [self.shaderProgram loadNormalMatrixWithModelMatrix:entity.currentTransformationMatrix
                                           andViewMatrix:viewMat];
+    [self.shaderProgram loadOffset:GLKVector2Make([entity getTextureXOffset], [entity getTextureYOffset])];
 }
 
 #pragma mark Old rendering

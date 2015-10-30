@@ -65,6 +65,7 @@
 		48F688371BE3F9F000F9A868 /* heightmap.png in Resources */ = {isa = PBXBuildFile; fileRef = 48F688361BE3F9EF00F9A868 /* heightmap.png */; };
 		48F6883A1BE40CD800F9A868 /* heightmap_high.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 48F688381BE40CD800F9A868 /* heightmap_high.jpg */; };
 		48F6883B1BE40CD800F9A868 /* heightmap_low.png in Resources */ = {isa = PBXBuildFile; fileRef = 48F688391BE40CD800F9A868 /* heightmap_low.png */; };
+		48F6883D1BE41D5A00F9A868 /* fernAtlas.png in Resources */ = {isa = PBXBuildFile; fileRef = 48F6883C1BE41D5A00F9A868 /* fernAtlas.png */; };
 		802639391B0E34D3009B42D6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 802639381B0E34D3009B42D6 /* main.m */; };
 		8026393C1B0E34D3009B42D6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8026393B1B0E34D3009B42D6 /* AppDelegate.m */; };
 		8026393F1B0E34D3009B42D6 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8026393E1B0E34D3009B42D6 /* ViewController.m */; };
@@ -174,6 +175,7 @@
 		48F688361BE3F9EF00F9A868 /* heightmap.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = heightmap.png; sourceTree = "<group>"; };
 		48F688381BE40CD800F9A868 /* heightmap_high.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = heightmap_high.jpg; sourceTree = "<group>"; };
 		48F688391BE40CD800F9A868 /* heightmap_low.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = heightmap_low.png; sourceTree = "<group>"; };
+		48F6883C1BE41D5A00F9A868 /* fernAtlas.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fernAtlas.png; sourceTree = "<group>"; };
 		802639331B0E34D3009B42D6 /* GLGameEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GLGameEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		802639371B0E34D3009B42D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		802639381B0E34D3009B42D6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -365,6 +367,7 @@
 			children = (
 				4898DACB1BDD3E94007D2695 /* fern.obj */,
 				4898DACC1BDD3E94007D2695 /* fern.png */,
+				48F6883C1BE41D5A00F9A868 /* fernAtlas.png */,
 			);
 			name = fern;
 			sourceTree = "<group>";
@@ -757,6 +760,7 @@
 				4889F24F1BC42AAB0097A28F /* cube.obj in Resources */,
 				4816CED31BC5650A00F35C2E /* TerrainFragmentShader.fsh in Resources */,
 				4888EAD61BDFBC02006EF15E /* blendMap.png in Resources */,
+				48F6883D1BE41D5A00F9A868 /* fernAtlas.png in Resources */,
 				80E38B7F1B1B9893006D7B30 /* white.png in Resources */,
 				802639421B0E34D3009B42D6 /* Main.storyboard in Resources */,
 				4898DAB21BDCE852007D2695 /* wagen.obj in Resources */,

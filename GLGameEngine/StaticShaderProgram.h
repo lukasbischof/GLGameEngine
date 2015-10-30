@@ -20,5 +20,7 @@
 - (void)loadLight:(Light *)light;
 - (void)loadSkyColor:(GLKVector3)skyColor;
 - (void)loadFogDensity:(GLfloat)density andGradient:(GLfloat)gradient;
+- (void)loadNumberOfRows:(GLint)numberOfRows;
+- (void)loadOffset:(GLKVector2)offset;
 
 @end

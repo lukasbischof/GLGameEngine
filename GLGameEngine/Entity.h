@@ -13,6 +13,7 @@
 
 @interface Entity : NSObject <NSCopying>
 
+@property (assign, nonatomic) GLuint textureIndex;
 @property (strong, nonatomic, readonly) TexturedModel *model;
 @property (assign, nonatomic) GLKVector3 position;
 @property (assign, nonatomic) Rotation rotation;
@@ -24,14 +25,20 @@
 - (instancetype)initWithTexturedModel:(TexturedModel *)model
                              position:(GLKVector3)position
                              rotation:(Rotation)rotation
-                             andScale:(GLfloat)scale NS_DESIGNATED_INITIALIZER;
+                                scale:(GLfloat)scale
+                      andTextureIndex:(GLuint)index NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithTexturedModel:(TexturedModel *)model
+                             position:(GLKVector3)position
+                             rotation:(Rotation)rotation
+                             andScale:(GLfloat)scale;
 - (instancetype)initWithTexturedModel:(TexturedModel *)model
                              rotation:(Rotation)rotation
-                             andScale:(GLfloat)scale NS_DESIGNATED_INITIALIZER;
+                             andScale:(GLfloat)scale;
 - (instancetype)initWithTexturedModel:(TexturedModel *)model
-                          andRotation:(Rotation)rotation NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithTexturedModel:(TexturedModel *)model NS_DESIGNATED_INITIALIZER;
+                          andRotation:(Rotation)rotation;
+- (instancetype)initWithTexturedModel:(TexturedModel *)model;
 
++ (Entity *)entityWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation scale:(GLfloat)scale andTextureIndex:(GLuint)index;
 + (Entity *)entityWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation andScale:(GLfloat)scale;
 + (Entity *)entityWithTexturedModel:(TexturedModel *)model rotation:(Rotation)rotation andScale:(GLfloat)scale;
 + (Entity *)entityWithTexturedModel:(TexturedModel *)model andRotation:(Rotation)rotation;
@@ -42,5 +49,8 @@
 - (void)increaseRotationByRotation:(Rotation)rot;
 - (void)increaseRotationByX:(GLfloat)x y:(GLfloat)y andZ:(GLfloat)z;
 - (void)setRotationX:(GLfloat)x y:(GLfloat)y andZ:(GLfloat)z;
+
+- (GLfloat)getTextureXOffset;
+- (GLfloat)getTextureYOffset;
 
 @end

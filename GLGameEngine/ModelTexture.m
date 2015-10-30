@@ -20,6 +20,7 @@
     if ((self = [super init])) {
         _textureID = textureID;
         _textureTarget = textureTarget;
+        _numberOfRows = 1;
     }
     
     return self;
@@ -31,6 +32,8 @@
     
     copy.shineDamper = self.shineDamper;
     copy.reflectivity = self.reflectivity;
+    copy.hasAlpha = self.hasAlpha;
+    copy.numberOfRows = self.numberOfRows;
     
     return copy;
 }

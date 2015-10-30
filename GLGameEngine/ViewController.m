@@ -143,7 +143,7 @@ NSString *deviceName()
     
     NSLog(@"err before: %d", glGetError());
     NSArray<NSString *> *names = @[@"Rock", @"pine", @"grass2", @"grass2", @"Farmhouse", @"wagen", @"fern"];
-    NSArray *textureNames = @[@[@"Rock", @"jpg"], @[@"pine", @"png"], @[@"grassTexture", @"png"], @[@"flower", @"png"], @[@"Farmhouse", @"jpg"], @[@"wagen", @"jpg"], @[@"fern", @"png"]];
+    NSArray *textureNames = @[@[@"Rock", @"jpg"], @[@"pine", @"png"], @[@"grassTexture", @"png"], @[@"flower", @"png"], @[@"Farmhouse", @"jpg"], @[@"wagen", @"jpg"], @[@"fernAtlas", @"png"]];
     NSArray<TexturedModel *> *models = [OBJLoader2 loadModelsWithNames:names
                                                           textureNames:textureNames
                                                              andLoader:self.loader];
@@ -158,6 +158,11 @@ NSString *deviceName()
                   *farmModel   = models[4],
                   *wagenModel  = models[5],
                   *fernModel   = models[6];
+    
+    fernModel.texture.hasAlpha = YES;
+    grassModel.texture.hasAlpha = YES;
+    flowerModel.texture.hasAlpha = YES;
+    fernModel.texture.numberOfRows = 2;
     
     // FARM
     Entity *farmEntity = [Entity entityWithTexturedModel:farmModel];
@@ -221,7 +226,7 @@ NSString *deviceName()
     for (NSUInteger i = 0; i < numb; i++) {
         GLfloat x = MathUtils_RandomFloat(-80, 80) + TERRAIN_SIZE/2.;
         GLfloat z = MathUtils_RandomFloat(0, -130) - TERRAIN_SIZE/2.;
-        GLKVector3 position = GLKVector3Make(x, [self.terrain getHeightAtWorldX:x worldZ:z], z);
+        GLKVector3 position = GLKVector3Make(x, [self.terrain getHeightAtWorldX:x worldZ:z] - 0.3, z);
         
         Entity *entity = [Entity entityWithTexturedModel:grassModel
                                                 position:position
@@ -241,10 +246,12 @@ NSString *deviceName()
         GLKVector3 position = GLKVector3Make(x, [self.terrain getHeightAtWorldX:x worldZ:z], z);
         
         BOOL isFlower = MathUtils_RandomBoolProb(.3);
+        GLuint texIndex = !isFlower ? (GLuint)floorf(MathUtils_RandomFloat(0, 3)) : 0;
         Entity *entity = [Entity entityWithTexturedModel:isFlower ? flowerModel : fernModel
                                                 position:position
                                                 rotation:MathUtils_RotationMake(0.0, MathUtils_RandomFloat(0.0, 360.0), 0.0)
-                                                andScale:isFlower ? 1.0 : 0.35];
+                                                   scale:isFlower ? 1.0 : 0.35
+                                         andTextureIndex:texIndex];
         
         entity.model.texture.shineDamper = 30;
         entity.model.texture.reflectivity = 1;
