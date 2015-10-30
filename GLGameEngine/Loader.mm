@@ -57,6 +57,7 @@
     NSError *error;
     NSDictionary *options = @{
         GLKTextureLoaderOriginBottomLeft: @YES,
+        GLKTextureLoaderGenerateMipmaps: @YES
     };
     GLKTextureInfo *texInfo = [GLKTextureLoader textureWithContentsOfFile:path
                                                                   options:options

@@ -136,4 +136,10 @@ GLboolean MathUtils_RandomBool();
 EXPORT
 GLboolean MathUtils_RandomBoolProb(GLfloat probability);
 
+/**
+ 
+*/
+EXPORT
+GLfloat MathUtils_BarryCentric(GLKVector3 p1, GLKVector3 p2, GLKVector3 p3, GLKVector2 pos);
+
 #endif /* defined(__GLGameEngine__MathUtils__) */

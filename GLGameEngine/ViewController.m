@@ -117,8 +117,7 @@ NSString *deviceName()
     self.light = [Light light];
     self.renderStartDate = [NSDate date];
     
-    [self.camera move:GLKVector3Make(TERRAIN_SIZE/2.0, 25.1, -TERRAIN_SIZE/2.0 - 10)];
-    self.renderer.fog = kNoFog;
+    [self.camera move:GLKVector3Make(TERRAIN_SIZE/2.0, 8.1, -TERRAIN_SIZE/2.0 - 10)];
     
     [self setupEntities];
     
@@ -130,11 +129,21 @@ NSString *deviceName()
 
 - (void)setupEntities
 {
+    // TERRAIN
+    [self setupTerrainTexturePackage];
+    self.terrain = [Terrain terrainWithGridX:0
+                                       gridZ:-1
+                                      loader:self.loader
+                                 texturePack:self.terrainTexturePack
+                               heightMapName:@"heightmap_low"
+                                 andBlendMap:self.terrainBlendMap];
+    
+    // ENTITIES
     self.entities = [NSMutableArray<Entity *> new];
     
     NSLog(@"err before: %d", glGetError());
-    NSArray<NSString *> *names = @[@"Rock", @"tree", @"grassModel", @"grassModel", @"Farmhouse", @"wagen", @"fern"];
-    NSArray *textureNames = @[@[@"Rock", @"jpg"], @[@"tree", @"png"], @[@"grassTexture", @"png"], @[@"flower", @"png"], @[@"Farmhouse", @"jpg"], @[@"wagen", @"jpg"], @[@"fern", @"png"]];
+    NSArray<NSString *> *names = @[@"Rock", @"pine", @"grass2", @"grass2", @"Farmhouse", @"wagen", @"fern"];
+    NSArray *textureNames = @[@[@"Rock", @"jpg"], @[@"pine", @"png"], @[@"grassTexture", @"png"], @[@"flower", @"png"], @[@"Farmhouse", @"jpg"], @[@"wagen", @"jpg"], @[@"fern", @"png"]];
     NSArray<TexturedModel *> *models = [OBJLoader2 loadModelsWithNames:names
                                                           textureNames:textureNames
                                                              andLoader:self.loader];
@@ -172,7 +181,9 @@ NSString *deviceName()
     
     // ROCK SETUP
     for (NSUInteger i = 0; i < 50; i++) {
-        GLKVector3 position = GLKVector3Make(MathUtils_RandomFloat(-50, 50) + TERRAIN_SIZE/2., 0.0, MathUtils_RandomFloat(0, -100) - TERRAIN_SIZE/2.);
+        GLfloat x = MathUtils_RandomFloat(-50, 50) + TERRAIN_SIZE/2.;
+        GLfloat z = MathUtils_RandomFloat(0, -100) - TERRAIN_SIZE/2.;
+        GLKVector3 position = GLKVector3Make(x, [self.terrain getHeightAtWorldX:x worldZ:z], z);
         Entity *entity = [Entity entityWithTexturedModel:rockModel
                                                 position:position
                                                 rotation:MathUtils_RotationMake(0.0, MathUtils_RandomFloat(0.0, 360.0), 0.0)
@@ -187,13 +198,17 @@ NSString *deviceName()
     }
     
     // TREE SETUP
-    for (NSUInteger i = 0; i < 50; i++) {
-        GLKVector3 position = GLKVector3Make(MathUtils_RandomFloat(-80, 80) + TERRAIN_SIZE/2., 0.0, MathUtils_RandomFloat(0, -130) - TERRAIN_SIZE/2.);
+    NSUInteger numb = [deviceName() isEqualToString:@"iPad5,3"] ? 75 : 50;
+    for (NSUInteger i = 0; i < numb; i++) {
+        GLfloat x = MathUtils_RandomFloat(-80, 80) + TERRAIN_SIZE/2.;
+        GLfloat z = MathUtils_RandomFloat(0, -130) - TERRAIN_SIZE/2.;
+        GLKVector3 position = GLKVector3Make(x, [self.terrain getHeightAtWorldX:x worldZ:z] - 0.5, z);
         
+        GLfloat rot = MathUtils_RandomFloat(0.0, 360);
         Entity *entity = [Entity entityWithTexturedModel:treeModel
                                                 position:position
-                                                rotation:MathUtils_RotationMake(0.0, 0.0, 0.0)
-                                                andScale:MathUtils_RandomFloat(1.0, 2.0)];
+                                                rotation:MathUtils_RotationMake(0.0, rot, 0.0)
+                                                andScale:MathUtils_RandomFloat(0.3, 0.8)];
         
         entity.model.texture.shineDamper = 30;
         entity.model.texture.reflectivity = 1;
@@ -202,14 +217,16 @@ NSString *deviceName()
     }
     
     // GRASS SETUP
-    NSUInteger numb = 500; //[deviceName() isEqualToString:@"iPad5,3"] ? 1100 : 650;
+    numb = [deviceName() isEqualToString:@"iPad5,3"] ? 850 : 650;
     for (NSUInteger i = 0; i < numb; i++) {
-        GLKVector3 position = GLKVector3Make(MathUtils_RandomFloat(-80, 80) + TERRAIN_SIZE/2., 0.0, MathUtils_RandomFloat(0, -130) - TERRAIN_SIZE/2.);
+        GLfloat x = MathUtils_RandomFloat(-80, 80) + TERRAIN_SIZE/2.;
+        GLfloat z = MathUtils_RandomFloat(0, -130) - TERRAIN_SIZE/2.;
+        GLKVector3 position = GLKVector3Make(x, [self.terrain getHeightAtWorldX:x worldZ:z], z);
         
         Entity *entity = [Entity entityWithTexturedModel:grassModel
                                                 position:position
                                                 rotation:MathUtils_RotationMake(0.0, MathUtils_RandomFloat(0.0, 360.0), 0.0)
-                                                andScale:1.0];
+                                                andScale:MathUtils_RandomFloat(1.0, 1.3)];
         
         entity.model.texture.shineDamper = 30;
         entity.model.texture.reflectivity = 1;
@@ -219,7 +236,9 @@ NSString *deviceName()
     
     // FLOWER / FERN SETUP
     for (NSUInteger i = 0; i < 80; i++) {
-        GLKVector3 position = GLKVector3Make(MathUtils_RandomFloat(-80, 80) + TERRAIN_SIZE/2., 0.0, MathUtils_RandomFloat(0, -130) - TERRAIN_SIZE/2.);
+        GLfloat x = MathUtils_RandomFloat(-80, 80) + TERRAIN_SIZE/2.;
+        GLfloat z = MathUtils_RandomFloat(0, -130) - TERRAIN_SIZE/2.;
+        GLKVector3 position = GLKVector3Make(x, [self.terrain getHeightAtWorldX:x worldZ:z], z);
         
         BOOL isFlower = MathUtils_RandomBoolProb(.3);
         Entity *entity = [Entity entityWithTexturedModel:isFlower ? flowerModel : fernModel
@@ -235,14 +254,6 @@ NSString *deviceName()
     
     self.light.position = GLKVector3Make(0.0, 20.0, 2.0);
     self.light.color = GLKVector3Make(0.91, 0.91, 0.91);
-    
-    [self setupTerrainTexturePackage];
-    self.terrain = [Terrain terrainWithGridX:0
-                                       gridZ:-1
-                                      loader:self.loader
-                                 texturePack:self.terrainTexturePack
-                                 andBlendMap:self.terrainBlendMap];
-
 }
 
 - (void)setupTerrainTexturePackage
@@ -256,8 +267,8 @@ NSString *deviceName()
     TerrainTexture *gTex = [[TerrainTexture alloc] initWithTexInfo:[self.loader loadTexture:@"grassFlowers"
                                                                               withExtension:@"png"]];
     
-    TerrainTexture *bTex = [[TerrainTexture alloc] initWithTexInfo:[self.loader loadTexture:@"path"
-                                                                              withExtension:@"png"]];
+    TerrainTexture *bTex = [[TerrainTexture alloc] initWithTexInfo:[self.loader loadTexture:@"asphalt"
+                                                                              withExtension:@"jpg"]];
     
     self.terrainTexturePack = [[TerrainTexturePackage alloc] initWithBackgroundTexture:back
                                                                               rTexture:rTex

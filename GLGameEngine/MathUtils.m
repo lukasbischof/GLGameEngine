@@ -106,3 +106,14 @@ GLboolean MathUtils_RandomBoolProb(GLfloat probability)
     
     return [[GKARC4RandomSource sharedRandom] nextUniform] < probability;
 }
+
+GLfloat MathUtils_BarryCentric(GLKVector3 p1, GLKVector3 p2, GLKVector3 p3, GLKVector2 pos)
+{
+    GLfloat det = (p2.z - p3.z) * (p1.x - p3.x) + (p3.x - p2.x) * (p1.z - p3.z);
+    GLfloat l1 = ((p2.z - p3.z) * (pos.x - p3.x) + (p3.x - p2.x) * (pos.y - p3.z)) / det;
+    GLfloat l2 = ((p3.z - p1.z) * (pos.x - p3.x) + (p1.x - p3.x) * (pos.y - p3.z)) / det;
+    GLfloat l3 = 1.f - l1 - l2;
+    
+    return l1 * p1.y + l2 * p2.y + l3 * p3.y;
+}
+    

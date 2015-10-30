@@ -11,6 +11,7 @@
 #import "RawModel.h"
 #import "TerrainTexturePackage.h"
 #import "Loader.h"
+#import "MathUtils.h"
 
 static const GLfloat TERRAIN_SIZE = 400;
 
@@ -22,8 +23,10 @@ static const GLfloat TERRAIN_SIZE = 400;
 @property (strong, nonatomic, readonly, nonnull) TerrainTexturePackage *texturePack;
 @property (strong, nonatomic, readonly, nonnull) TerrainTexture *blendMap;
 
-+ (Terrain *_Nonnull)terrainWithGridX:(GLint)gridX gridZ:(GLint)gridZ loader:(Loader *_Nonnull)loader texturePack:(TerrainTexturePackage *_Nonnull)texturePack andBlendMap:(TerrainTexture *_Nonnull)blendMap;
++ (Terrain *_Nonnull)terrainWithGridX:(GLint)gridX gridZ:(GLint)gridZ loader:(Loader *_Nonnull)loader texturePack:(TerrainTexturePackage *_Nonnull)texturePack heightMapName:(NSString *_Nonnull)heightMap andBlendMap:(TerrainTexture *_Nonnull)blendMap;
 
-- (_Nonnull instancetype)initWithGridX:(GLint)gridX gridZ:(GLint)gridZ loader:(Loader *_Nonnull)loader texturePack:(TerrainTexturePackage *_Nonnull)texturePack andBlendMap:(TerrainTexture *_Nonnull)blendMap;
+- (_Nonnull instancetype)initWithGridX:(GLint)gridX gridZ:(GLint)gridZ loader:(Loader *_Nonnull)loader texturePack:(TerrainTexturePackage *_Nonnull)texturePack heightMapName:(NSString *_Nonnull)heightMap andBlendMap:(TerrainTexture *_Nonnull)blendMap;
+
+- (GLfloat)getHeightAtWorldX:(GLfloat)worldX worldZ:(GLfloat)worldZ;
 
 @end

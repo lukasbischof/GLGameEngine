@@ -32,7 +32,11 @@
         #endif
     #endif
 #else
-    #define EXPORT extern
+    #if defined(__cplusplus)
+        #define EXPORT extern "C"
+    #else
+        #define EXPORT extern
+    #endif
 #endif
 
 #define FLOAT_BUFFER_DATA_TYPE GLfloat
