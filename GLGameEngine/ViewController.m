@@ -16,6 +16,7 @@
 #import "Camera.h"
 #import "MasterRenderer.h"
 #import "GLKView+aspect.h"
+#import "TimeController.h"
 #import <sys/utsname.h>
 
 #define _ACTIVATE_SHADER_ [self.shader activate];
@@ -120,6 +121,8 @@ NSString *deviceName()
     [self.camera move:GLKVector3Make(TERRAIN_SIZE/2.0, 8.1, -TERRAIN_SIZE/2.0)];
     
     [self setupEntities];
+    
+    [[TimeController sharedController] setStartDate:[NSDate date]];
     
     GLenum err = glGetError();
     if (err != GL_NO_ERROR) {
@@ -282,13 +285,15 @@ NSString *deviceName()
         
         [self.entities addObject:lamp];
         
-        [self.lights addObject:[Light lightWithPosition:GLKVector3Make(pos.x, pos.y + 4.9, pos.z)
-                                                  color:GLKVector3Make(0.8, 0.7, 0.0)
+        [self.lights addObject:[Light lightWithPosition:GLKVector3Make(pos.x, pos.y + 4.9f, pos.z)
+                                                  color:GLKVector3Make(.8f, .7f, .0f)
                                          andAttenuation:GLKVector3Make(1.f, 0.01f, 0.002f)]];
     }
     
     self.renderer.skyColor = RGBAMake(.5, .5, .5, 1.);
     self.renderer.fog = FogMake(0.010, 1.8);
+    
+    self.renderer.skyboxRenderer.shader.rotation_speed = .5f;
 }
 
 - (void)setupTerrainTexturePackage

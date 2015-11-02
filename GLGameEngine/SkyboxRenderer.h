@@ -13,11 +13,14 @@
 
 @interface SkyboxRenderer : NSObject
 
+@property (strong, nonatomic) SkyboxShader *shader;
+
 + (SkyboxRenderer *)skyboxRendererWithLoader:(Loader *)loader;
 
 - (instancetype)initWithLoader:(Loader *)loader;
 
 - (void)updateProjectionMatrix:(GLKMatrix4)projMat;
+- (void)updateFogColor:(GLKVector3)fogColor;
 - (void)renderWithCamera:(Camera *)camera;
 
 @end

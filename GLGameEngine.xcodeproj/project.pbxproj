@@ -99,6 +99,20 @@
 		8050712E1BE808FD00CBB310 /* right.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 805071231BE808FD00CBB310 /* right.jpg */; };
 		8050712F1BE808FD00CBB310 /* top.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 805071241BE808FD00CBB310 /* top.jpg */; };
 		805071301BE808FD00CBB310 /* top.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 805071241BE808FD00CBB310 /* top.jpg */; };
+		805071331BE80FBB00CBB310 /* TimeController.m in Sources */ = {isa = PBXBuildFile; fileRef = 805071321BE80FBB00CBB310 /* TimeController.m */; };
+		805071341BE80FBB00CBB310 /* TimeController.m in Sources */ = {isa = PBXBuildFile; fileRef = 805071321BE80FBB00CBB310 /* TimeController.m */; };
+		8050713B1BE8128C00CBB310 /* nightBack.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 805071351BE8128C00CBB310 /* nightBack.jpg */; };
+		8050713C1BE8128C00CBB310 /* nightBack.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 805071351BE8128C00CBB310 /* nightBack.jpg */; };
+		8050713D1BE8128C00CBB310 /* nightBottom.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 805071361BE8128C00CBB310 /* nightBottom.jpg */; };
+		8050713E1BE8128C00CBB310 /* nightBottom.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 805071361BE8128C00CBB310 /* nightBottom.jpg */; };
+		8050713F1BE8128C00CBB310 /* nightFront.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 805071371BE8128C00CBB310 /* nightFront.jpg */; };
+		805071401BE8128C00CBB310 /* nightFront.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 805071371BE8128C00CBB310 /* nightFront.jpg */; };
+		805071411BE8128C00CBB310 /* nightLeft.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 805071381BE8128C00CBB310 /* nightLeft.jpg */; };
+		805071421BE8128C00CBB310 /* nightLeft.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 805071381BE8128C00CBB310 /* nightLeft.jpg */; };
+		805071431BE8128C00CBB310 /* nightRight.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 805071391BE8128C00CBB310 /* nightRight.jpg */; };
+		805071441BE8128C00CBB310 /* nightRight.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 805071391BE8128C00CBB310 /* nightRight.jpg */; };
+		805071451BE8128C00CBB310 /* nightTop.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 8050713A1BE8128C00CBB310 /* nightTop.jpg */; };
+		805071461BE8128C00CBB310 /* nightTop.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 8050713A1BE8128C00CBB310 /* nightTop.jpg */; };
 		806778E71B18D2930082AF0B /* Buffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 806778E61B18D2930082AF0B /* Buffer.mm */; };
 		806778EB1B18ED7E0082AF0B /* ModelTexture.m in Sources */ = {isa = PBXBuildFile; fileRef = 806778EA1B18ED7E0082AF0B /* ModelTexture.m */; };
 		806778EF1B18EE1D0082AF0B /* TexturedModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 806778EE1B18EE1D0082AF0B /* TexturedModel.m */; };
@@ -240,6 +254,14 @@
 		805071221BE808FD00CBB310 /* left.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = left.jpg; sourceTree = "<group>"; };
 		805071231BE808FD00CBB310 /* right.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = right.jpg; sourceTree = "<group>"; };
 		805071241BE808FD00CBB310 /* top.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = top.jpg; sourceTree = "<group>"; };
+		805071311BE80FBB00CBB310 /* TimeController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TimeController.h; sourceTree = "<group>"; };
+		805071321BE80FBB00CBB310 /* TimeController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TimeController.m; sourceTree = "<group>"; };
+		805071351BE8128C00CBB310 /* nightBack.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = nightBack.jpg; sourceTree = "<group>"; };
+		805071361BE8128C00CBB310 /* nightBottom.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = nightBottom.jpg; sourceTree = "<group>"; };
+		805071371BE8128C00CBB310 /* nightFront.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = nightFront.jpg; sourceTree = "<group>"; };
+		805071381BE8128C00CBB310 /* nightLeft.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = nightLeft.jpg; sourceTree = "<group>"; };
+		805071391BE8128C00CBB310 /* nightRight.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = nightRight.jpg; sourceTree = "<group>"; };
+		8050713A1BE8128C00CBB310 /* nightTop.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = nightTop.jpg; sourceTree = "<group>"; };
 		806778E51B18D2930082AF0B /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
 		806778E61B18D2930082AF0B /* Buffer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Buffer.mm; sourceTree = "<group>"; };
 		806778E91B18ED7E0082AF0B /* ModelTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModelTexture.h; sourceTree = "<group>"; };
@@ -625,6 +647,12 @@
 				805071221BE808FD00CBB310 /* left.jpg */,
 				805071231BE808FD00CBB310 /* right.jpg */,
 				805071241BE808FD00CBB310 /* top.jpg */,
+				805071351BE8128C00CBB310 /* nightBack.jpg */,
+				805071361BE8128C00CBB310 /* nightBottom.jpg */,
+				805071371BE8128C00CBB310 /* nightFront.jpg */,
+				805071381BE8128C00CBB310 /* nightLeft.jpg */,
+				805071391BE8128C00CBB310 /* nightRight.jpg */,
+				8050713A1BE8128C00CBB310 /* nightTop.jpg */,
 			);
 			name = skybox;
 			sourceTree = "<group>";
@@ -675,6 +703,8 @@
 		80FFE4191B19EB6F008DE7DB /* Utils */ = {
 			isa = PBXGroup;
 			children = (
+				805071311BE80FBB00CBB310 /* TimeController.h */,
+				805071321BE80FBB00CBB310 /* TimeController.m */,
 				80FFE41B1B19EBAD008DE7DB /* MathUtils.h */,
 				80FFE41A1B19EBAD008DE7DB /* MathUtils.m */,
 				48B856C71B8B9BD500336A43 /* GLKView+aspect.h */,
@@ -844,6 +874,7 @@
 				806E35C11BE6B20B0053DE78 /* lamp.obj in Resources */,
 				4888EAD71BDFBC02006EF15E /* mud.png in Resources */,
 				4898DAC71BDD3A4E007D2695 /* grassModel.obj in Resources */,
+				8050713D1BE8128C00CBB310 /* nightBottom.jpg in Resources */,
 				4888EAD81BDFBC02006EF15E /* path.png in Resources */,
 				48F688331BE3BDEA00F9A868 /* grass2.obj in Resources */,
 				806E35C21BE6B20B0053DE78 /* lamp.png in Resources */,
@@ -861,6 +892,8 @@
 				4898DACE1BDD3E94007D2695 /* fern.png in Resources */,
 				8026396D1B0E66FC009B42D6 /* FragmentShader.fsh in Resources */,
 				48DB0F131BDC1EC4003C52DC /* Rock.mtl in Resources */,
+				805071411BE8128C00CBB310 /* nightLeft.jpg in Resources */,
+				805071451BE8128C00CBB310 /* nightTop.jpg in Resources */,
 				48DB0F1C1BDC208F003C52DC /* Farmhouse Texture Bump Map .jpg in Resources */,
 				48DB0F141BDC1EC4003C52DC /* Rock.obj in Resources */,
 				8050712B1BE808FD00CBB310 /* left.jpg in Resources */,
@@ -878,6 +911,7 @@
 				4816CECF1BC564E800F35C2E /* TerrainVertexShader.vsh in Resources */,
 				80FFE42A1B1A2C0B008DE7DB /* stallTexture.png in Resources */,
 				8050712D1BE808FD00CBB310 /* right.jpg in Resources */,
+				805071431BE8128C00CBB310 /* nightRight.jpg in Resources */,
 				4889F24F1BC42AAB0097A28F /* cube.obj in Resources */,
 				4816CED31BC5650A00F35C2E /* TerrainFragmentShader.fsh in Resources */,
 				4888EAD61BDFBC02006EF15E /* blendMap.png in Resources */,
@@ -897,6 +931,8 @@
 				4888EAE71BE01FAB006EF15E /* pine.obj in Resources */,
 				802639441B0E34D3009B42D6 /* Images.xcassets in Resources */,
 				4888EAE41BE01E9A006EF15E /* asphalt.jpg in Resources */,
+				8050713F1BE8128C00CBB310 /* nightFront.jpg in Resources */,
+				8050713B1BE8128C00CBB310 /* nightBack.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -907,12 +943,18 @@
 				805071301BE808FD00CBB310 /* top.jpg in Resources */,
 				805071261BE808FD00CBB310 /* back.jpg in Resources */,
 				4816CED41BC5650A00F35C2E /* TerrainFragmentShader.fsh in Resources */,
+				805071421BE8128C00CBB310 /* nightLeft.jpg in Resources */,
+				805071461BE8128C00CBB310 /* nightTop.jpg in Resources */,
 				4816CED01BC564E800F35C2E /* TerrainVertexShader.vsh in Resources */,
+				805071401BE8128C00CBB310 /* nightFront.jpg in Resources */,
 				4816CEE21BC56D1900F35C2E /* grass.jpg in Resources */,
+				805071441BE8128C00CBB310 /* nightRight.jpg in Resources */,
 				805071281BE808FD00CBB310 /* bottom.jpg in Resources */,
 				8050712C1BE808FD00CBB310 /* left.jpg in Resources */,
 				8050712E1BE808FD00CBB310 /* right.jpg in Resources */,
 				8050712A1BE808FD00CBB310 /* front.jpg in Resources */,
+				8050713E1BE8128C00CBB310 /* nightBottom.jpg in Resources */,
+				8050713C1BE8128C00CBB310 /* nightBack.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -959,6 +1001,7 @@
 				80FFE4201B19EF82008DE7DB /* Entity.m in Sources */,
 				4816CEDD1BC5663800F35C2E /* TerrainRenderer.m in Sources */,
 				8026396A1B0E5F5C009B42D6 /* EntityRenderer.m in Sources */,
+				805071331BE80FBB00CBB310 /* TimeController.m in Sources */,
 				802639721B0E7069009B42D6 /* ShaderProgram.m in Sources */,
 				8026393C1B0E34D3009B42D6 /* AppDelegate.m in Sources */,
 				802639391B0E34D3009B42D6 /* main.m in Sources */,
@@ -981,6 +1024,7 @@
 			files = (
 				4816CED91BC5655800F35C2E /* TerrainShader.m in Sources */,
 				802639531B0E34D3009B42D6 /* GLGameEngineTests.m in Sources */,
+				805071341BE80FBB00CBB310 /* TimeController.m in Sources */,
 				4816CEDE1BC5663800F35C2E /* TerrainRenderer.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

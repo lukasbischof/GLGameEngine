@@ -8,5 +8,5 @@ uniform mat4 u_viewMatrix;
 
 void main(void) {
     gl_Position = u_projectionMatrix * u_viewMatrix * vec4(in_position, 1.0);
-    inout_texCoords = normalize(in_position);
+    inout_texCoords = in_position;
 }

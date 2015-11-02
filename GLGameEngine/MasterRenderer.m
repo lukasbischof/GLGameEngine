@@ -191,6 +191,13 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
     [self.terrainShader deactivate];
 }
 
+- (void)setSkyColor:(RGBA)skyColor
+{
+    _skyColor = skyColor;
+    
+    [self.skyboxRenderer updateFogColor:RGBAGetGLKVector3(skyColor)];
+}
+
 @end
 
 

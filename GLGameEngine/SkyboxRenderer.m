@@ -8,8 +8,13 @@
 
 #import "SkyboxRenderer.h"
 #import "NSObject+class.h"
+#import "TimeController.h"
 
 #define SIZE 100.f
+
+static const GLfloat WHOLE_DAY_DURATION = 28;
+static const GLfloat DAY_DURATION = 12;
+static const GLfloat NIGHT_DURATION = 11;
 
 /*const float vertices[] = {
     0.0, SIZE, 0.0,
@@ -77,11 +82,22 @@ static inline NSArray<NSString *> *getTextureFiles() {
     ];
 };
 
+static inline NSArray<NSString *> *getNightTextureFiles() {
+    return @[
+             bundleURL(@"nightRight", @"jpg"),
+             bundleURL(@"nightLeft", @"jpg"),
+             bundleURL(@"nightTop", @"jpg"),
+             bundleURL(@"nightBottom", @"jpg"),
+             bundleURL(@"nightBack", @"jpg"),
+             bundleURL(@"nightFront", @"jpg"),
+             ];
+};
+
 @interface SkyboxRenderer ()
 
 @property (strong, nonatomic) RawModel *cube;
-@property (strong, nonatomic) GLKTextureInfo *cubeTexture;
-@property (strong, nonatomic) SkyboxShader *shader;
+@property (strong, nonatomic) GLKTextureInfo *dayTexture;
+@property (strong, nonatomic) GLKTextureInfo *nightTexture;
 
 @end
 
@@ -105,9 +121,13 @@ static inline NSArray<NSString *> *getTextureFiles() {
         
         NSArray *files = getTextureFiles();
         // NSLog(@"files: %@", files);
-        self.cubeTexture = [loader loadCubeTexture:files];
+        self.dayTexture = [loader loadCubeTexture:files];
+        self.nightTexture = [loader loadCubeTexture:getNightTextureFiles()];
         
         self.shader = [SkyboxShader skyboxShaderProgram];
+        [self.shader activate];
+        [self.shader loadTextureUnits];
+        [self.shader deactivate];
     }
     
     return self;
@@ -120,6 +140,13 @@ static inline NSArray<NSString *> *getTextureFiles() {
     [self.shader deactivate];
 }
 
+- (void)updateFogColor:(GLKVector3)fogColor
+{
+    [self.shader activate];
+    [self.shader loadFogColor:fogColor];
+    [self.shader deactivate];
+}
+
 - (void)renderWithCamera:(Camera *)camera
 {
     [self.shader activate];
@@ -127,8 +154,9 @@ static inline NSArray<NSString *> *getTextureFiles() {
     
     glBindVertexArray(self.cube.vaoID);
     glEnableVertexAttribArray(0);
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(self.cubeTexture.target, self.cubeTexture.name);
+    
+    [self bindTextures];
+    
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
     glDrawArrays(GL_TRIANGLES, 0, self.cube.vertexCount);
@@ -137,6 +165,32 @@ static inline NSArray<NSString *> *getTextureFiles() {
     glEnable(GL_DEPTH_TEST);
     
     [self.shader deactivate];
+}
+
+- (void)bindTextures
+{
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(self.dayTexture.target, self.dayTexture.name);
+    glActiveTexture(GL_TEXTURE1);
+    glBindTexture(self.nightTexture.target, self.nightTexture.name);
+    
+    [self.shader loadBlendFactor:[self getBlendFactor]];
+}
+
+- (GLfloat)getBlendFactor
+{
+    GLfloat currentTime = fmodf([TimeController sharedController].passedTime, WHOLE_DAY_DURATION);
+    GLfloat transitionPeriod = (WHOLE_DAY_DURATION - DAY_DURATION - NIGHT_DURATION) / 2;
+    
+    if (currentTime < DAY_DURATION) {
+        return 0.0;
+    } else if (currentTime < DAY_DURATION + transitionPeriod) {
+        return (currentTime - DAY_DURATION) / transitionPeriod;
+    } else if (currentTime < DAY_DURATION + transitionPeriod + NIGHT_DURATION) {
+        return 1.0;
+    } else {
+        return 1. - ((currentTime - (WHOLE_DAY_DURATION - transitionPeriod)) / transitionPeriod);
+    }
 }
 
 @end
