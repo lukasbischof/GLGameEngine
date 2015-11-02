@@ -7,6 +7,7 @@ in vec3 in_normals;
 out vec3 inout_normal;
 out vec2 inout_texCoords;
 out vec3 inout_modelPosition;
+out vec3 inout_lightDirection[4];
 out float inout_visibility;
 
 // VERTEX TRANSFORMATION
@@ -23,6 +24,9 @@ uniform float u_gradient;
 uniform float u_numberOfRows;
 uniform vec2 u_offset;
 
+// LIGHT
+uniform vec3 u_lightPosition[4];
+
 // Die Property useFakeLighting fehlt, da ich der Meinung bin, dass es einfacher ist, Objekte direkt mit (0,1,0) Normalen zu exportieren...
 
 void main(void) {
@@ -32,6 +36,10 @@ void main(void) {
     inout_modelPosition = modelPosition.xyz;
     inout_texCoords = (in_texCoords / u_numberOfRows) + u_offset;
     inout_normal = normalize(u_normalMatrix * in_normals);
+    
+    for (int i = 0; i < 4; i++) {
+        inout_lightDirection[i] = (u_viewMatrix * vec4(u_lightPosition[i], 1.0)).xyz - inout_modelPosition;
+    }
     
     float vertDistance = length(modelPosition.xyz);
     inout_visibility = exp(-pow(vertDistance * u_density, u_gradient));

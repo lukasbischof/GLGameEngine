@@ -21,6 +21,8 @@
         _textureID = textureID;
         _textureTarget = textureTarget;
         _numberOfRows = 1;
+        _shineDamper = 45.0;
+        _reflectivity = 0.0;
     }
     
     return self;

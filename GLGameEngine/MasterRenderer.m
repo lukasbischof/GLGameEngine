@@ -9,11 +9,12 @@
 #import "MasterRenderer.h"
 #import "TexturedModel.h"
 #import "Entity.h"
+#import "NSObject+class.h"
 
 // Field of View in degrees
 static const GLfloat FOVY = 45;
 static const GLfloat NEARZ = 0.1;
-static const GLfloat FARZ = 200;
+static const GLfloat FARZ = 300;
 
 typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityMap;
 
@@ -28,12 +29,18 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
 @implementation MasterRenderer
 
 #pragma mark - init
-+ (MasterRenderer *)renderer
++ (MasterRenderer *)rendererWithLoader:(Loader *)loader
 {
-    return [[MasterRenderer alloc] init];
+    return [[MasterRenderer alloc] initWithLoader:loader];
 }
 
 - (instancetype)init
+{
+    NSLog(@"[%@]: Direct init not supported", [self className]);
+    return nil;
+}
+
+- (instancetype)initWithLoader:(Loader *)loader
 {
     if ((self = [super init])) {
         CGSize size = [UIScreen mainScreen].bounds.size;
@@ -45,6 +52,7 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
         self.entityRenderer = [EntityRenderer rendererWithShaderProgram:self.shader];
         self.terrainShader = [TerrainShader terrainShaderProgram];
         self.terrainRenderer = [TerrainRenderer terrainRendererWithShader:self.terrainShader];
+        self.skyboxRenderer = [SkyboxRenderer skyboxRendererWithLoader:loader];
         
         self.skyColor = RGBAMake(0.5f, 0.5f, 0.5f, 1.f);
         self.fog = kDefaultFog;
@@ -85,21 +93,29 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
     [self.terrainShader activate];
     [self.terrainShader loadProjectionMatrix:_projectionMatrix];
     [self.terrainShader deactivate];
+    
+    [self.skyboxRenderer updateProjectionMatrix:_projectionMatrix];
 }
 
 #pragma mark - Rendering
-- (void)renderWithLight:(Light *)light andCamera:(Camera *)camera
+- (void)renderWithLights:(NSArray<Light *> *)lights andCamera:(Camera *)camera
 {
     [self prepare];
+    
+    [self.skyboxRenderer renderWithCamera:camera];
+    
+    // The depth will be turned on after skybox render call automatically
+    glDepthFunc(GL_LESS);
+    
     [self.shader activate];
-    [self.shader loadLight:light];
+    [self.shader loadLights:lights];
     [self.shader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
     [self.shader loadViewMatrix:[camera getViewMatrix]];
     [self.entityRenderer render:self.entities withCamera:camera];
     [self.shader deactivate];
     
     [self.terrainShader activate];
-    [self.terrainShader loadLight:light];
+    [self.terrainShader loadLights:lights];
     [self.terrainShader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
     [self.terrainShader loadViewMatrix:[camera getViewMatrix]];
     [self.terrainRenderer render:self.terrains withCamera:camera];
@@ -114,9 +130,6 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
     glClearColor(self.skyColor.r, self.skyColor.g, self.skyColor.b, self.skyColor.a);
     glClearDepthf(1.0);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    
-    glDepthFunc(GL_LESS);
-    glEnable(GL_DEPTH_TEST);
 }
 
 #pragma mark - Entity Map
@@ -166,7 +179,7 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
 #pragma mark - getters / setters
 - (void)setFog:(Fog)fog
 {
-    NSLog(@"set");
+    // NSLog(@"set");
     _fog = fog;
     
     [self.shader activate];

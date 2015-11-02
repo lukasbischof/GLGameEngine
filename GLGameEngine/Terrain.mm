@@ -71,6 +71,8 @@ static const GLint MAX_PIXEL_COLOR = 256 + 256 + 256;
             #else
                 // abort();
             #endif
+            
+            NSAssert([self getImageData:heightMapImage], @"<< ERROR >>: CAN'T LOAD HEIGHTMAP '%@'", heightMap);
         }
         
         _model = [self generateTerrain:loader];
@@ -89,7 +91,7 @@ static const GLint MAX_PIXEL_COLOR = 256 + 256 + 256;
     _width = width;
     _height = height;
     _bytesPerRow = 4 * width;
-    _data = [self getBinaryDataForImage:img flipped:NO];
+    _data = [self getBinaryDataForImage:img flipped:YES];
     
     if (_data)
         return YES;
@@ -157,7 +159,7 @@ static const GLint MAX_PIXEL_COLOR = 256 + 256 + 256;
     GLint gridZ = floorf(terrainZ / gridSquareSize);
     
     if (gridX >= _height - 1 || gridZ >= _height - 1 || gridX < 0 || gridZ < 0) {
-        std::cerr << "[Terrain.mm]: Out of bounds (Accessing x=" << worldX << ", z=" << worldZ << ")";
+        std::cerr << "[Terrain.mm]: Out of bounds (Accessing x=" << worldX << ", z=" << worldZ << ")\n";
         return 0.f;
     }
     

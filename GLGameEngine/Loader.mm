@@ -46,7 +46,34 @@
     textures = std::vector<GLuint>();
 }
 
-- (GLKTextureInfo *)loadTexture:(NSString *)textureName withExtension:(NSString *)extension
+- (GLKTextureInfo *)loadCubeTexture:(NSArray<NSString *> *)textureNames
+{
+    if (!textureNames) {
+        NSLog(@"[Loader]: Can't load cube texture %@", textureNames);
+        return nil;
+    }
+    
+    NSError *error;
+    NSDictionary *options = @{
+        GLKTextureLoaderOriginBottomLeft: @NO
+    };
+    
+    GLKTextureInfo *info = [GLKTextureLoader cubeMapWithContentsOfFiles:textureNames
+                                                                options:options
+                                                                  error:&error];
+    
+    if (error) {
+        NSLog(@"[Loader]: Can't load texture: %@", error);
+        NSLog(@"OpenGL Error: %u", glGetError());
+        return nil;
+    }
+    
+    textures.push_back(info.name);
+    
+    return info;
+}
+
+- (GLKTextureInfo *)loadTexture:(NSString *)textureName withExtension:(NSString *)extension flipped:(BOOL)flipped
 {
     NSString *path = [[NSBundle mainBundle] pathForResource:textureName ofType:extension];
     if (!path) {
@@ -56,7 +83,7 @@
     
     NSError *error;
     NSDictionary *options = @{
-        GLKTextureLoaderOriginBottomLeft: @YES,
+        GLKTextureLoaderOriginBottomLeft: @(flipped),
         GLKTextureLoaderGenerateMipmaps: @YES
     };
     GLKTextureInfo *texInfo = [GLKTextureLoader textureWithContentsOfFile:path
@@ -72,6 +99,28 @@
     textures.push_back(texInfo.name);
     
     return texInfo;
+}
+
+- (GLKTextureInfo *)loadTexture:(NSString *)textureName withExtension:(NSString *)extension
+{
+    return [self loadTexture:textureName withExtension:extension flipped:YES];
+}
+
+- (RawModel *)createRawModelWithPositions:(FloatBuffer)positions dimensions:(GLuint)dimensions
+{
+    if (positions.data == NULL)
+        return nil;
+    
+    GLuint vertexCount = (GLuint)(positions.length / dimensions);
+    RawModel *model = [RawModel modelByCreatingVAOWithVertexCount:vertexCount];
+    
+    vaos.push_back(model.vaoID);
+    
+    [model bindVAO];
+    [self storeData:positions inVAOAttribIndex:0 withAttribSize:dimensions];
+    [model unbindVAO];
+    
+    return model;
 }
 
 - (RawModel *)createRawModelWithPositions:(FloatBuffer)positions

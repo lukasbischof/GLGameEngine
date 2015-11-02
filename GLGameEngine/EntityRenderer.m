@@ -73,6 +73,7 @@
     glEnableVertexAttribArray(2);
 
     [self.shaderProgram loadNumberOfRows:texturedModel.texture.numberOfRows];
+    [self.shaderProgram loadDamper:texturedModel.texture.shineDamper andReflectivity:texturedModel.texture.reflectivity];
     
     if (texturedModel.texture.hasAlpha && glIsEnabled(GL_CULL_FACE)) {
         [MasterRenderer disableCulling];

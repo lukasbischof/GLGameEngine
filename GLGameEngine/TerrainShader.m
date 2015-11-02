@@ -21,8 +21,9 @@ NSString *const TERRAIN_FRAGMENT_SHADER_FILE_NAME = @"TerrainFragmentShader";
 #define UNIFORM_PROJECTION_MATRIX_NAME "u_projectionMatrix"
 #define UNIFORM_NORMAL_MATRIX_NAME "u_normalMatrix"
 #define UNIFORM_VIEW_MATRIX_NAME "u_viewMatrix"
-#define UNIFORM_LIGHT_COLOR_NAME "u_lightColor"
-#define UNIFORM_LIGHT_POSITION_NAME "u_lightPosition"
+#define UNIFORM_LIGHT_COLOR_NAME(i) ([NSString stringWithFormat:@"u_lightColor[%d]", (i)].UTF8String)
+#define UNIFORM_LIGHT_POSITION_NAME(i) ([NSString stringWithFormat:@"u_lightPosition[%d]", (i)].UTF8String)
+#define UNIFORM_ATTENUATION_NAME(i) ([NSString stringWithFormat:@"u_attenuation[%d]", (i)].UTF8String)
 #define UNIFORM_SKY_COLOR_NAME "u_skyColor"
 #define UNIFORM_DENSITY_NAME "u_density"
 #define UNIFORM_GRADIENT_NAME "u_gradient"
@@ -37,8 +38,9 @@ NSString *const TERRAIN_FRAGMENT_SHADER_FILE_NAME = @"TerrainFragmentShader";
            uniform_projection_matrix_location,
            uniform_normal_matrix_location,
            uniform_view_matrix_location,
-           uniform_light_color_location,
-           uniform_light_position_location,
+           uniform_light_color_locations[MAX_LIGHTS],
+           uniform_light_position_locations[MAX_LIGHTS],
+           uniform_attenuation_locations[MAX_LIGHTS],
            uniform_sky_color_location,
            uniform_density_location,
            uniform_gradient_location,
@@ -77,8 +79,6 @@ NSString *const TERRAIN_FRAGMENT_SHADER_FILE_NAME = @"TerrainFragmentShader";
     uniform_projection_matrix_location = [super getUniformLocation:UNIFORM_PROJECTION_MATRIX_NAME];
     uniform_normal_matrix_location = [super getUniformLocation:UNIFORM_NORMAL_MATRIX_NAME];
     uniform_view_matrix_location = [super getUniformLocation:UNIFORM_VIEW_MATRIX_NAME];
-    uniform_light_color_location = [super getUniformLocation:UNIFORM_LIGHT_COLOR_NAME];
-    uniform_light_position_location = [super getUniformLocation:UNIFORM_LIGHT_POSITION_NAME];
     uniform_sky_color_location = [super getUniformLocation:UNIFORM_SKY_COLOR_NAME];
     uniform_density_location = [super getUniformLocation:UNIFORM_DENSITY_NAME];
     uniform_gradient_location = [super getUniformLocation:UNIFORM_GRADIENT_NAME];
@@ -87,6 +87,12 @@ NSString *const TERRAIN_FRAGMENT_SHADER_FILE_NAME = @"TerrainFragmentShader";
     uniform_g_sampler_location = [super getUniformLocation:UNIFORM_G_SAMPLER_NAME];
     uniform_b_sampler_location = [super getUniformLocation:UNIFORM_B_SAMPLER_NAME];
     uniform_blend_map_sampler_location = [super getUniformLocation:UNIFORM_BLEND_MAP_SAMPLER_NAME];
+    
+    for (GLuint i = 0; i < MAX_LIGHTS; i++) {
+        uniform_light_position_locations[i] = [super getUniformLocation:UNIFORM_LIGHT_POSITION_NAME(i)];
+        uniform_light_color_locations[i] = [super getUniformLocation:UNIFORM_LIGHT_COLOR_NAME(i)];
+        uniform_attenuation_locations[i] = [super getUniformLocation:UNIFORM_ATTENUATION_NAME(i)];
+    }
 }
 
 - (void)loadTextureUnits
@@ -109,10 +115,19 @@ NSString *const TERRAIN_FRAGMENT_SHADER_FILE_NAME = @"TerrainFragmentShader";
     [super loadFloatVector3:skyColor toLocation:uniform_sky_color_location];
 }
 
-- (void)loadLight:(Light *)light
+- (void)loadLights:(NSArray<Light *> *)lights
 {
-    [self loadFloatVector3:light.position toLocation:uniform_light_position_location];
-    [self loadFloatVector3:light.color toLocation:uniform_light_color_location];
+    for (GLuint i = 0; i < MAX_LIGHTS; i++) {
+        if (i < lights.count) {
+            [super loadFloatVector3:lights[i].position toLocation:uniform_light_position_locations[i]];
+            [super loadFloatVector3:lights[i].color toLocation:uniform_light_color_locations[i]];
+            [super loadFloatVector3:lights[i].attenuation toLocation:uniform_attenuation_locations[i]];
+        } else {
+            [super loadFloatVector3:GLKVector3Make(0, 0, 0) toLocation:uniform_light_position_locations[i]];
+            [super loadFloatVector3:GLKVector3Make(0, 0, 0) toLocation:uniform_light_color_locations[i]];
+            [super loadFloatVector3:GLKVector3Make(1, 0, 0) toLocation:uniform_attenuation_locations[i]];
+        }
+    }
 }
 
 - (void)loadTransformationMatrix:(GLKMatrix4)transformationMatrix

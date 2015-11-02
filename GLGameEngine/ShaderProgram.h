@@ -17,6 +17,10 @@
 
 #define SHADER_FILE(name, extension) ([[NSBundle mainBundle] pathForResource:(name) ofType:(extension)])
 
+#ifndef MAX_LIGHTS
+#define MAX_LIGHTS 4
+#endif
+
 /*!
  @class ShaderProgram
  @brief abstract class that represents a Shader Program

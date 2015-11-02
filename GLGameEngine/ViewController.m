@@ -40,7 +40,7 @@ NSString *deviceName()
 @property (strong, nonatomic) NSMutableArray<Entity *> *entities;
 @property (strong, nonatomic) Terrain *terrain;
 @property (strong, nonatomic) Camera *camera;
-@property (strong, nonatomic) Light *light;
+@property (strong, nonatomic) NSMutableArray<Light *> *lights;
 @property (strong, nonatomic) TerrainTexturePackage *terrainTexturePack;
 @property (strong, nonatomic) TerrainTexture *terrainBlendMap;
 
@@ -111,13 +111,13 @@ NSString *deviceName()
 
 - (void)initGLObjects
 {
-    self.renderer = [MasterRenderer renderer];
     self.loader = [Loader loader];
+    self.renderer = [MasterRenderer rendererWithLoader:self.loader];
     self.camera = [Camera camera];
-    self.light = [Light light];
+    self.lights = [NSMutableArray array];
     self.renderStartDate = [NSDate date];
     
-    [self.camera move:GLKVector3Make(TERRAIN_SIZE/2.0, 8.1, -TERRAIN_SIZE/2.0 - 10)];
+    [self.camera move:GLKVector3Make(TERRAIN_SIZE/2.0, 8.1, -TERRAIN_SIZE/2.0)];
     
     [self setupEntities];
     
@@ -135,15 +135,15 @@ NSString *deviceName()
                                        gridZ:-1
                                       loader:self.loader
                                  texturePack:self.terrainTexturePack
-                               heightMapName:@"heightmap_low"
+                               heightMapName:@"heightmap3"
                                  andBlendMap:self.terrainBlendMap];
     
     // ENTITIES
     self.entities = [NSMutableArray<Entity *> new];
     
     NSLog(@"err before: %d", glGetError());
-    NSArray<NSString *> *names = @[@"Rock", @"pine", @"grass2", @"grass2", @"Farmhouse", @"wagen", @"fern"];
-    NSArray *textureNames = @[@[@"Rock", @"jpg"], @[@"pine", @"png"], @[@"grassTexture", @"png"], @[@"flower", @"png"], @[@"Farmhouse", @"jpg"], @[@"wagen", @"jpg"], @[@"fernAtlas", @"png"]];
+    NSArray<NSString *> *names = @[@"Rock", @"pine", @"grass2", @"grassModel", @"Farmhouse", @"wagen", @"fern", @"lamp"];
+    NSArray *textureNames = @[@[@"Rock", @"jpg"], @[@"pine", @"png"], @[@"grassTexture", @"png"], @[@"flower", @"png"], @[@"Farmhouse", @"jpg"], @[@"wagen", @"jpg"], @[@"fernAtlas", @"png"], @[@"lamp", @"png"]];
     NSArray<TexturedModel *> *models = [OBJLoader2 loadModelsWithNames:names
                                                           textureNames:textureNames
                                                              andLoader:self.loader];
@@ -157,7 +157,8 @@ NSString *deviceName()
                   *flowerModel = models[3],
                   *farmModel   = models[4],
                   *wagenModel  = models[5],
-                  *fernModel   = models[6];
+                  *fernModel   = models[6],
+                  *lampModel   = models[7];
     
     fernModel.texture.hasAlpha = YES;
     grassModel.texture.hasAlpha = YES;
@@ -168,7 +169,7 @@ NSString *deviceName()
     Entity *farmEntity = [Entity entityWithTexturedModel:farmModel];
     farmEntity.position = GLKVector3Make(TERRAIN_SIZE/2.0, 0.0, -TERRAIN_SIZE/2.0 - 40.0);
     farmEntity.scale = 0.3;
-    farmEntity.rotation = MathUtils_RotationMake(0.0, 125., 0.0);
+    //farmEntity.rotation = MathUtils_RotationMake(0.0, 125., 0.0);
     
     [self.entities addObject:farmEntity];
     
@@ -194,10 +195,8 @@ NSString *deviceName()
                                                 rotation:MathUtils_RotationMake(0.0, MathUtils_RandomFloat(0.0, 360.0), 0.0)
                                                 andScale:MathUtils_RandomFloat(.3, .6)];
         
-        /// @todo Zurzeit werden nur statische Lichtparameter im Shader verwendet. Damper = Specular Higlights-Exponent, Reflectivity = Gewicht (Weight)
-        /// => In den Shader laden und implementieren
         entity.model.texture.shineDamper = 30;
-        entity.model.texture.reflectivity = 1;
+        entity.model.texture.reflectivity = .1;
         
         [self.entities addObject:entity];
     }
@@ -205,8 +204,8 @@ NSString *deviceName()
     // TREE SETUP
     NSUInteger numb = [deviceName() isEqualToString:@"iPad5,3"] ? 75 : 50;
     for (NSUInteger i = 0; i < numb; i++) {
-        GLfloat x = MathUtils_RandomFloat(-80, 80) + TERRAIN_SIZE/2.;
-        GLfloat z = MathUtils_RandomFloat(0, -130) - TERRAIN_SIZE/2.;
+        GLfloat x = MathUtils_RandomFloat(-60, 40) + TERRAIN_SIZE/2.;
+        GLfloat z = MathUtils_RandomFloat(-90, 50) - TERRAIN_SIZE/2.;
         GLKVector3 position = GLKVector3Make(x, [self.terrain getHeightAtWorldX:x worldZ:z] - 0.5, z);
         
         GLfloat rot = MathUtils_RandomFloat(0.0, 360);
@@ -215,8 +214,8 @@ NSString *deviceName()
                                                 rotation:MathUtils_RotationMake(0.0, rot, 0.0)
                                                 andScale:MathUtils_RandomFloat(0.3, 0.8)];
         
-        entity.model.texture.shineDamper = 30;
-        entity.model.texture.reflectivity = 1;
+        entity.model.texture.shineDamper = 0;
+        entity.model.texture.reflectivity = 0;
         
         [self.entities addObject:entity];
     }
@@ -224,8 +223,8 @@ NSString *deviceName()
     // GRASS SETUP
     numb = [deviceName() isEqualToString:@"iPad5,3"] ? 850 : 650;
     for (NSUInteger i = 0; i < numb; i++) {
-        GLfloat x = MathUtils_RandomFloat(-80, 80) + TERRAIN_SIZE/2.;
-        GLfloat z = MathUtils_RandomFloat(0, -130) - TERRAIN_SIZE/2.;
+        GLfloat x = MathUtils_RandomFloat(-80, 20) + TERRAIN_SIZE/2.;
+        GLfloat z = MathUtils_RandomFloat(-90, 50) - TERRAIN_SIZE/2.;
         GLKVector3 position = GLKVector3Make(x, [self.terrain getHeightAtWorldX:x worldZ:z] - 0.3, z);
         
         Entity *entity = [Entity entityWithTexturedModel:grassModel
@@ -234,15 +233,15 @@ NSString *deviceName()
                                                 andScale:MathUtils_RandomFloat(1.0, 1.3)];
         
         entity.model.texture.shineDamper = 30;
-        entity.model.texture.reflectivity = 1;
+        entity.model.texture.reflectivity = 0;
         
         [self.entities addObject:entity];
     }
     
     // FLOWER / FERN SETUP
     for (NSUInteger i = 0; i < 80; i++) {
-        GLfloat x = MathUtils_RandomFloat(-80, 80) + TERRAIN_SIZE/2.;
-        GLfloat z = MathUtils_RandomFloat(0, -130) - TERRAIN_SIZE/2.;
+        GLfloat x = MathUtils_RandomFloat(-60, 40) + TERRAIN_SIZE/2.;
+        GLfloat z = MathUtils_RandomFloat(-90, 50) - TERRAIN_SIZE/2.;
         GLKVector3 position = GLKVector3Make(x, [self.terrain getHeightAtWorldX:x worldZ:z], z);
         
         BOOL isFlower = MathUtils_RandomBoolProb(.3);
@@ -254,13 +253,42 @@ NSString *deviceName()
                                          andTextureIndex:texIndex];
         
         entity.model.texture.shineDamper = 30;
-        entity.model.texture.reflectivity = 1;
+        entity.model.texture.reflectivity = 0;
         
         [self.entities addObject:entity];
     }
     
-    self.light.position = GLKVector3Make(0.0, 20.0, 2.0);
-    self.light.color = GLKVector3Make(0.91, 0.91, 0.91);
+    
+    GLKVector3 sunPos1 = GLKVector3Make(TERRAIN_SIZE/2.0, 100.0, -TERRAIN_SIZE/2.0);
+    
+    [self.lights addObject:[Light lightWithPosition:sunPos1
+                                           andColor:GLKVector3Make(0.5, 0.5, 0.5)]];
+    
+    GLuint posCount = 3;
+    GLKVector3 positions[3] = {
+        GLKVector3Make(TERRAIN_SIZE/2.0 - 50, 0, -TERRAIN_SIZE/2.0 - 40.0),
+        GLKVector3Make(TERRAIN_SIZE/2.0, 0, -TERRAIN_SIZE/2.0 + 60.0),
+        GLKVector3Make(farmEntity.position.x + 7.0, 0.0, farmEntity.position.z),
+    };
+    
+    for (GLuint i = 0; i < posCount; i++) {
+        GLKVector3 pos = positions[i];
+        pos.y = [self.terrain getHeightAtWorldX:pos.x worldZ:pos.z];
+        
+        Entity *lamp = [Entity entityWithTexturedModel:lampModel
+                                              position:pos
+                                              rotation:MathUtils_ZeroRotation
+                                              andScale:.4];
+        
+        [self.entities addObject:lamp];
+        
+        [self.lights addObject:[Light lightWithPosition:GLKVector3Make(pos.x, pos.y + 4.9, pos.z)
+                                                  color:GLKVector3Make(0.8, 0.7, 0.0)
+                                         andAttenuation:GLKVector3Make(1.f, 0.01f, 0.002f)]];
+    }
+    
+    self.renderer.skyColor = RGBAMake(.5, .5, .5, 1.);
+    self.renderer.fog = FogMake(0.010, 1.8);
 }
 
 - (void)setupTerrainTexturePackage
@@ -282,8 +310,7 @@ NSString *deviceName()
                                                                               gTexture:gTex
                                                                               bTexture:bTex];
     
-    self.terrainBlendMap = [[TerrainTexture alloc] initWithTexInfo:[self.loader loadTexture:@"blendMap"
-                                                                              withExtension:@"png"] andTiling:NO];
+    self.terrainBlendMap = [[TerrainTexture alloc] initWithTexInfo:[self.loader loadTexture:@"blendMap2" withExtension:@"png" flipped:YES] andTiling:NO];
 }
 
 #pragma mark GLKViewControllerDelegate
@@ -292,13 +319,13 @@ NSString *deviceName()
 - (void)update
 {
     if (self->_isMoving) {
-        self.camera.yaw = self->_oldYaw + self->_movingDirectionX * 0.2;
-        self.camera.pitch = self->_oldPitch + self->_movingDirectionY * 0.2;
+        self.camera.yaw = self->_oldYaw + self->_movingDirectionX * 0.37;
+        self.camera.pitch = self->_oldPitch + self->_movingDirectionY * 0.37;
         
         GLfloat yawRadians = MathUtils_DegToRad(self.camera.yaw);
         GLfloat pitchRadians = MathUtils_DegToRad(self.camera.pitch);
         
-        [self.camera move:GLKVector3Make(sinf(yawRadians) * 0.05, -sinf(pitchRadians) * 0.05, -cosf(yawRadians) * 0.05)];
+        [self.camera move:GLKVector3Make(sinf(yawRadians) * 0.5, -sinf(pitchRadians) * 0.5, -cosf(yawRadians) * 0.5)];
     }
 }
 
@@ -315,7 +342,7 @@ NSString *deviceName()
     
     [self.renderer processTerrain:self.terrain];
     
-    [self.renderer renderWithLight:self.light andCamera:self.camera];
+    [self.renderer renderWithLights:self.lights andCamera:self.camera];
 }
 
 #pragma mark - Getters

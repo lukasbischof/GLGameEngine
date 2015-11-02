@@ -12,7 +12,9 @@
 
 - (instancetype)init
 {
-    if ((self = [self initWithPosition:GLKVector3Make(0, 0, 0) andColor:GLKVector3Make(1, 1, 1)])) {
+    if ((self = [self initWithPosition:GLKVector3Make(0, 0, 0)
+                                 color:GLKVector3Make(1, 1, 1)
+                        andAttenuation:GLKVector3Make(1.0, 0.0, 0.0)])) {
         
     }
     
@@ -24,16 +26,22 @@
     return [[Light alloc] init];
 }
 
-+ (Light *)lightWithPosition:(GLKVector3)position andColor:(GLKVector3)color
++ (Light *)lightWithPosition:(GLKVector3)position color:(GLKVector3)color andAttenuation:(GLKVector3)attenuation
 {
-    return [[Light alloc] initWithPosition:position andColor:color];
+    return [[Light alloc] initWithPosition:position color:color andAttenuation:attenuation];
 }
 
-- (instancetype)initWithPosition:(GLKVector3)position andColor:(GLKVector3)color
++ (Light *)lightWithPosition:(GLKVector3)position andColor:(GLKVector3)color
+{
+    return [[Light alloc] initWithPosition:position color:color andAttenuation:GLKVector3Make(1.0, 0.0, 0.0)];
+}
+
+- (instancetype)initWithPosition:(GLKVector3)position color:(GLKVector3)color andAttenuation:(GLKVector3)attenuation
 {
     if ((self = [super init])) {
         self.position = position;
         self.color = color;
+        self.attenuation = attenuation;
     }
     
     return self;

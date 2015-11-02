@@ -10,6 +10,7 @@
 #import "StaticShaderProgram.h"
 #import "EntityRenderer.h"
 #import "TerrainRenderer.h"
+#import "SkyboxRenderer.h"
 
 typedef struct {
     GLfloat density;
@@ -37,8 +38,11 @@ typedef struct _RGBA RGBA;
 @property (strong, nonatomic, nonnull) TerrainShader *terrainShader;
 @property (strong, nonatomic, nonnull) EntityRenderer *entityRenderer;
 @property (strong, nonatomic, nonnull) TerrainRenderer *terrainRenderer;
+@property (strong, nonatomic, nonnull) SkyboxRenderer *skyboxRenderer;
 
-+ (MasterRenderer *_Nonnull)renderer;
++ (MasterRenderer *_Nonnull)rendererWithLoader:(Loader *_Nonnull)loader;
+
+- (_Nonnull instancetype)initWithLoader:(Loader *_Nonnull)loader;
 
 + (void)enableCulling;
 + (void)disableCulling;
@@ -46,7 +50,7 @@ typedef struct _RGBA RGBA;
 - (void)updateProjectionForAspect:(float)aspect;
 - (void)processEntity:(Entity *_Nonnull)entity;
 - (void)processTerrain:(Terrain *_Nonnull)terrain;
-- (void)renderWithLight:(Light *_Nonnull)light andCamera:(Camera *_Nonnull)camera;
+- (void)renderWithLights:(NSArray<Light *> *_Nonnull)lights andCamera:(Camera *_Nonnull)camera;
 - (void)cleanUp;
 
 @end
