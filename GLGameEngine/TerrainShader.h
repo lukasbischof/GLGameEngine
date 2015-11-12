@@ -21,5 +21,6 @@
 - (void)loadSkyColor:(GLKVector3)skyColor;
 - (void)loadFogDensity:(GLfloat)density andGradient:(GLfloat)gradient;
 - (void)loadTextureUnits;
+- (void)loadClippingPlane:(GLKVector4)clippingPlane;
 
 @end

@@ -7,6 +7,7 @@
 //
 
 #import "Camera.h"
+#import <OpenGLES/ES3/glext.h>
 
 @implementation Camera
 
@@ -28,6 +29,11 @@
 - (void)move:(GLKVector3)vec
 {
     self.position = GLKVector3Add(self.position, vec);
+}
+
+- (void)invertPitch
+{
+    self.pitch = -self.pitch;
 }
 
 - (GLKMatrix4)getViewMatrix

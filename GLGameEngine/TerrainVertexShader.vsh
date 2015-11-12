@@ -1,4 +1,5 @@
-#version 300 core
+#version 300 es
+#extension GL_APPLE_clip_distance : require
 
 in vec3 in_position;
 in vec2 in_texCoords;
@@ -10,6 +11,7 @@ out vec3 inout_modelPosition;
 out vec3 inout_lightDirection[4];
 out float inout_visibility;
 out vec2 inout_tiledTexCoords;
+out highp float gl_ClipDistance[1];
 
 // VERTEX TRANSFORMATION
 uniform mat4 u_transformationMatrix;
@@ -21,11 +23,15 @@ uniform mat3 u_normalMatrix;
 uniform float u_density;
 uniform float u_gradient;
 
-// LIGHT
+// MISC
 uniform vec3 u_lightPosition[4];
+uniform vec4 u_clippingPlane;
 
 void main(void) {
-    vec4 modelPosition = u_viewMatrix * u_transformationMatrix * vec4(in_position.xyz, 1.0);
+    vec4 worldPosition = u_transformationMatrix * vec4(in_position.xyz, 1.0);
+    gl_ClipDistance[0] = dot(worldPosition, u_clippingPlane);
+    
+    vec4 modelPosition = u_viewMatrix * worldPosition;
     gl_Position = u_projectionMatrix * modelPosition;
     
     inout_modelPosition = modelPosition.xyz;

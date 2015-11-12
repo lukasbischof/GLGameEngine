@@ -11,6 +11,8 @@
 #import "EntityRenderer.h"
 #import "TerrainRenderer.h"
 #import "SkyboxRenderer.h"
+#import "WaterRenderer.h"
+#import "GUIRenderer.h"
 
 typedef struct {
     GLfloat density;
@@ -39,10 +41,12 @@ typedef struct _RGBA RGBA;
 @property (strong, nonatomic, nonnull) EntityRenderer *entityRenderer;
 @property (strong, nonatomic, nonnull) TerrainRenderer *terrainRenderer;
 @property (strong, nonatomic, nonnull) SkyboxRenderer *skyboxRenderer;
+@property (strong, nonatomic, nonnull) WaterRenderer *waterRenderer;
+@property (strong, nonatomic, nonnull) GUIRenderer *guiRenderer;
 
-+ (MasterRenderer *_Nonnull)rendererWithLoader:(Loader *_Nonnull)loader;
++ (MasterRenderer *_Nonnull)rendererWithLoader:(Loader *_Nonnull)loader andFBOs:(WaterFrameBuffers *_Nullable)fbos;
 
-- (_Nonnull instancetype)initWithLoader:(Loader *_Nonnull)loader;
+- (_Nonnull instancetype)initWithLoader:(Loader *_Nonnull)loader andFBOs:(WaterFrameBuffers *_Nullable)fbos;
 
 + (void)enableCulling;
 + (void)disableCulling;
@@ -50,7 +54,11 @@ typedef struct _RGBA RGBA;
 - (void)updateProjectionForAspect:(float)aspect;
 - (void)processEntity:(Entity *_Nonnull)entity;
 - (void)processTerrain:(Terrain *_Nonnull)terrain;
-- (void)renderWithLights:(NSArray<Light *> *_Nonnull)lights andCamera:(Camera *_Nonnull)camera;
+- (void)processWaterTile:(WaterTile *_Nonnull)tile;
+- (void)renderWithLights:(NSArray<Light *> *_Nonnull)lights camera:(Camera *_Nonnull)camera andClippingPlane:(GLKVector4)clippingPlane;
+- (void)renderWaterWithCamera:(Camera *_Nonnull)camera;
+- (void)finishedFrame;
+- (void)renderGUI:(NSArray<GUITexture *> *_Nonnull)guis;
 - (void)cleanUp;
 
 @end

@@ -17,10 +17,10 @@
 #import "MasterRenderer.h"
 #import "GLKView+aspect.h"
 #import "TimeController.h"
+#import "WaterFrameBuffers.h"
 #import <sys/utsname.h>
 
-#define _ACTIVATE_SHADER_ [self.shader activate];
-#define _DEACTIVATE_SHADER_ [self.shader deactivate];
+#define WATER_DEBUG 0
 
 NSString *deviceName()
 {
@@ -31,7 +31,7 @@ NSString *deviceName()
                               encoding:NSUTF8StringEncoding];
 }
 
-@interface ViewController ()
+@interface ViewController () <GLKViewControllerDelegate>
 
 @property (strong, nonatomic) EAGLContext *context;
 @property (strong, nonatomic) NSDate *renderStartDate;
@@ -44,6 +44,9 @@ NSString *deviceName()
 @property (strong, nonatomic) NSMutableArray<Light *> *lights;
 @property (strong, nonatomic) TerrainTexturePackage *terrainTexturePack;
 @property (strong, nonatomic) TerrainTexture *terrainBlendMap;
+@property (strong, nonatomic) NSMutableArray<GUITexture *> *guis;
+@property (strong, nonatomic) WaterTile *water;
+@property (strong, nonatomic) WaterFrameBuffers *fbos;
 
 @end
 
@@ -55,6 +58,7 @@ NSString *deviceName()
     GLfloat _oldYaw;
     GLfloat _oldPitch;
     CGPoint _startTouch;
+    GLint defaultFBO;
 }
 
 #pragma mark - View methods
@@ -65,6 +69,8 @@ NSString *deviceName()
     
     [self initOpenGLESContext];
     [self initGLObjects];
+    
+    self.delegate = self;
 }
 
 - (BOOL)prefersStatusBarHidden
@@ -84,16 +90,19 @@ NSString *deviceName()
     if (!self.context) {
         NSLog(@"SORRY, OPENGL ES 3.0 ISN'T AVAILABLE ON YOUR DEVICE :(");
         exit(EXIT_SUCCESS);
-    } else
+    } else {
         NSLog(@"OpenGL ES 3.0 context initialized for %@.", deviceName());
+    }
     
     self.glview.context = self.context;
     self.glview.drawableDepthFormat = GLKViewDrawableDepthFormat16;
     // self.glview.drawableColorFormat = GLKViewDrawableColorFormatRGBA8888;
-    // self.glview.drawableMultisample = GLKViewDrawableMultisample4X;
+    self.glview.drawableMultisample = GLKViewDrawableMultisampleNone;
     
     [EAGLContext setCurrentContext:self.context];
     [self.glview bindDrawable];
+    
+    glGetIntegerv(GL_FRAMEBUFFER_BINDING, &defaultFBO);
     
     glViewport(0, 0, self.view.frame.size.width, self.view.frame.size.height);
 }
@@ -102,6 +111,7 @@ NSString *deviceName()
 {
     [self.loader cleanUp];
     [self.renderer cleanUp];
+    [self.fbos cleanUp];
     
     if ([EAGLContext currentContext] == self.context) {
         [EAGLContext setCurrentContext:nil];
@@ -113,12 +123,14 @@ NSString *deviceName()
 - (void)initGLObjects
 {
     self.loader = [Loader loader];
-    self.renderer = [MasterRenderer rendererWithLoader:self.loader];
+    self.fbos = [[WaterFrameBuffers alloc] init];
+    self.renderer = [MasterRenderer rendererWithLoader:self.loader andFBOs:self.fbos];
     self.camera = [Camera camera];
     self.lights = [NSMutableArray array];
+    self.guis = [NSMutableArray array];
     self.renderStartDate = [NSDate date];
     
-    [self.camera move:GLKVector3Make(TERRAIN_SIZE/2.0, 8.1, -TERRAIN_SIZE/2.0)];
+    [self.camera move:GLKVector3Make(TERRAIN_SIZE/2.0 + 60, 8.1, -TERRAIN_SIZE/2.0 - 30)];
     
     [self setupEntities];
     
@@ -138,7 +150,7 @@ NSString *deviceName()
                                        gridZ:-1
                                       loader:self.loader
                                  texturePack:self.terrainTexturePack
-                               heightMapName:@"heightmap3"
+                               heightMapName:@"heightmap3_vlow"
                                  andBlendMap:self.terrainBlendMap];
     
     // ENTITIES
@@ -291,46 +303,74 @@ NSString *deviceName()
     }
     
     self.renderer.skyColor = RGBAMake(.5, .5, .5, 1.);
-    self.renderer.fog = FogMake(0.010, 1.8);
+    // self.renderer.fog = FogMake(0.010, 1.8);
+    self.renderer.fog = kNoFog;
     
     self.renderer.skyboxRenderer.shader.rotation_speed = .5f;
+    
+    GLfloat x = TERRAIN_SIZE/2.0 + 80;
+    GLfloat z = -TERRAIN_SIZE/2.0 - 106.3;
+    
+    self.water = [[WaterTile alloc] initWithX:x
+                                            z:z
+                                       height:-5.0
+                                      andSize:68.];
+    
+    
+#if WATER_DEBUG
+    GUITexture *tex = [GUITexture textureWithTextureID:self.fbos.reflectionTexture
+                                         textureTarget:GL_TEXTURE_2D
+                                              position:GLKVector2Make(-0.75, -0.75)
+                                              andScale:GLKVector2Make(0.25, 0.25)];
+    GUITexture *tex2 = [GUITexture textureWithTextureID:self.fbos.refractionTexture
+                                          textureTarget:GL_TEXTURE_2D
+                                               position:GLKVector2Make(0.75, -0.75)
+                                               andScale:GLKVector2Make(0.25, 0.25)];
+    
+    [self.guis addObject:tex];
+    [self.guis addObject:tex2];
+#endif
 }
 
 - (void)setupTerrainTexturePackage
 {
-    TerrainTexture *back = [[TerrainTexture alloc] initWithTexInfo:[self.loader loadTexture:@"grass"
-                                                                              withExtension:@"jpg"]];
+    TerrainTexture *back = [[TerrainTexture alloc] initWithTextureInfo:[self.loader loadTexture:@"grass"
+                                                                                  withExtension:@"jpg"]];
     
-    TerrainTexture *rTex = [[TerrainTexture alloc] initWithTexInfo:[self.loader loadTexture:@"mud"
-                                                                              withExtension:@"png"]];
+    TerrainTexture *rTex = [[TerrainTexture alloc] initWithTextureInfo:[self.loader loadTexture:@"mud"
+                                                                                  withExtension:@"png"]];
     
-    TerrainTexture *gTex = [[TerrainTexture alloc] initWithTexInfo:[self.loader loadTexture:@"grassFlowers"
-                                                                              withExtension:@"png"]];
+    TerrainTexture *gTex = [[TerrainTexture alloc] initWithTextureInfo:[self.loader loadTexture:@"grassFlowers"
+                                                                                  withExtension:@"png"]];
     
-    TerrainTexture *bTex = [[TerrainTexture alloc] initWithTexInfo:[self.loader loadTexture:@"asphalt"
-                                                                              withExtension:@"jpg"]];
+    TerrainTexture *bTex = [[TerrainTexture alloc] initWithTextureInfo:[self.loader loadTexture:@"asphalt"
+                                                                                  withExtension:@"jpg"]];
     
     self.terrainTexturePack = [[TerrainTexturePackage alloc] initWithBackgroundTexture:back
                                                                               rTexture:rTex
                                                                               gTexture:gTex
                                                                               bTexture:bTex];
     
-    self.terrainBlendMap = [[TerrainTexture alloc] initWithTexInfo:[self.loader loadTexture:@"blendMap2" withExtension:@"png" flipped:YES] andTiling:NO];
+    self.terrainBlendMap = [[TerrainTexture alloc] initWithTextureInfo:[self.loader loadTexture:@"blendMap2" withExtension:@"png" flipped:YES] andTiling:NO];
 }
 
 #pragma mark GLKViewControllerDelegate
 
 // This method gets called before the view renders
-- (void)update
+- (void)glkViewControllerUpdate:(GLKViewController *)controller
 {
     if (self->_isMoving) {
-        self.camera.yaw = self->_oldYaw + self->_movingDirectionX * 0.37;
-        self.camera.pitch = self->_oldPitch + self->_movingDirectionY * 0.37;
+        self.camera.yaw = self->_oldYaw + self->_movingDirectionX * 0.27;
+        self.camera.pitch = self->_oldPitch + self->_movingDirectionY * 0.27;
         
         GLfloat yawRadians = MathUtils_DegToRad(self.camera.yaw);
         GLfloat pitchRadians = MathUtils_DegToRad(self.camera.pitch);
         
-        [self.camera move:GLKVector3Make(sinf(yawRadians) * 0.5, -sinf(pitchRadians) * 0.5, -cosf(yawRadians) * 0.5)];
+        GLfloat scalar = controller.timeSinceLastUpdate * 10;
+        GLKVector3 move = GLKVector3Make(sinf(yawRadians) * scalar,
+                                         -sinf(pitchRadians) * scalar,
+                                         -cosf(yawRadians) * scalar);
+        [self.camera move:move];
     }
 }
 
@@ -346,8 +386,31 @@ NSString *deviceName()
     }
     
     [self.renderer processTerrain:self.terrain];
+    [self.renderer processWaterTile:self.water];
     
-    [self.renderer renderWithLights:self.lights andCamera:self.camera];
+    
+    GLfloat distance = 2 * (self.camera.position.y - self.water.height);
+    [self.camera move:GLKVector3Make(0, -distance, 0)];
+    [self.camera invertPitch];
+    
+    [self.fbos bindReflectionFrameBuffer];
+    [self.renderer renderWithLights:self.lights camera:self.camera andClippingPlane:GLKVector4Make(0, 1, 0, -self.water.height)];
+    
+    [self.camera move:GLKVector3Make(0, distance, 0)];
+    [self.camera invertPitch];
+    
+    [self.fbos bindRefractionFrameBuffer];
+    [self.renderer renderWithLights:self.lights camera:self.camera andClippingPlane:GLKVector4Make(0, -1, 0, self.water.height)];
+    
+    [self.glview bindDrawable];
+    
+    glDisable(GL_CLIP_DISTANCE0_APPLE);
+    [self.renderer renderWithLights:self.lights camera:self.camera andClippingPlane:GLKVector4Make(0, -1, 0, 100)];
+    [self.renderer renderWaterWithCamera:self.camera];
+    #if WATER_DEBUG
+        [self.renderer renderGUI:self.guis];
+    #endif
+    [self.renderer finishedFrame];
 }
 
 #pragma mark - Getters

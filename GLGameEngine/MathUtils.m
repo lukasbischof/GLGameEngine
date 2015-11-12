@@ -72,6 +72,16 @@ GLKMatrix4 MathUtils_CreateTransformationMatrixr(GLKVector3 translation, Rotatio
     return matrix;
 }
 
+GLKMatrix4 MathUtils_CreateGUITransformationMatrix(GLKVector2 translation, GLKVector2 scale)
+{
+    GLKMatrix4 matrix = GLKMatrix4Identity;
+    
+    matrix = GLKMatrix4Translate(matrix, translation.x, translation.y, 0.0);
+    matrix = GLKMatrix4Scale(matrix, scale.x, scale.y, 1.0);
+    
+    return matrix;
+}
+
 GLKMatrix3 MathUtils_CreateNormalMatrix(GLKMatrix4 transformationMatrix, GLKMatrix4 viewMatrix)
 {
     bool isInvertible;
@@ -91,7 +101,12 @@ GLKMatrix3 MathUtils_CreateNormalMatrix(GLKMatrix4 transformationMatrix, GLKMatr
 
 GLfloat MathUtils_RandomFloat(GLfloat min, GLfloat max)
 {
-    return (((GLfloat)[[GKARC4RandomSource sharedRandom] nextUniform]) * (max - min)) + min;
+    return (((GLfloat)[[GKLinearCongruentialRandomSource sharedRandom] nextUniform]) * (max - min)) + min;
+}
+
+GLfloat MathUtils_RandomMersenneTwisterFloat(GLfloat min, GLfloat max)
+{
+    return (((GLfloat)[[GKMersenneTwisterRandomSource sharedRandom] nextUniform]) * (max - min)) + min;
 }
 
 GLboolean MathUtils_RandomBool()
@@ -104,7 +119,7 @@ GLboolean MathUtils_RandomBoolProb(GLfloat probability)
     if (probability >= 1.)
         return YES;
     
-    return [[GKARC4RandomSource sharedRandom] nextUniform] < probability;
+    return [[GKLinearCongruentialRandomSource sharedRandom] nextUniform] < probability;
 }
 
 GLfloat MathUtils_BarryCentric(GLKVector3 p1, GLKVector3 p2, GLKVector3 p3, GLKVector2 pos)

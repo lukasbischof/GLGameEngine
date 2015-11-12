@@ -1,4 +1,4 @@
-#version 300 core
+#version 300 es
 
 precision mediump float;
 
@@ -8,7 +8,7 @@ in vec3 inout_normal;
 in vec3 inout_modelPosition;
 in vec3 inout_lightDirection[4];
 in float inout_visibility;
-out vec4 out_color;
+layout(location = 0) out lowp vec4 out_color;
 
 uniform sampler2D u_backgroundSampler;
 uniform sampler2D u_rSampler;
@@ -31,13 +31,13 @@ float getAttenuation(int i, float lightDistance) {
 void main(void) {
     vec4 blendMapColor = texture(u_blendMapSampler, inout_texCoords);
     
-    float backTextureAmount = 1.0 - (blendMapColor.r + blendMapColor.g + blendMapColor.b);
+    float backTextureAmount = 1.0 - (blendMapColor.r + /*blendMapColor.g +*/ blendMapColor.b);
     vec4 backgroundTextureColor = texture(u_backgroundSampler, inout_tiledTexCoords) * backTextureAmount;
     vec4 rTextureColor = texture(u_rSampler, inout_tiledTexCoords) * blendMapColor.r;
-    vec4 gTextureColor = texture(u_gSampler, inout_tiledTexCoords) * blendMapColor.g;
+//    vec4 gTextureColor = texture(u_gSampler, inout_tiledTexCoords) * blendMapColor.g;
     vec4 bTextureColor = texture(u_bSampler, inout_tiledTexCoords) * blendMapColor.b;
     
-    vec4 finalColor = backgroundTextureColor + rTextureColor + gTextureColor + bTextureColor;
+    vec4 finalColor = backgroundTextureColor + rTextureColor /*+ gTextureColor */+ bTextureColor;
     
     vec3 totalDiffuse = vec3(0.0);
     

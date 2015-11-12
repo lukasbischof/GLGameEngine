@@ -21,9 +21,7 @@
 
 - (instancetype)initWithID:(GLuint)textureID andTarget:(GLenum)target enableTiling:(BOOL)enableTiling
 {
-    if ((self = [super init])) {
-        self.textureID = textureID;
-        self.textureTarget = target;
+    if ((self = [super initWithTextureID:textureID andTextureTarget:target])) {
         
         if (enableTiling) {
             glBindTexture(target, textureID);
@@ -37,14 +35,14 @@
     return self;
 }
 
-- (instancetype)initWithTexInfo:(GLKTextureInfo *)texInfo
+- (instancetype)initWithTextureInfo:(GLKTextureInfo *)info
 {
-    self = [self initWithID:texInfo.name andTarget:texInfo.target enableTiling:YES];
+    self = [self initWithID:info.name andTarget:info.target enableTiling:YES];
     
     return self;
 }
 
-- (instancetype)initWithTexInfo:(GLKTextureInfo *)texInfo andTiling:(BOOL)enableTiling
+- (instancetype)initWithTextureInfo:(GLKTextureInfo *)texInfo andTiling:(BOOL)enableTiling
 {
     self = [self initWithID:texInfo.name andTarget:texInfo.target enableTiling:enableTiling];
     

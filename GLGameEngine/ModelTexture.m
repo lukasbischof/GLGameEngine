@@ -17,9 +17,7 @@
 
 - (instancetype)initWithTextureID:(GLuint)textureID andTextureTarget:(GLenum)textureTarget
 {
-    if ((self = [super init])) {
-        _textureID = textureID;
-        _textureTarget = textureTarget;
+    if ((self = [super initWithTextureID:textureID andTextureTarget:textureTarget])) {
         _numberOfRows = 1;
         _shineDamper = 45.0;
         _reflectivity = 0.0;

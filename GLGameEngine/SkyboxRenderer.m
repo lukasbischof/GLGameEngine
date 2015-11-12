@@ -135,16 +135,17 @@ static inline NSArray<NSString *> *getNightTextureFiles() {
 
 - (void)updateProjectionMatrix:(GLKMatrix4)projMat
 {
-    [self.shader activate];
-    [self.shader loadProjectionMatrix:projMat];
-    [self.shader deactivate];
+    [self.shader bind:^{
+        [self.shader loadProjectionMatrix:projMat];
+    }];
 }
 
 - (void)updateFogColor:(GLKVector3)fogColor
 {
-    [self.shader activate];
-    [self.shader loadFogColor:fogColor];
-    [self.shader deactivate];
+    [self.shader bind:^{
+        [self.shader loadFogColor:fogColor];
+    }];
+     
 }
 
 - (void)renderWithCamera:(Camera *)camera
@@ -163,6 +164,7 @@ static inline NSArray<NSString *> *getNightTextureFiles() {
     glDisableVertexAttribArray(0);
     glBindVertexArray(0);
     glEnable(GL_DEPTH_TEST);
+    glEnable(GL_CULL_FACE);
     
     [self.shader deactivate];
 }
@@ -175,6 +177,11 @@ static inline NSArray<NSString *> *getNightTextureFiles() {
     glBindTexture(self.nightTexture.target, self.nightTexture.name);
     
     [self.shader loadBlendFactor:[self getBlendFactor]];
+}
+
+- (void)cleanUp
+{
+    [self.shader cleanUp];
 }
 
 - (GLfloat)getBlendFactor

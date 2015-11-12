@@ -31,6 +31,7 @@ NSString *const FRAGMENT_SHADER_FILE_NAME = @"FragmentShader";
 #define UNIFORM_GRADIENT_NAME "u_gradient"
 #define UNIFORM_NUMBER_OF_ROWS_NAME "u_numberOfRows"
 #define UNIFORM_OFFSET_NAME "u_offset"
+#define UNIFORM_CLIPPING_PLANE_NAME "u_clippingPlane"
 
 @implementation StaticShaderProgram {
     GLuint uniform_transformation_matrix_location,
@@ -46,7 +47,8 @@ NSString *const FRAGMENT_SHADER_FILE_NAME = @"FragmentShader";
            uniform_density_location,
            uniform_gradient_location,
            uniform_number_of_rows_location,
-           uniform_offset_location;
+           uniform_offset_location,
+           uniform_clipping_plane_location;
 }
 
 + (StaticShaderProgram *)staticShaderProgram
@@ -71,27 +73,30 @@ NSString *const FRAGMENT_SHADER_FILE_NAME = @"FragmentShader";
     [super bindAttribute:2 toVariableName:IN_NORMALS_NAME];
 }
 
+#define LOC(l) [super getUniformLocation:(l)]
 - (void)getAllUniformLocations
 {
-    uniform_transformation_matrix_location = [super getUniformLocation:UNIFORM_TRANSFORMATION_MATRIX_NAME];
-    uniform_projection_matrix_location = [super getUniformLocation:UNIFORM_PROJECTION_MATRIX_NAME];
-    uniform_normal_matrix_location = [super getUniformLocation:UNIFORM_NORMAL_MATRIX_NAME];
-    uniform_view_matrix_location = [super getUniformLocation:UNIFORM_VIEW_MATRIX_NAME];
-    uniform_sky_color_location = [super getUniformLocation:UNIFORM_SKY_COLOR_NAME];
-    uniform_density_location = [super getUniformLocation:UNIFORM_DENSITY_NAME];
-    uniform_gradient_location = [super getUniformLocation:UNIFORM_GRADIENT_NAME];
-    uniform_number_of_rows_location = [super getUniformLocation:UNIFORM_NUMBER_OF_ROWS_NAME];
-    uniform_offset_location = [super getUniformLocation:UNIFORM_OFFSET_NAME];
-    uniform_damper_location = [super getUniformLocation:UNIFORM_DAMPER_NAME];
-    uniform_reflectivity_location = [super getUniformLocation:UNIFORM_REFLECTIVITY_NAME];
+    uniform_transformation_matrix_location = LOC(UNIFORM_TRANSFORMATION_MATRIX_NAME);
+    uniform_projection_matrix_location = LOC(UNIFORM_PROJECTION_MATRIX_NAME);
+    uniform_normal_matrix_location = LOC(UNIFORM_NORMAL_MATRIX_NAME);
+    uniform_view_matrix_location = LOC(UNIFORM_VIEW_MATRIX_NAME);
+    uniform_sky_color_location = LOC(UNIFORM_SKY_COLOR_NAME);
+    uniform_density_location = LOC(UNIFORM_DENSITY_NAME);
+    uniform_gradient_location = LOC(UNIFORM_GRADIENT_NAME);
+    uniform_number_of_rows_location = LOC(UNIFORM_NUMBER_OF_ROWS_NAME);
+    uniform_offset_location = LOC(UNIFORM_OFFSET_NAME);
+    uniform_damper_location = LOC(UNIFORM_DAMPER_NAME);
+    uniform_reflectivity_location = LOC(UNIFORM_REFLECTIVITY_NAME);
+    uniform_clipping_plane_location = LOC(UNIFORM_CLIPPING_PLANE_NAME);
     
     
     for (GLuint i = 0; i < MAX_LIGHTS; i++) {
-        uniform_light_color_locations[i] = [super getUniformLocation:UNIFORM_LIGHT_COLOR_NAME(i)];
-        uniform_light_position_locations[i] = [super getUniformLocation:UNIFORM_LIGHT_POSITION_NAME(i)];
-        uniform_attenuation_locations[i] = [super getUniformLocation:UNIFORM_ATTENUATION_NAME(i)];
+        uniform_light_color_locations[i] = LOC(UNIFORM_LIGHT_COLOR_NAME(i));
+        uniform_light_position_locations[i] = LOC(UNIFORM_LIGHT_POSITION_NAME(i));
+        uniform_attenuation_locations[i] = LOC(UNIFORM_ATTENUATION_NAME(i));
     }
 }
+#undef LOC
 
 - (void)loadDamper:(GLfloat)damper andReflectivity:(GLfloat)reflectivity
 {
@@ -153,6 +158,11 @@ NSString *const FRAGMENT_SHADER_FILE_NAME = @"FragmentShader";
 - (void)loadNormalMatrixWithModelMatrix:(GLKMatrix4)modelMatrix andViewMatrix:(GLKMatrix4)viewMatrix
 {
     [super loadMatrix3x3:MathUtils_CreateNormalMatrix(modelMatrix, viewMatrix) toLocation:uniform_normal_matrix_location];
+}
+
+- (void)loadClippingPlane:(GLKVector4)clippingPlane
+{
+    [super loadFloatVector4:clippingPlane toLocation:uniform_clipping_plane_location];
 }
 
 @end

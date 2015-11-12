@@ -82,6 +82,17 @@
 		8026396F1B0E670D009B42D6 /* VertexShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 8026396E1B0E670D009B42D6 /* VertexShader.vsh */; };
 		802639721B0E7069009B42D6 /* ShaderProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 802639711B0E7069009B42D6 /* ShaderProgram.m */; };
 		802639751B0E77B4009B42D6 /* StaticShaderProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 802639741B0E77B4009B42D6 /* StaticShaderProgram.m */; };
+		802A49ED1BECF49500373B68 /* Texture.m in Sources */ = {isa = PBXBuildFile; fileRef = 802A49EC1BECF49500373B68 /* Texture.m */; };
+		80370BC31BEBDF51000A62FD /* GUITexture.m in Sources */ = {isa = PBXBuildFile; fileRef = 80370BC21BEBDF51000A62FD /* GUITexture.m */; };
+		80370BC61BEBE161000A62FD /* GUIRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 80370BC51BEBE161000A62FD /* GUIRenderer.m */; };
+		80370BCA1BEBE423000A62FD /* GUIShader.m in Sources */ = {isa = PBXBuildFile; fileRef = 80370BC91BEBE423000A62FD /* GUIShader.m */; };
+		80370BCC1BEBE489000A62FD /* GUIVertexShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 80370BCB1BEBE489000A62FD /* GUIVertexShader.vsh */; };
+		80370BCE1BEBE49D000A62FD /* GUIFragmentShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 80370BCD1BEBE49D000A62FD /* GUIFragmentShader.fsh */; };
+		804430681BE93D7A008D9A47 /* WaterVertexShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 804430671BE93D7A008D9A47 /* WaterVertexShader.vsh */; };
+		8044306A1BE93D8A008D9A47 /* WaterFragmentShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 804430691BE93D8A008D9A47 /* WaterFragmentShader.fsh */; };
+		8044306D1BE93D9A008D9A47 /* WaterShader.m in Sources */ = {isa = PBXBuildFile; fileRef = 8044306C1BE93D9A008D9A47 /* WaterShader.m */; };
+		804430701BE94A6C008D9A47 /* WaterRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 8044306F1BE94A6C008D9A47 /* WaterRenderer.m */; };
+		804430741BE94C95008D9A47 /* WaterTile.m in Sources */ = {isa = PBXBuildFile; fileRef = 804430731BE94C95008D9A47 /* WaterTile.m */; };
 		805070E01BE7D61C00CBB310 /* SkyboxVertexShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 805070DF1BE7D61C00CBB310 /* SkyboxVertexShader.vsh */; };
 		805070E41BE7D67600CBB310 /* SkyboxFragmentShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 805070E31BE7D67600CBB310 /* SkyboxFragmentShader.fsh */; };
 		805070E71BE7D79F00CBB310 /* SkyboxShader.m in Sources */ = {isa = PBXBuildFile; fileRef = 805070E61BE7D79F00CBB310 /* SkyboxShader.m */; };
@@ -113,6 +124,9 @@
 		805071441BE8128C00CBB310 /* nightRight.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 805071391BE8128C00CBB310 /* nightRight.jpg */; };
 		805071451BE8128C00CBB310 /* nightTop.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 8050713A1BE8128C00CBB310 /* nightTop.jpg */; };
 		805071461BE8128C00CBB310 /* nightTop.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 8050713A1BE8128C00CBB310 /* nightTop.jpg */; };
+		80672D141BEF4AB70009030D /* WaterFrameBuffers.m in Sources */ = {isa = PBXBuildFile; fileRef = 80672D131BEF4AB70009030D /* WaterFrameBuffers.m */; };
+		80672D161BEFB6790009030D /* heightmap3_low.png in Resources */ = {isa = PBXBuildFile; fileRef = 80672D151BEFB6790009030D /* heightmap3_low.png */; };
+		80672D181BEFB6E60009030D /* heightmap3_vlow.png in Resources */ = {isa = PBXBuildFile; fileRef = 80672D171BEFB6E60009030D /* heightmap3_vlow.png */; };
 		806778E71B18D2930082AF0B /* Buffer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 806778E61B18D2930082AF0B /* Buffer.mm */; };
 		806778EB1B18ED7E0082AF0B /* ModelTexture.m in Sources */ = {isa = PBXBuildFile; fileRef = 806778EA1B18ED7E0082AF0B /* ModelTexture.m */; };
 		806778EF1B18EE1D0082AF0B /* TexturedModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 806778EE1B18EE1D0082AF0B /* TexturedModel.m */; };
@@ -122,6 +136,8 @@
 		806E35C01BE6B20B0053DE78 /* lamp.mtl in Resources */ = {isa = PBXBuildFile; fileRef = 806E35BD1BE6B20B0053DE78 /* lamp.mtl */; };
 		806E35C11BE6B20B0053DE78 /* lamp.obj in Resources */ = {isa = PBXBuildFile; fileRef = 806E35BE1BE6B20B0053DE78 /* lamp.obj */; };
 		806E35C21BE6B20B0053DE78 /* lamp.png in Resources */ = {isa = PBXBuildFile; fileRef = 806E35BF1BE6B20B0053DE78 /* lamp.png */; };
+		80790B891BF48E97003A4AFB /* waterNormal.png in Resources */ = {isa = PBXBuildFile; fileRef = 80790B871BF48E97003A4AFB /* waterNormal.png */; };
+		80790B8A1BF48E97003A4AFB /* waterDuDv.png in Resources */ = {isa = PBXBuildFile; fileRef = 80790B881BF48E97003A4AFB /* waterDuDv.png */; };
 		80B72DA21B33328700394A80 /* OBJLoader2.mm in Sources */ = {isa = PBXBuildFile; fileRef = 80B72DA11B33328700394A80 /* OBJLoader2.mm */; };
 		80E38B7D1B1B819A006D7B30 /* dragon.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80E38B7C1B1B819A006D7B30 /* dragon.obj */; };
 		80E38B7F1B1B9893006D7B30 /* white.png in Resources */ = {isa = PBXBuildFile; fileRef = 80E38B7E1B1B9893006D7B30 /* white.png */; };
@@ -240,6 +256,24 @@
 		802639711B0E7069009B42D6 /* ShaderProgram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShaderProgram.m; sourceTree = "<group>"; };
 		802639731B0E77B4009B42D6 /* StaticShaderProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StaticShaderProgram.h; sourceTree = "<group>"; };
 		802639741B0E77B4009B42D6 /* StaticShaderProgram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = StaticShaderProgram.m; sourceTree = "<group>"; };
+		802A49EB1BECF49500373B68 /* Texture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Texture.h; sourceTree = "<group>"; };
+		802A49EC1BECF49500373B68 /* Texture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Texture.m; sourceTree = "<group>"; };
+		80370BC11BEBDF51000A62FD /* GUITexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUITexture.h; sourceTree = "<group>"; };
+		80370BC21BEBDF51000A62FD /* GUITexture.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GUITexture.m; sourceTree = "<group>"; };
+		80370BC41BEBE161000A62FD /* GUIRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIRenderer.h; sourceTree = "<group>"; };
+		80370BC51BEBE161000A62FD /* GUIRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GUIRenderer.m; sourceTree = "<group>"; };
+		80370BC81BEBE423000A62FD /* GUIShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GUIShader.h; sourceTree = "<group>"; };
+		80370BC91BEBE423000A62FD /* GUIShader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GUIShader.m; sourceTree = "<group>"; };
+		80370BCB1BEBE489000A62FD /* GUIVertexShader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = GUIVertexShader.vsh; sourceTree = "<group>"; };
+		80370BCD1BEBE49D000A62FD /* GUIFragmentShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = GUIFragmentShader.fsh; sourceTree = "<group>"; };
+		804430671BE93D7A008D9A47 /* WaterVertexShader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = WaterVertexShader.vsh; sourceTree = "<group>"; };
+		804430691BE93D8A008D9A47 /* WaterFragmentShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = WaterFragmentShader.fsh; sourceTree = "<group>"; };
+		8044306B1BE93D9A008D9A47 /* WaterShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaterShader.h; sourceTree = "<group>"; };
+		8044306C1BE93D9A008D9A47 /* WaterShader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WaterShader.m; sourceTree = "<group>"; };
+		8044306E1BE94A6C008D9A47 /* WaterRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaterRenderer.h; sourceTree = "<group>"; };
+		8044306F1BE94A6C008D9A47 /* WaterRenderer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WaterRenderer.m; sourceTree = "<group>"; };
+		804430721BE94C95008D9A47 /* WaterTile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaterTile.h; sourceTree = "<group>"; };
+		804430731BE94C95008D9A47 /* WaterTile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WaterTile.m; sourceTree = "<group>"; };
 		805070DF1BE7D61C00CBB310 /* SkyboxVertexShader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = SkyboxVertexShader.vsh; sourceTree = "<group>"; };
 		805070E31BE7D67600CBB310 /* SkyboxFragmentShader.fsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = SkyboxFragmentShader.fsh; sourceTree = "<group>"; };
 		805070E51BE7D79F00CBB310 /* SkyboxShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyboxShader.h; sourceTree = "<group>"; };
@@ -262,6 +296,10 @@
 		805071381BE8128C00CBB310 /* nightLeft.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = nightLeft.jpg; sourceTree = "<group>"; };
 		805071391BE8128C00CBB310 /* nightRight.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = nightRight.jpg; sourceTree = "<group>"; };
 		8050713A1BE8128C00CBB310 /* nightTop.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = nightTop.jpg; sourceTree = "<group>"; };
+		80672D121BEF4AB70009030D /* WaterFrameBuffers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaterFrameBuffers.h; sourceTree = "<group>"; };
+		80672D131BEF4AB70009030D /* WaterFrameBuffers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WaterFrameBuffers.m; sourceTree = "<group>"; };
+		80672D151BEFB6790009030D /* heightmap3_low.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = heightmap3_low.png; sourceTree = "<group>"; };
+		80672D171BEFB6E60009030D /* heightmap3_vlow.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = heightmap3_vlow.png; sourceTree = "<group>"; };
 		806778E51B18D2930082AF0B /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
 		806778E61B18D2930082AF0B /* Buffer.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = Buffer.mm; sourceTree = "<group>"; };
 		806778E91B18ED7E0082AF0B /* ModelTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ModelTexture.h; sourceTree = "<group>"; };
@@ -274,6 +312,8 @@
 		806E35BD1BE6B20B0053DE78 /* lamp.mtl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = lamp.mtl; sourceTree = "<group>"; };
 		806E35BE1BE6B20B0053DE78 /* lamp.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = lamp.obj; sourceTree = "<group>"; };
 		806E35BF1BE6B20B0053DE78 /* lamp.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = lamp.png; sourceTree = "<group>"; };
+		80790B871BF48E97003A4AFB /* waterNormal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = waterNormal.png; sourceTree = "<group>"; };
+		80790B881BF48E97003A4AFB /* waterDuDv.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = waterDuDv.png; sourceTree = "<group>"; };
 		80B72DA01B33328700394A80 /* OBJLoader2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OBJLoader2.h; sourceTree = "<group>"; };
 		80B72DA11B33328700394A80 /* OBJLoader2.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OBJLoader2.mm; sourceTree = "<group>"; };
 		80E38B7C1B1B819A006D7B30 /* dragon.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dragon.obj; sourceTree = "<group>"; };
@@ -371,6 +411,9 @@
 				805070E91BE7D7D300CBB310 /* SkyboxRenderer.m */,
 				4828F8F01B87BF45006D93CD /* MasterRenderer.h */,
 				4828F8F11B87BF45006D93CD /* MasterRenderer.m */,
+				80370BC41BEBE161000A62FD /* GUIRenderer.h */,
+				80370BC51BEBE161000A62FD /* GUIRenderer.m */,
+				804430711BE94C88008D9A47 /* Water */,
 			);
 			name = Rendering;
 			sourceTree = "<group>";
@@ -519,11 +562,8 @@
 				4889F24E1BC42AAB0097A28F /* cube.obj */,
 				80E38B7E1B1B9893006D7B30 /* white.png */,
 				4898DAC81BDD3A9D007D2695 /* flower.png */,
-				48F688361BE3F9EF00F9A868 /* heightmap.png */,
-				806E35AE1BE639600053DE78 /* heightmap2.png */,
-				806E35B41BE642AD0053DE78 /* heightmap3.png */,
-				48F688381BE40CD800F9A868 /* heightmap_high.jpg */,
-				48F688391BE40CD800F9A868 /* heightmap_low.png */,
+				80790B861BF48E7B003A4AFB /* water */,
+				80672D191BEFB6EC0009030D /* heightmaps */,
 				805070EB1BE7DBBD00CBB310 /* skybox */,
 				806E35BC1BE6B2020053DE78 /* lamp */,
 				4888EAD21BDFBBE7006EF15E /* ground */,
@@ -574,7 +614,6 @@
 				80B72DA01B33328700394A80 /* OBJLoader2.h */,
 				80B72DA11B33328700394A80 /* OBJLoader2.mm */,
 				4828F8EF1B87BF28006D93CD /* Rendering */,
-				805070DB1BE7D59D00CBB310 /* skybox */,
 				80FFE41D1B19EF73008DE7DB /* Entities */,
 				483D4F0A1BC53F7500587983 /* Terrain */,
 				806778EC1B18EE0B0082AF0B /* Models */,
@@ -591,6 +630,8 @@
 			children = (
 				802639701B0E7069009B42D6 /* ShaderProgram.h */,
 				802639711B0E7069009B42D6 /* ShaderProgram.m */,
+				80370BC71BEBE40F000A62FD /* GUI */,
+				804430661BE93D68008D9A47 /* water */,
 				805070DE1BE7D5F200CBB310 /* skybox */,
 				805070DD1BE7D5E900CBB310 /* static */,
 				805070DC1BE7D5DE00CBB310 /* terrain */,
@@ -598,11 +639,39 @@
 			name = "Shaders / Programs";
 			sourceTree = "<group>";
 		};
-		805070DB1BE7D59D00CBB310 /* skybox */ = {
+		80370BC71BEBE40F000A62FD /* GUI */ = {
 			isa = PBXGroup;
 			children = (
+				80370BC81BEBE423000A62FD /* GUIShader.h */,
+				80370BC91BEBE423000A62FD /* GUIShader.m */,
+				80370BCB1BEBE489000A62FD /* GUIVertexShader.vsh */,
+				80370BCD1BEBE49D000A62FD /* GUIFragmentShader.fsh */,
 			);
-			name = skybox;
+			name = GUI;
+			sourceTree = "<group>";
+		};
+		804430661BE93D68008D9A47 /* water */ = {
+			isa = PBXGroup;
+			children = (
+				804430671BE93D7A008D9A47 /* WaterVertexShader.vsh */,
+				804430691BE93D8A008D9A47 /* WaterFragmentShader.fsh */,
+				8044306B1BE93D9A008D9A47 /* WaterShader.h */,
+				8044306C1BE93D9A008D9A47 /* WaterShader.m */,
+			);
+			name = water;
+			sourceTree = "<group>";
+		};
+		804430711BE94C88008D9A47 /* Water */ = {
+			isa = PBXGroup;
+			children = (
+				8044306E1BE94A6C008D9A47 /* WaterRenderer.h */,
+				8044306F1BE94A6C008D9A47 /* WaterRenderer.m */,
+				804430721BE94C95008D9A47 /* WaterTile.h */,
+				804430731BE94C95008D9A47 /* WaterTile.m */,
+				80672D121BEF4AB70009030D /* WaterFrameBuffers.h */,
+				80672D131BEF4AB70009030D /* WaterFrameBuffers.m */,
+			);
+			name = Water;
 			sourceTree = "<group>";
 		};
 		805070DC1BE7D5DE00CBB310 /* terrain */ = {
@@ -657,6 +726,20 @@
 			name = skybox;
 			sourceTree = "<group>";
 		};
+		80672D191BEFB6EC0009030D /* heightmaps */ = {
+			isa = PBXGroup;
+			children = (
+				48F688361BE3F9EF00F9A868 /* heightmap.png */,
+				806E35AE1BE639600053DE78 /* heightmap2.png */,
+				806E35B41BE642AD0053DE78 /* heightmap3.png */,
+				80672D151BEFB6790009030D /* heightmap3_low.png */,
+				80672D171BEFB6E60009030D /* heightmap3_vlow.png */,
+				48F688381BE40CD800F9A868 /* heightmap_high.jpg */,
+				48F688391BE40CD800F9A868 /* heightmap_low.png */,
+			);
+			name = heightmaps;
+			sourceTree = "<group>";
+		};
 		806778E11B18D2590082AF0B /* Buffer */ = {
 			isa = PBXGroup;
 			children = (
@@ -669,8 +752,12 @@
 		806778E81B18ED690082AF0B /* Textures */ = {
 			isa = PBXGroup;
 			children = (
+				802A49EB1BECF49500373B68 /* Texture.h */,
+				802A49EC1BECF49500373B68 /* Texture.m */,
 				806778E91B18ED7E0082AF0B /* ModelTexture.h */,
 				806778EA1B18ED7E0082AF0B /* ModelTexture.m */,
+				80370BC11BEBDF51000A62FD /* GUITexture.h */,
+				80370BC21BEBDF51000A62FD /* GUITexture.m */,
 				4888EAD91BDFC74B006EF15E /* TerrainTexture.h */,
 				4888EADA1BDFC74B006EF15E /* TerrainTexture.m */,
 				4888EADC1BDFC7F0006EF15E /* TerrainTexturePackage.h */,
@@ -698,6 +785,15 @@
 				806E35BF1BE6B20B0053DE78 /* lamp.png */,
 			);
 			name = lamp;
+			sourceTree = "<group>";
+		};
+		80790B861BF48E7B003A4AFB /* water */ = {
+			isa = PBXGroup;
+			children = (
+				80790B871BF48E97003A4AFB /* waterNormal.png */,
+				80790B881BF48E97003A4AFB /* waterDuDv.png */,
+			);
+			name = water;
 			sourceTree = "<group>";
 		};
 		80FFE4191B19EB6F008DE7DB /* Utils */ = {
@@ -874,6 +970,7 @@
 				806E35C11BE6B20B0053DE78 /* lamp.obj in Resources */,
 				4888EAD71BDFBC02006EF15E /* mud.png in Resources */,
 				4898DAC71BDD3A4E007D2695 /* grassModel.obj in Resources */,
+				80790B891BF48E97003A4AFB /* waterNormal.png in Resources */,
 				8050713D1BE8128C00CBB310 /* nightBottom.jpg in Resources */,
 				4888EAD81BDFBC02006EF15E /* path.png in Resources */,
 				48F688331BE3BDEA00F9A868 /* grass2.obj in Resources */,
@@ -884,19 +981,25 @@
 				4898DAB71BDD08C2007D2695 /* tree.obj in Resources */,
 				48F6883B1BE40CD800F9A868 /* heightmap_low.png in Resources */,
 				4898DAC91BDD3A9D007D2695 /* flower.png in Resources */,
+				80370BCC1BEBE489000A62FD /* GUIVertexShader.vsh in Resources */,
 				4898DAC31BDD0FA3007D2695 /* tree.png in Resources */,
+				804430681BE93D7A008D9A47 /* WaterVertexShader.vsh in Resources */,
+				80672D161BEFB6790009030D /* heightmap3_low.png in Resources */,
 				805071251BE808FD00CBB310 /* back.jpg in Resources */,
 				48F688371BE3F9F000F9A868 /* heightmap.png in Resources */,
 				805070E01BE7D61C00CBB310 /* SkyboxVertexShader.vsh in Resources */,
 				4898DACD1BDD3E94007D2695 /* fern.obj in Resources */,
 				4898DACE1BDD3E94007D2695 /* fern.png in Resources */,
+				8044306A1BE93D8A008D9A47 /* WaterFragmentShader.fsh in Resources */,
 				8026396D1B0E66FC009B42D6 /* FragmentShader.fsh in Resources */,
 				48DB0F131BDC1EC4003C52DC /* Rock.mtl in Resources */,
+				80370BCE1BEBE49D000A62FD /* GUIFragmentShader.fsh in Resources */,
 				805071411BE8128C00CBB310 /* nightLeft.jpg in Resources */,
 				805071451BE8128C00CBB310 /* nightTop.jpg in Resources */,
 				48DB0F1C1BDC208F003C52DC /* Farmhouse Texture Bump Map .jpg in Resources */,
 				48DB0F141BDC1EC4003C52DC /* Rock.obj in Resources */,
 				8050712B1BE808FD00CBB310 /* left.jpg in Resources */,
+				80672D181BEFB6E60009030D /* heightmap3_vlow.png in Resources */,
 				4898DAB31BDCE852007D2695 /* wagen.jpg in Resources */,
 				4898DABC1BDD0B75007D2695 /* lowPolyTree.png in Resources */,
 				8050712F1BE808FD00CBB310 /* top.jpg in Resources */,
@@ -910,6 +1013,7 @@
 				48F6883A1BE40CD800F9A868 /* heightmap_high.jpg in Resources */,
 				4816CECF1BC564E800F35C2E /* TerrainVertexShader.vsh in Resources */,
 				80FFE42A1B1A2C0B008DE7DB /* stallTexture.png in Resources */,
+				80790B8A1BF48E97003A4AFB /* waterDuDv.png in Resources */,
 				8050712D1BE808FD00CBB310 /* right.jpg in Resources */,
 				805071431BE8128C00CBB310 /* nightRight.jpg in Resources */,
 				4889F24F1BC42AAB0097A28F /* cube.obj in Resources */,
@@ -987,7 +1091,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				80370BC61BEBE161000A62FD /* GUIRenderer.m in Sources */,
+				80672D141BEF4AB70009030D /* WaterFrameBuffers.m in Sources */,
 				4888EADB1BDFC74B006EF15E /* TerrainTexture.m in Sources */,
+				804430741BE94C95008D9A47 /* WaterTile.m in Sources */,
 				80FFE4231B1A1361008DE7DB /* Camera.m in Sources */,
 				805070EA1BE7D7D300CBB310 /* SkyboxRenderer.m in Sources */,
 				80FFE4261B1A2BFA008DE7DB /* OBJLoader.mm in Sources */,
@@ -998,8 +1105,11 @@
 				483D4F0D1BC53FA800587983 /* Terrain.mm in Sources */,
 				805070FA1BE7EF5F00CBB310 /* NSObject+class.m in Sources */,
 				806778EF1B18EE1D0082AF0B /* TexturedModel.m in Sources */,
+				802A49ED1BECF49500373B68 /* Texture.m in Sources */,
 				80FFE4201B19EF82008DE7DB /* Entity.m in Sources */,
+				804430701BE94A6C008D9A47 /* WaterRenderer.m in Sources */,
 				4816CEDD1BC5663800F35C2E /* TerrainRenderer.m in Sources */,
+				8044306D1BE93D9A008D9A47 /* WaterShader.m in Sources */,
 				8026396A1B0E5F5C009B42D6 /* EntityRenderer.m in Sources */,
 				805071331BE80FBB00CBB310 /* TimeController.m in Sources */,
 				802639721B0E7069009B42D6 /* ShaderProgram.m in Sources */,
@@ -1013,7 +1123,9 @@
 				806778EB1B18ED7E0082AF0B /* ModelTexture.m in Sources */,
 				806778E71B18D2930082AF0B /* Buffer.mm in Sources */,
 				802639751B0E77B4009B42D6 /* StaticShaderProgram.m in Sources */,
+				80370BC31BEBDF51000A62FD /* GUITexture.m in Sources */,
 				4828F8F21B87BF45006D93CD /* MasterRenderer.m in Sources */,
+				80370BCA1BEBE423000A62FD /* GUIShader.m in Sources */,
 				80FFE41C1B19EBAD008DE7DB /* MathUtils.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

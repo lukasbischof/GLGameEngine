@@ -22,16 +22,17 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
 
 @property (assign, nonatomic) GLKMatrix4 projectionMatrix;
 @property (strong, nonatomic, nonnull) EntityMap *entities;
-@property (strong, nonnull, nonatomic) NSMutableArray<Terrain *> *terrains;
+@property (strong, nonatomic, nonnull) NSMutableArray<Terrain *> *terrains;
+@property (strong, nonatomic, nonnull) NSMutableArray<WaterTile *> *waterTiles;
 
 @end
 
 @implementation MasterRenderer
 
 #pragma mark - init
-+ (MasterRenderer *)rendererWithLoader:(Loader *)loader
++ (MasterRenderer *)rendererWithLoader:(Loader *)loader andFBOs:(WaterFrameBuffers *)fbos
 {
-    return [[MasterRenderer alloc] initWithLoader:loader];
+    return [[MasterRenderer alloc] initWithLoader:loader andFBOs:fbos];
 }
 
 - (instancetype)init
@@ -40,7 +41,8 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
     return nil;
 }
 
-- (instancetype)initWithLoader:(Loader *)loader
+#warning fbos ist _Nullable, wird aber nicht im Initializer geprüft
+- (instancetype)initWithLoader:(Loader *)loader andFBOs:(WaterFrameBuffers *)fbos
 {
     if ((self = [super init])) {
         CGSize size = [UIScreen mainScreen].bounds.size;
@@ -53,6 +55,8 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
         self.terrainShader = [TerrainShader terrainShaderProgram];
         self.terrainRenderer = [TerrainRenderer terrainRendererWithShader:self.terrainShader];
         self.skyboxRenderer = [SkyboxRenderer skyboxRendererWithLoader:loader];
+        self.waterRenderer = [WaterRenderer waterRendererWithLoader:loader andFBOs:fbos];
+        self.guiRenderer = [GUIRenderer rendererWithLoader:loader];
         
         self.skyColor = RGBAMake(0.5f, 0.5f, 0.5f, 1.f);
         self.fog = kDefaultFog;
@@ -61,6 +65,7 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
         
         _entities = [EntityMap dictionary];
         _terrains = [NSMutableArray<Terrain *> array];
+        _waterTiles = [NSMutableArray<WaterTile *> array];
     }
     
     return self;
@@ -95,19 +100,28 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
     [self.terrainShader deactivate];
     
     [self.skyboxRenderer updateProjectionMatrix:_projectionMatrix];
+    [self.waterRenderer updateProjectionMatrix:_projectionMatrix];
 }
 
 #pragma mark - Rendering
-- (void)renderWithLights:(NSArray<Light *> *)lights andCamera:(Camera *)camera
+- (void)renderGUI:(NSArray<GUITexture *> *)guis
+{
+    [self.guiRenderer render:guis];
+}
+
+- (void)renderWithLights:(NSArray<Light *> *)lights camera:(Camera * _Nonnull)camera andClippingPlane:(GLKVector4)clippingPlane
 {
     [self prepare];
     
     [self.skyboxRenderer renderWithCamera:camera];
     
-    // The depth will be turned on after skybox render call automatically
+    // The depth will be turned on after the skybox render call automatically
     glDepthFunc(GL_LESS);
     
+    glEnable(GL_CLIP_DISTANCE0_APPLE);
+    
     [self.shader activate];
+    [self.shader loadClippingPlane:clippingPlane];
     [self.shader loadLights:lights];
     [self.shader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
     [self.shader loadViewMatrix:[camera getViewMatrix]];
@@ -115,12 +129,22 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
     [self.shader deactivate];
     
     [self.terrainShader activate];
+    [self.terrainShader loadClippingPlane:clippingPlane];
     [self.terrainShader loadLights:lights];
     [self.terrainShader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
     [self.terrainShader loadViewMatrix:[camera getViewMatrix]];
     [self.terrainRenderer render:self.terrains withCamera:camera];
     [self.terrainShader deactivate];
-    
+}
+
+- (void)renderWaterWithCamera:(Camera *)camera
+{
+    [self.waterRenderer render:self.waterTiles withCamera:camera];
+}
+
+- (void)finishedFrame
+{
+    [self clearWaterTiles];
     [self clearEntities];
     [self clearTerrains];
 }
@@ -153,6 +177,11 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
     [self.terrains addObject:terrain];
 }
 
+- (void)processWaterTile:(WaterTile *)tile
+{
+    [self.waterTiles addObject:tile];
+}
+
 - (void)clearEntities
 {
     [self.entities removeAllObjects];
@@ -161,6 +190,11 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
 - (void)clearTerrains
 {
     [self.terrains removeAllObjects];
+}
+
+- (void)clearWaterTiles
+{
+    [self.waterTiles removeAllObjects];
 }
 
 #pragma mark - private methods
@@ -174,6 +208,9 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
 {
     [self.shader cleanUp];
     [self.terrainShader cleanUp];
+    [self.waterRenderer cleanUp];
+    [self.skyboxRenderer cleanUp];
+    [self.guiRenderer cleanUp];
 }
 
 #pragma mark - getters / setters

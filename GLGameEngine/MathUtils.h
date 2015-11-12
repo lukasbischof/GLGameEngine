@@ -120,6 +120,16 @@ EXPORT
 GLfloat MathUtils_RandomFloat(GLfloat min, GLfloat max);
 
 /**
+ @function MathUtils_RandomMersenneTwisterFloat
+ @abstract Generiert eine zufällige Zahl zwischen min und max mit dem mersenne twister Algorithmus
+ @param min Die kleinste Grenze
+ @param max Die grösste Grenze
+ @return Die Zufallszahl
+ */
+EXPORT
+GLfloat MathUtils_RandomMersenneTwisterFloat(GLfloat min, GLfloat max);
+
+/**
  @function MathUtils_RandomBool
  @abstract Generiert ein zufälligen Boolean
  @return Der Zufallsboolean
@@ -137,9 +147,25 @@ EXPORT
 GLboolean MathUtils_RandomBoolProb(GLfloat probability);
 
 /**
- 
+ @function MathUtils_BarryCentric
+ @abstract Gibt die Höhe des Dreiecks △(p1, p2, p3) an der Position pos zurück.
+ @param p1  Dreieckskoordinate 1
+ @param p2  Dreieckskoordinate 2
+ @param p3  Dreieckskoordinate 3
+ @param pos Die Position
+ @return Die Höhe
 */
 EXPORT
 GLfloat MathUtils_BarryCentric(GLKVector3 p1, GLKVector3 p2, GLKVector3 p3, GLKVector2 pos);
+
+/**
+ @function MathUtils_CreateGUITransformationMatrix
+ @abstract Generiert eine neue Transformationsmatrix für GUI Texturen
+ @param translation Die Verschiebung (Position) des Elements
+ @param scale   Die Grösse des Elements
+ @return Die Matrix
+*/
+EXPORT
+GLKMatrix4 MathUtils_CreateGUITransformationMatrix(GLKVector2 translation, GLKVector2 scale);
 
 #endif /* defined(__GLGameEngine__MathUtils__) */

@@ -7,16 +7,11 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <OpenGLES/ES3/gl.h>
-#import <GLKit/GLKit.h>
+#import "Texture.h"
 
-@interface TerrainTexture : NSObject
-
-@property (assign, nonatomic) GLuint textureID;
-@property (assign, nonatomic) GLenum textureTarget;
+@interface TerrainTexture : Texture
 
 - (instancetype)initWithID:(GLuint)textureID andTarget:(GLenum)target enableTiling:(BOOL)enableTiling NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithTexInfo:(GLKTextureInfo *)texInfo;
-- (instancetype)initWithTexInfo:(GLKTextureInfo *)texInfo andTiling:(BOOL)enableTiling;
+- (instancetype)initWithTextureInfo:(GLKTextureInfo *)texInfo andTiling:(BOOL)enableTiling;
 
 @end

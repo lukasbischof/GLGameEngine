@@ -23,5 +23,6 @@
 - (void)loadNumberOfRows:(GLint)numberOfRows;
 - (void)loadOffset:(GLKVector2)offset;
 - (void)loadDamper:(GLfloat)damper andReflectivity:(GLfloat)reflectivity;
+- (void)loadClippingPlane:(GLKVector4)clippingPlane;
 
 @end

@@ -46,5 +46,6 @@
 + (Camera *)camera;
 
 - (void)move:(GLKVector3)vec;
+- (void)invertPitch;
 
 @end

@@ -23,4 +23,6 @@
 - (void)updateFogColor:(GLKVector3)fogColor;
 - (void)renderWithCamera:(Camera *)camera;
 
+- (void)cleanUp;
+
 @end

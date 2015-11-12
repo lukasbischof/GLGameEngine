@@ -3,7 +3,7 @@
 precision mediump float;
 
 in vec3 inout_texCoords;
-out vec4 out_color;
+layout(location = 0) out lowp vec4 out_color;
 
 uniform samplerCube u_cubeSampler1;
 uniform samplerCube u_cubeSampler2;

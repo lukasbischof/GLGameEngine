@@ -32,6 +32,7 @@ NSString *const TERRAIN_FRAGMENT_SHADER_FILE_NAME = @"TerrainFragmentShader";
 #define UNIFORM_G_SAMPLER_NAME "u_gSampler"
 #define UNIFORM_B_SAMPLER_NAME "u_bSampler"
 #define UNIFORM_BLEND_MAP_SAMPLER_NAME "u_blendMapSampler"
+#define UNIFORM_CLIPPING_PLANE_NAME "u_clippingPlane"
 
 @implementation TerrainShader {
     GLuint uniform_transformation_matrix_location,
@@ -48,7 +49,8 @@ NSString *const TERRAIN_FRAGMENT_SHADER_FILE_NAME = @"TerrainFragmentShader";
            uniform_r_sampler_location,
            uniform_g_sampler_location,
            uniform_b_sampler_location,
-           uniform_blend_map_sampler_location;
+           uniform_blend_map_sampler_location,
+           uniform_clipping_plane_location;
 }
 
 + (TerrainShader *)terrainShaderProgram
@@ -87,12 +89,18 @@ NSString *const TERRAIN_FRAGMENT_SHADER_FILE_NAME = @"TerrainFragmentShader";
     uniform_g_sampler_location = [super getUniformLocation:UNIFORM_G_SAMPLER_NAME];
     uniform_b_sampler_location = [super getUniformLocation:UNIFORM_B_SAMPLER_NAME];
     uniform_blend_map_sampler_location = [super getUniformLocation:UNIFORM_BLEND_MAP_SAMPLER_NAME];
+    uniform_clipping_plane_location = [super getUniformLocation:UNIFORM_CLIPPING_PLANE_NAME];
     
     for (GLuint i = 0; i < MAX_LIGHTS; i++) {
         uniform_light_position_locations[i] = [super getUniformLocation:UNIFORM_LIGHT_POSITION_NAME(i)];
         uniform_light_color_locations[i] = [super getUniformLocation:UNIFORM_LIGHT_COLOR_NAME(i)];
         uniform_attenuation_locations[i] = [super getUniformLocation:UNIFORM_ATTENUATION_NAME(i)];
     }
+}
+
+- (void)loadClippingPlane:(GLKVector4)clippingPlane
+{
+    [super loadFloatVector4:clippingPlane toLocation:uniform_clipping_plane_location];
 }
 
 - (void)loadTextureUnits

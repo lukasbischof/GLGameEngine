@@ -1,4 +1,4 @@
-#version 300 core
+#version 300 es
 
 precision mediump float;
 
@@ -7,7 +7,8 @@ in vec3 inout_normal;
 in vec3 inout_lightDirection[4];
 in vec3 inout_modelPosition;
 in float inout_visibility;
-out vec4 out_color;
+
+layout(location = 0) out lowp vec4 out_color;
 
 uniform sampler2D u_textureSampler;
 uniform vec3 u_lightColor[4];
