@@ -95,7 +95,7 @@ NSString *deviceName()
     }
     
     self.glview.context = self.context;
-    self.glview.drawableDepthFormat = GLKViewDrawableDepthFormat16;
+    self.glview.drawableDepthFormat = GLKViewDrawableDepthFormat24;
     // self.glview.drawableColorFormat = GLKViewDrawableColorFormatRGBA8888;
     self.glview.drawableMultisample = GLKViewDrawableMultisampleNone;
     
@@ -274,7 +274,7 @@ NSString *deviceName()
     }
     
     
-    GLKVector3 sunPos1 = GLKVector3Make(TERRAIN_SIZE/2.0, 100.0, -TERRAIN_SIZE/2.0);
+    GLKVector3 sunPos1 = GLKVector3Make(TERRAIN_SIZE/2.0 + 30, 100.0, -TERRAIN_SIZE/2.0 - 10);
     
     [self.lights addObject:[Light lightWithPosition:sunPos1
                                            andColor:GLKVector3Make(0.5, 0.5, 0.5)]];
@@ -394,19 +394,19 @@ NSString *deviceName()
     [self.camera invertPitch];
     
     [self.fbos bindReflectionFrameBuffer];
-    [self.renderer renderWithLights:self.lights camera:self.camera andClippingPlane:GLKVector4Make(0, 1, 0, -self.water.height)];
+    [self.renderer renderWithLights:self.lights camera:self.camera andClippingPlane:GLKVector4Make(0, 1, 0, -self.water.height + 0.5f)];
     
     [self.camera move:GLKVector3Make(0, distance, 0)];
     [self.camera invertPitch];
     
     [self.fbos bindRefractionFrameBuffer];
-    [self.renderer renderWithLights:self.lights camera:self.camera andClippingPlane:GLKVector4Make(0, -1, 0, self.water.height)];
+    [self.renderer renderWithLights:self.lights camera:self.camera andClippingPlane:GLKVector4Make(0, -1, 0, self.water.height + 0.5f)];
     
     [self.glview bindDrawable];
     
     glDisable(GL_CLIP_DISTANCE0_APPLE);
     [self.renderer renderWithLights:self.lights camera:self.camera andClippingPlane:GLKVector4Make(0, -1, 0, 100)];
-    [self.renderer renderWaterWithCamera:self.camera];
+    [self.renderer renderWaterWithCamera:self.camera andLight:self.lights[0]];
     #if WATER_DEBUG
         [self.renderer renderGUI:self.guis];
     #endif

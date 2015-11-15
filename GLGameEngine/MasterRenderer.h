@@ -56,7 +56,7 @@ typedef struct _RGBA RGBA;
 - (void)processTerrain:(Terrain *_Nonnull)terrain;
 - (void)processWaterTile:(WaterTile *_Nonnull)tile;
 - (void)renderWithLights:(NSArray<Light *> *_Nonnull)lights camera:(Camera *_Nonnull)camera andClippingPlane:(GLKVector4)clippingPlane;
-- (void)renderWaterWithCamera:(Camera *_Nonnull)camera;
+- (void)renderWaterWithCamera:(Camera *_Nonnull)camera andLight:(Light *_Nonnull)light;
 - (void)finishedFrame;
 - (void)renderGUI:(NSArray<GUITexture *> *_Nonnull)guis;
 - (void)cleanUp;

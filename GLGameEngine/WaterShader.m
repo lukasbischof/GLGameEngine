@@ -18,8 +18,12 @@ NSString *const WATER_FRAGMENT_SHADER_FILE_NAME = @"WaterFragmentShader";
            uniform_reflection_texture_location,
            uniform_refraction_texture_location,
            uniform_dudv_map_location,
+           uniform_normal_map_location,
+           uniform_depth_map_location,
            uniform_move_factor_location,
-           uniform_camera_position_location;
+           uniform_camera_position_location,
+           uniform_light_position_location,
+           uniform_light_color_location;
 }
 
 #pragma mark - init
@@ -54,6 +58,16 @@ NSString *const WATER_FRAGMENT_SHADER_FILE_NAME = @"WaterFragmentShader";
     uniform_dudv_map_location = [self getUniformLocation:"u_dudvMap"];
     uniform_move_factor_location = [self getUniformLocation:"u_moveFactor"];
     uniform_camera_position_location = [self getUniformLocation:"u_cameraPosition"];
+    uniform_normal_map_location = [self getUniformLocation:"u_normalMap"];
+    uniform_depth_map_location = [self getUniformLocation:"u_depthMap"];
+    uniform_light_position_location = [self getUniformLocation:"u_lightPosition"];
+    uniform_light_color_location = [self getUniformLocation:"u_lightColor"];
+}
+
+- (void)loadLight:(Light *)light
+{
+    [self loadFloatVector3:light.color toLocation:uniform_light_color_location];
+    [self loadFloatVector3:light.position toLocation:uniform_light_position_location];
 }
 
 - (void)loadMoveFactor:(GLfloat)moveFactor
@@ -66,6 +80,8 @@ NSString *const WATER_FRAGMENT_SHADER_FILE_NAME = @"WaterFragmentShader";
     [self loadInt:0 toLocation:uniform_reflection_texture_location];
     [self loadInt:1 toLocation:uniform_refraction_texture_location];
     [self loadInt:2 toLocation:uniform_dudv_map_location];
+    [self loadInt:3 toLocation:uniform_normal_map_location];
+    [self loadInt:4 toLocation:uniform_depth_map_location];
 }
 
 - (void)loadTransformationMatrix:(GLKMatrix4)transformationMatrix

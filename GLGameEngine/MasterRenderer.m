@@ -12,9 +12,9 @@
 #import "NSObject+class.h"
 
 // Field of View in degrees
-static const GLfloat FOVY = 45;
-static const GLfloat NEARZ = 0.1;
-static const GLfloat FARZ = 300;
+static const GLfloat FOVY = 45.0;
+static const GLfloat NEARZ = 1.5;
+static const GLfloat FARZ = 300.0;
 
 typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityMap;
 
@@ -137,9 +137,9 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
     [self.terrainShader deactivate];
 }
 
-- (void)renderWaterWithCamera:(Camera *)camera
+- (void)renderWaterWithCamera:(Camera *)camera andLight:(Light * _Nonnull)light
 {
-    [self.waterRenderer render:self.waterTiles withCamera:camera];
+    [self.waterRenderer render:self.waterTiles withCamera:camera andLight:light];
 }
 
 - (void)finishedFrame

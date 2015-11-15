@@ -7,6 +7,7 @@
 //
 
 #import "ShaderProgram.h"
+#import "Light.h"
 #import "Camera.h"
 
 @interface WaterShader : ShaderProgram
@@ -18,5 +19,6 @@
 - (void)loadViewMatrix:(Camera *)cam;
 - (void)loadTextureUnits;
 - (void)loadMoveFactor:(GLfloat)moveFactor;
+- (void)loadLight:(Light *)light;
 
 @end
