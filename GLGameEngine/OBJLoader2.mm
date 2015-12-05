@@ -81,7 +81,11 @@
     if ((self = [super init])) {
         if ([MDLAsset canImportFileExtension:@"obj"]) {
             
-            GLKMeshBufferAllocator *_Nonnull allocator = [[GLKMeshBufferAllocator alloc] init];
+            static GLKMeshBufferAllocator *allocator = nil;
+            static dispatch_once_t onceToken;
+            dispatch_once(&onceToken, ^{
+                allocator = [[GLKMeshBufferAllocator alloc] init];
+            });
             
             MDLAsset *asset = [[MDLAsset alloc] initWithURL:url
                                            vertexDescriptor:[self getVertexDescriptor]
@@ -110,8 +114,8 @@
             }
             
             GLKMeshBuffer *positionBuffer = vertexBuffers[0];
-            GLKMeshBuffer *normalBuffer = vertexBuffers[1];
-            GLKMeshBuffer *texCoordBuffer = vertexBuffers[2];
+            GLKMeshBuffer *texCoordBuffer = vertexBuffers[1];
+            GLKMeshBuffer *normalBuffer = vertexBuffers[2];
             
             
             TexturedModel *model = [loader createTexturedModelWithPositions:positionBuffer
@@ -122,6 +126,7 @@
                                                                  andTexture:texture];
             
             self.texturedModel = model;
+            self.texturedModel.debugLabel = [url absoluteString];
         } else {
             fatal_error(@"Model I/O doesn't support obj?");
         }
@@ -139,23 +144,23 @@
     descriptor.attributes[0].offset = 0;
     descriptor.attributes[0].bufferIndex = 0;
     
-    NSUInteger size = sizeof(float) * 3;
+    NSUInteger size = sizeof(GLfloat) * 3;
     descriptor.layouts[0].stride = size;
     
-    descriptor.attributes[1].name = MDLVertexAttributeNormal;
-    descriptor.attributes[1].format = MDLVertexFormatFloat3;
+    descriptor.attributes[1].name = MDLVertexAttributeTextureCoordinate;
+    descriptor.attributes[1].format = MDLVertexFormatHalf2;
     descriptor.attributes[1].offset = 0;
     descriptor.attributes[1].bufferIndex = 1;
     
-    size = sizeof(float) * 3;
+    size = sizeof(GLfloat);
     descriptor.layouts[1].stride = size;
     
-    descriptor.attributes[2].name = MDLVertexAttributeTextureCoordinate;
-    descriptor.attributes[2].format = MDLVertexFormatHalf2;
+    descriptor.attributes[2].name = MDLVertexAttributeNormal;
+    descriptor.attributes[2].format = MDLVertexFormatFloat3;
     descriptor.attributes[2].offset = 0;
     descriptor.attributes[2].bufferIndex = 2;
     
-    size = sizeof(float);
+    size = sizeof(GLfloat) * 3;
     descriptor.layouts[2].stride = size;
     
     return descriptor;

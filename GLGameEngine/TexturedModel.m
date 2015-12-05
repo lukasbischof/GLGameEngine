@@ -30,6 +30,7 @@
 {
     TexturedModel *copy = [[TexturedModel alloc] initWithRawModel:[self.rawModel copy] andTexture:[self.texture copy]];
     copy.UUID = self.UUID;
+    copy.debugLabel = self.debugLabel;
     
     return copy;
 }

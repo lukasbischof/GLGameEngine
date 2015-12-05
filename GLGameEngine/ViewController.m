@@ -39,6 +39,7 @@ NSString *deviceName()
 @property (strong, nonatomic) Loader *loader;
 @property (strong, nonatomic) MasterRenderer *renderer;
 @property (strong, nonatomic) NSMutableArray<Entity *> *entities;
+@property (strong, nonatomic) NSMutableArray<InstanceableTexturedModel *> *instanceableModels;
 @property (strong, nonatomic) Terrain *terrain;
 @property (strong, nonatomic) Camera *camera;
 @property (strong, nonatomic) NSMutableArray<Light *> *lights;
@@ -96,8 +97,8 @@ NSString *deviceName()
     
     self.glview.context = self.context;
     self.glview.drawableDepthFormat = GLKViewDrawableDepthFormat24;
-    // self.glview.drawableColorFormat = GLKViewDrawableColorFormatRGBA8888;
-    self.glview.drawableMultisample = GLKViewDrawableMultisampleNone;
+    self.glview.drawableColorFormat = GLKViewDrawableColorFormatRGBA8888;
+    //self.glview.drawableMultisample = GLKViewDrawableMultisampleNone;
     
     [EAGLContext setCurrentContext:self.context];
     [self.glview bindDrawable];
@@ -155,10 +156,15 @@ NSString *deviceName()
     
     // ENTITIES
     self.entities = [NSMutableArray<Entity *> new];
+    self.instanceableModels = [NSMutableArray<InstanceableTexturedModel *> new];
     
     NSLog(@"err before: %d", glGetError());
-    NSArray<NSString *> *names = @[@"Rock", @"pine", @"grass2", @"grassModel", @"Farmhouse", @"wagen", @"fern", @"lamp"];
-    NSArray *textureNames = @[@[@"Rock", @"jpg"], @[@"pine", @"png"], @[@"grassTexture", @"png"], @[@"flower", @"png"], @[@"Farmhouse", @"jpg"], @[@"wagen", @"jpg"], @[@"fernAtlas", @"png"], @[@"lamp", @"png"]];
+    NSArray<NSString *> *names = @[@"Rock", @"pine", @"grass2",
+                                   @"grassModel", @"Farmhouse", @"wagen",
+                                   @"fern", @"lamp", @"boat"];
+    NSArray *textureNames = @[@[@"Rock", @"jpg"], @[@"pine", @"png"], @[@"grassTexture", @"png"],
+                              @[@"flower", @"png"], @[@"Farmhouse", @"jpg"], @[@"wagen", @"jpg"],
+                              @[@"fernAtlas", @"png"], @[@"lamp", @"png"], @[@"boat", @"jpg"]];
     NSArray<TexturedModel *> *models = [OBJLoader2 loadModelsWithNames:names
                                                           textureNames:textureNames
                                                              andLoader:self.loader];
@@ -173,7 +179,19 @@ NSString *deviceName()
                   *farmModel   = models[4],
                   *wagenModel  = models[5],
                   *fernModel   = models[6],
-                  *lampModel   = models[7];
+                  *lampModel   = models[7],
+                  *boatModel   = models[8];
+    /*InstanceableTexturedModel *rockModel = [[InstanceableTexturedModel alloc] initWithRawModel:models[0].rawModel
+                                                                                    andTexture:models[0].texture];
+    InstanceableTexturedModel *treeModel = [[InstanceableTexturedModel alloc] initWithRawModel:models[1].rawModel
+                                                                                    andTexture:models[1].texture];
+    TexturedModel *rockModel   = models[0],
+                  *grassModel  = models[2],
+                  *flowerModel = models[3],
+                  *farmModel   = models[4],
+                  *wagenModel  = models[5],
+                  *fernModel   = models[6],
+                  *lampModel   = models[7];*/
     
     fernModel.texture.hasAlpha = YES;
     grassModel.texture.hasAlpha = YES;
@@ -187,6 +205,14 @@ NSString *deviceName()
     //farmEntity.rotation = MathUtils_RotationMake(0.0, 125., 0.0);
     
     [self.entities addObject:farmEntity];
+    
+    // BOAT
+    Entity *boatEntity = [Entity entityWithTexturedModel:boatModel];
+    boatEntity.position = GLKVector3Make(TERRAIN_SIZE/2.0 + 60, -8.0, -TERRAIN_SIZE/2.0 - 100.0);
+    boatEntity.scale = 0.01;
+    //farmEntity.rotation = MathUtils_RotationMake(0.0, 125., 0.0);
+    
+    [self.entities addObject:boatEntity];
     
     // WAGEN
     Entity *wagenEntity = [Entity entityWithTexturedModel:wagenModel];
@@ -214,7 +240,11 @@ NSString *deviceName()
         entity.model.texture.reflectivity = .1;
         
         [self.entities addObject:entity];
+        //[rockModel updateTransformationMatrix:entity.currentTransformationMatrix forInstance:(GLuint)i];
     }
+    
+    //[rockModel lock];
+    //[self.instanceableModels addObject:rockModel];
     
     // TREE SETUP
     NSUInteger numb = [deviceName() isEqualToString:@"iPad5,3"] ? 75 : 50;
@@ -233,7 +263,11 @@ NSString *deviceName()
         entity.model.texture.reflectivity = 0;
         
         [self.entities addObject:entity];
+        //[treeModel updateTransformationMatrix:entity.currentTransformationMatrix forInstance:(GLuint)i];
     }
+    
+    //[treeModel lock];
+    //[self.instanceableModels addObject:treeModel];
     
     // GRASS SETUP
     numb = [deviceName() isEqualToString:@"iPad5,3"] ? 850 : 650;
@@ -384,6 +418,10 @@ NSString *deviceName()
     for (Entity *entity in self.entities) {
         [self.renderer processEntity:entity];
     }
+    
+    /*for (InstanceableTexturedModel *model in self.instanceableModels) {
+        [self.renderer processInstanceableModel:model];
+    }*/
     
     [self.renderer processTerrain:self.terrain];
     [self.renderer processWaterTile:self.water];

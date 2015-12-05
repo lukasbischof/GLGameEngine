@@ -22,7 +22,7 @@ static const GLfloat NIGHT_DURATION = 11;
     SIZE, -SIZE, 0.0
 };*/
 
-const float vertices[] = {
+__attribute__((aligned(16))) const float vertices[] = {
     -SIZE,  SIZE, -SIZE,
     -SIZE, -SIZE, -SIZE,
     SIZE, -SIZE, -SIZE,
@@ -90,7 +90,7 @@ static inline NSArray<NSString *> *getNightTextureFiles() {
              bundleURL(@"nightBottom", @"jpg"),
              bundleURL(@"nightBack", @"jpg"),
              bundleURL(@"nightFront", @"jpg"),
-             ];
+    ];
 };
 
 @interface SkyboxRenderer ()
@@ -154,14 +154,14 @@ static inline NSArray<NSString *> *getNightTextureFiles() {
     [self.shader loadViewMatrix:camera.viewMatrix];
     
     glBindVertexArray(self.cube.vaoID);
-    glEnableVertexAttribArray(0);
+    //glEnableVertexAttribArray(0);
     
     [self bindTextures];
     
     glDisable(GL_CULL_FACE);
     glDisable(GL_DEPTH_TEST);
     glDrawArrays(GL_TRIANGLES, 0, self.cube.vertexCount);
-    glDisableVertexAttribArray(0);
+    //glDisableVertexAttribArray(0);
     glBindVertexArray(0);
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_CULL_FACE);

@@ -124,6 +124,9 @@
 		805071441BE8128C00CBB310 /* nightRight.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 805071391BE8128C00CBB310 /* nightRight.jpg */; };
 		805071451BE8128C00CBB310 /* nightTop.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 8050713A1BE8128C00CBB310 /* nightTop.jpg */; };
 		805071461BE8128C00CBB310 /* nightTop.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 8050713A1BE8128C00CBB310 /* nightTop.jpg */; };
+		8053F3E41BF8D263006163D1 /* InstanceableTexturedModel.mm in Sources */ = {isa = PBXBuildFile; fileRef = 8053F3E31BF8D263006163D1 /* InstanceableTexturedModel.mm */; };
+		8053F3E71BF8D91B006163D1 /* InstancingShaderProgram.m in Sources */ = {isa = PBXBuildFile; fileRef = 8053F3E61BF8D91B006163D1 /* InstancingShaderProgram.m */; };
+		8053F3E91BF8D937006163D1 /* InstancingVertexShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 8053F3E81BF8D937006163D1 /* InstancingVertexShader.vsh */; };
 		80672D141BEF4AB70009030D /* WaterFrameBuffers.m in Sources */ = {isa = PBXBuildFile; fileRef = 80672D131BEF4AB70009030D /* WaterFrameBuffers.m */; };
 		80672D161BEFB6790009030D /* heightmap3_low.png in Resources */ = {isa = PBXBuildFile; fileRef = 80672D151BEFB6790009030D /* heightmap3_low.png */; };
 		80672D181BEFB6E60009030D /* heightmap3_vlow.png in Resources */ = {isa = PBXBuildFile; fileRef = 80672D171BEFB6E60009030D /* heightmap3_vlow.png */; };
@@ -139,6 +142,8 @@
 		80790B891BF48E97003A4AFB /* waterNormal.png in Resources */ = {isa = PBXBuildFile; fileRef = 80790B871BF48E97003A4AFB /* waterNormal.png */; };
 		80790B8A1BF48E97003A4AFB /* waterDuDv.png in Resources */ = {isa = PBXBuildFile; fileRef = 80790B881BF48E97003A4AFB /* waterDuDv.png */; };
 		80B72DA21B33328700394A80 /* OBJLoader2.mm in Sources */ = {isa = PBXBuildFile; fileRef = 80B72DA11B33328700394A80 /* OBJLoader2.mm */; };
+		80C69D9D1C11CC7200342785 /* boat.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80C69D9C1C11CC7200342785 /* boat.obj */; };
+		80C69D9F1C11CC7A00342785 /* boat.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 80C69D9E1C11CC7A00342785 /* boat.jpg */; };
 		80E38B7D1B1B819A006D7B30 /* dragon.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80E38B7C1B1B819A006D7B30 /* dragon.obj */; };
 		80E38B7F1B1B9893006D7B30 /* white.png in Resources */ = {isa = PBXBuildFile; fileRef = 80E38B7E1B1B9893006D7B30 /* white.png */; };
 		80FFE41C1B19EBAD008DE7DB /* MathUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 80FFE41A1B19EBAD008DE7DB /* MathUtils.m */; };
@@ -296,6 +301,11 @@
 		805071381BE8128C00CBB310 /* nightLeft.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = nightLeft.jpg; sourceTree = "<group>"; };
 		805071391BE8128C00CBB310 /* nightRight.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = nightRight.jpg; sourceTree = "<group>"; };
 		8050713A1BE8128C00CBB310 /* nightTop.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = nightTop.jpg; sourceTree = "<group>"; };
+		8053F3E21BF8D263006163D1 /* InstanceableTexturedModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InstanceableTexturedModel.h; sourceTree = "<group>"; };
+		8053F3E31BF8D263006163D1 /* InstanceableTexturedModel.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = InstanceableTexturedModel.mm; sourceTree = "<group>"; };
+		8053F3E51BF8D91B006163D1 /* InstancingShaderProgram.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InstancingShaderProgram.h; sourceTree = "<group>"; };
+		8053F3E61BF8D91B006163D1 /* InstancingShaderProgram.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InstancingShaderProgram.m; sourceTree = "<group>"; };
+		8053F3E81BF8D937006163D1 /* InstancingVertexShader.vsh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; path = InstancingVertexShader.vsh; sourceTree = "<group>"; };
 		80672D121BEF4AB70009030D /* WaterFrameBuffers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WaterFrameBuffers.h; sourceTree = "<group>"; };
 		80672D131BEF4AB70009030D /* WaterFrameBuffers.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WaterFrameBuffers.m; sourceTree = "<group>"; };
 		80672D151BEFB6790009030D /* heightmap3_low.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = heightmap3_low.png; sourceTree = "<group>"; };
@@ -316,6 +326,8 @@
 		80790B881BF48E97003A4AFB /* waterDuDv.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = waterDuDv.png; sourceTree = "<group>"; };
 		80B72DA01B33328700394A80 /* OBJLoader2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OBJLoader2.h; sourceTree = "<group>"; };
 		80B72DA11B33328700394A80 /* OBJLoader2.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = OBJLoader2.mm; sourceTree = "<group>"; };
+		80C69D9C1C11CC7200342785 /* boat.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = boat.obj; sourceTree = "<group>"; };
+		80C69D9E1C11CC7A00342785 /* boat.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = boat.jpg; sourceTree = "<group>"; };
 		80E38B7C1B1B819A006D7B30 /* dragon.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = dragon.obj; sourceTree = "<group>"; };
 		80E38B7E1B1B9893006D7B30 /* white.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = white.png; sourceTree = "<group>"; };
 		80FFE41A1B19EBAD008DE7DB /* MathUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MathUtils.m; sourceTree = "<group>"; };
@@ -562,6 +574,7 @@
 				4889F24E1BC42AAB0097A28F /* cube.obj */,
 				80E38B7E1B1B9893006D7B30 /* white.png */,
 				4898DAC81BDD3A9D007D2695 /* flower.png */,
+				80C69D971C11C85B00342785 /* boat */,
 				80790B861BF48E7B003A4AFB /* water */,
 				80672D191BEFB6EC0009030D /* heightmaps */,
 				805070EB1BE7DBBD00CBB310 /* skybox */,
@@ -690,8 +703,11 @@
 			children = (
 				8026396C1B0E66FC009B42D6 /* FragmentShader.fsh */,
 				8026396E1B0E670D009B42D6 /* VertexShader.vsh */,
+				8053F3E81BF8D937006163D1 /* InstancingVertexShader.vsh */,
 				802639731B0E77B4009B42D6 /* StaticShaderProgram.h */,
 				802639741B0E77B4009B42D6 /* StaticShaderProgram.m */,
+				8053F3E51BF8D91B006163D1 /* InstancingShaderProgram.h */,
+				8053F3E61BF8D91B006163D1 /* InstancingShaderProgram.m */,
 			);
 			name = static;
 			sourceTree = "<group>";
@@ -773,6 +789,8 @@
 				802639631B0E5279009B42D6 /* RawModel.m */,
 				806778ED1B18EE1D0082AF0B /* TexturedModel.h */,
 				806778EE1B18EE1D0082AF0B /* TexturedModel.m */,
+				8053F3E21BF8D263006163D1 /* InstanceableTexturedModel.h */,
+				8053F3E31BF8D263006163D1 /* InstanceableTexturedModel.mm */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -794,6 +812,15 @@
 				80790B881BF48E97003A4AFB /* waterDuDv.png */,
 			);
 			name = water;
+			sourceTree = "<group>";
+		};
+		80C69D971C11C85B00342785 /* boat */ = {
+			isa = PBXGroup;
+			children = (
+				80C69D9C1C11CC7200342785 /* boat.obj */,
+				80C69D9E1C11CC7A00342785 /* boat.jpg */,
+			);
+			name = boat;
 			sourceTree = "<group>";
 		};
 		80FFE4191B19EB6F008DE7DB /* Utils */ = {
@@ -974,6 +1001,7 @@
 				8050713D1BE8128C00CBB310 /* nightBottom.jpg in Resources */,
 				4888EAD81BDFBC02006EF15E /* path.png in Resources */,
 				48F688331BE3BDEA00F9A868 /* grass2.obj in Resources */,
+				80C69D9F1C11CC7A00342785 /* boat.jpg in Resources */,
 				806E35C21BE6B20B0053DE78 /* lamp.png in Resources */,
 				80FFE4291B1A2C0B008DE7DB /* stall.obj in Resources */,
 				806E35C01BE6B20B0053DE78 /* lamp.mtl in Resources */,
@@ -982,6 +1010,7 @@
 				48F6883B1BE40CD800F9A868 /* heightmap_low.png in Resources */,
 				4898DAC91BDD3A9D007D2695 /* flower.png in Resources */,
 				80370BCC1BEBE489000A62FD /* GUIVertexShader.vsh in Resources */,
+				80C69D9D1C11CC7200342785 /* boat.obj in Resources */,
 				4898DAC31BDD0FA3007D2695 /* tree.png in Resources */,
 				804430681BE93D7A008D9A47 /* WaterVertexShader.vsh in Resources */,
 				80672D161BEFB6790009030D /* heightmap3_low.png in Resources */,
@@ -999,6 +1028,7 @@
 				48DB0F1C1BDC208F003C52DC /* Farmhouse Texture Bump Map .jpg in Resources */,
 				48DB0F141BDC1EC4003C52DC /* Rock.obj in Resources */,
 				8050712B1BE808FD00CBB310 /* left.jpg in Resources */,
+				8053F3E91BF8D937006163D1 /* InstancingVertexShader.vsh in Resources */,
 				80672D181BEFB6E60009030D /* heightmap3_vlow.png in Resources */,
 				4898DAB31BDCE852007D2695 /* wagen.jpg in Resources */,
 				4898DABC1BDD0B75007D2695 /* lowPolyTree.png in Resources */,
@@ -1093,6 +1123,7 @@
 			files = (
 				80370BC61BEBE161000A62FD /* GUIRenderer.m in Sources */,
 				80672D141BEF4AB70009030D /* WaterFrameBuffers.m in Sources */,
+				8053F3E41BF8D263006163D1 /* InstanceableTexturedModel.mm in Sources */,
 				4888EADB1BDFC74B006EF15E /* TerrainTexture.m in Sources */,
 				804430741BE94C95008D9A47 /* WaterTile.m in Sources */,
 				80FFE4231B1A1361008DE7DB /* Camera.m in Sources */,
@@ -1115,6 +1146,7 @@
 				802639721B0E7069009B42D6 /* ShaderProgram.m in Sources */,
 				8026393C1B0E34D3009B42D6 /* AppDelegate.m in Sources */,
 				802639391B0E34D3009B42D6 /* main.m in Sources */,
+				8053F3E71BF8D91B006163D1 /* InstancingShaderProgram.m in Sources */,
 				80FFE42D1B1A615E008DE7DB /* Light.m in Sources */,
 				80B72DA21B33328700394A80 /* OBJLoader2.mm in Sources */,
 				805070E71BE7D79F00CBB310 /* SkyboxShader.m in Sources */,

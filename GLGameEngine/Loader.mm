@@ -17,6 +17,8 @@
     std::vector<GLuint> vaos;
     std::vector<GLuint> vbos;
     std::vector<GLuint> textures;
+    
+    NSMutableArray<GLKMeshBuffer *> *buffers;
 }
 
 @end
@@ -44,6 +46,7 @@
     vaos = std::vector<GLuint>();
     vbos = std::vector<GLuint>();
     textures = std::vector<GLuint>();
+    buffers = (NSMutableArray<GLKMeshBuffer *> *)[@[] mutableCopy];
 }
 
 - (GLKTextureInfo *)loadCubeTexture:(NSArray<NSString *> *)textureNames
@@ -111,7 +114,7 @@
     if (positions.data == NULL)
         return nil;
     
-    GLuint vertexCount = (GLuint)(positions.length / dimensions);
+    GLuint vertexCount = (GLuint)(positions.length / sizeof(GLfloat) / dimensions);
     RawModel *model = [RawModel modelByCreatingVAOWithVertexCount:vertexCount];
     
     vaos.push_back(model.vaoID);
@@ -241,9 +244,11 @@
 - (void)setBuffer:(GLKMeshBuffer *)buffer inVAOAttribIndex:(GLuint)attribIndex withAttribSize:(GLint)size andType:(GLenum)type
 {
     vbos.push_back(buffer.glBufferName);
+    [buffers addObject:buffer];
     
     glBindBuffer(GL_ARRAY_BUFFER, buffer.glBufferName);
     glVertexAttribPointer(attribIndex, size, type, GL_FALSE, 0, BUFFER_OFFSET(buffer.offset));
+    glEnableVertexAttribArray(attribIndex);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -257,6 +262,7 @@
     glBindBuffer(GL_ARRAY_BUFFER, vboID);
     glBufferData(GL_ARRAY_BUFFER, data.length, data.data, GL_STATIC_DRAW);
     glVertexAttribPointer(attribIndex, size, GL_FLOAT, GL_FALSE, 0, 0);
+    glEnableVertexAttribArray(attribIndex);
     glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
@@ -286,6 +292,7 @@
         glDeleteTextures(1, &tex);
     }
     
+    [buffers removeAllObjects];
     [self restoreObjectsCreationLists];
 }
 

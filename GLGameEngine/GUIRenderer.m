@@ -50,7 +50,7 @@ const float quad2DVertices[] = {
 {
     [self.shader activate];
     [self.quadModel bindVAO];
-    glEnableVertexAttribArray(0);
+    //glEnableVertexAttribArray(0);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glDisable(GL_DEPTH_TEST);
@@ -64,7 +64,7 @@ const float quad2DVertices[] = {
     
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);
-    glDisableVertexAttribArray(0);
+    //glDisableVertexAttribArray(0);
     [self.quadModel unbindVAO];
     [self.shader deactivate];
 }

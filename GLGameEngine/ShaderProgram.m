@@ -27,11 +27,13 @@
         // Compile Shaders
         if (![self compileShader:&_vertexShaderID type:GL_VERTEX_SHADER file:vertexShaderFile]) {
             NSLog(@"ERROR: CANT LOAD VERTEX SHADER AT PATH %@", vertexShaderFile);
+            glDeleteProgram(_programID);
             return nil;
         }
         
         if (![self compileShader:&_fragmentShaderID type:GL_FRAGMENT_SHADER file:fragmentShaderFile]) {
             NSLog(@"ERROR: CANT LOAD FRAGMENT SHADER AT PATH %@", fragmentShaderFile);
+            glDeleteProgram(_programID);
             return nil;
         }
         
@@ -177,10 +179,14 @@
 {
     GLint status;
     const GLchar *source;
+    NSError *error;
     
-    source = (GLchar *)[NSString stringWithContentsOfFile:file encoding:NSUTF8StringEncoding error:nil].UTF8String;
+    source = (GLchar *)[NSString stringWithContentsOfFile:file
+                                                 encoding:NSUTF8StringEncoding
+                                                    error:&error].UTF8String;
+    
     if (!source) {
-        NSLog(@"Failed to load vertex shader");
+        NSLog(@"Failed to load vertex shader (%@)", error);
         return NO;
     }
     

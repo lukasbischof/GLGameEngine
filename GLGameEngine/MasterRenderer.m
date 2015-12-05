@@ -17,11 +17,13 @@ static const GLfloat NEARZ = 1.5;
 static const GLfloat FARZ = 300.0;
 
 typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityMap;
+typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 
 @interface MasterRenderer ()
 
 @property (assign, nonatomic) GLKMatrix4 projectionMatrix;
 @property (strong, nonatomic, nonnull) EntityMap *entities;
+@property (strong, nonnull, nonatomic) InstancingEntityMap *instancedEntities;
 @property (strong, nonatomic, nonnull) NSMutableArray<Terrain *> *terrains;
 @property (strong, nonatomic, nonnull) NSMutableArray<WaterTile *> *waterTiles;
 
@@ -51,7 +53,8 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
         [self updateProjectionForAspect:aspect];
         
         self.shader = [StaticShaderProgram staticShaderProgram];
-        self.entityRenderer = [EntityRenderer rendererWithShaderProgram:self.shader];
+        self.instancingShader = [InstancingShaderProgram instancingShaderProgram];
+        self.entityRenderer = [EntityRenderer rendererWithShaderProgram:self.shader andInstancingShaderProgram:self.instancingShader];
         self.terrainShader = [TerrainShader terrainShaderProgram];
         self.terrainRenderer = [TerrainRenderer terrainRendererWithShader:self.terrainShader];
         self.skyboxRenderer = [SkyboxRenderer skyboxRendererWithLoader:loader];
@@ -64,6 +67,7 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
         [self setupProperties];
         
         _entities = [EntityMap dictionary];
+        _instancedEntities = [InstancingEntityMap array];
         _terrains = [NSMutableArray<Terrain *> array];
         _waterTiles = [NSMutableArray<WaterTile *> array];
     }
@@ -94,6 +98,10 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
     [self.shader activate];
     [self.shader loadProjectionMatrix:_projectionMatrix];
     [self.shader deactivate];
+    
+    [self.instancingShader bind:^{
+        [self.instancingShader loadProjectionMatrix:_projectionMatrix];
+    }];
     
     [self.terrainShader activate];
     [self.terrainShader loadProjectionMatrix:_projectionMatrix];
@@ -127,6 +135,14 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
     [self.shader loadViewMatrix:[camera getViewMatrix]];
     [self.entityRenderer render:self.entities withCamera:camera];
     [self.shader deactivate];
+    
+    [self.instancingShader activate];
+    [self.instancingShader loadClippingPlane:clippingPlane];
+    [self.instancingShader loadLights:lights];
+    [self.instancingShader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
+    [self.instancingShader loadViewMatrix:[camera getViewMatrix]];
+    [self.entityRenderer renderInstances:self.instancedEntities withCamera:camera];
+    [self.instancingShader deactivate];
     
     [self.terrainShader activate];
     [self.terrainShader loadClippingPlane:clippingPlane];
@@ -172,6 +188,11 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
     }
 }
 
+- (void)processInstanceableModel:(InstanceableTexturedModel *)model
+{
+    [self.instancedEntities addObject:model];
+}
+
 - (void)processTerrain:(Terrain *)terrain
 {
     [self.terrains addObject:terrain];
@@ -185,6 +206,7 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
 - (void)clearEntities
 {
     [self.entities removeAllObjects];
+    [self.instancedEntities removeAllObjects];
 }
 
 - (void)clearTerrains
@@ -207,6 +229,7 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
 - (void)cleanUp
 {
     [self.shader cleanUp];
+    [self.instancingShader cleanUp];
     [self.terrainShader cleanUp];
     [self.waterRenderer cleanUp];
     [self.skyboxRenderer cleanUp];
@@ -222,6 +245,10 @@ typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityM
     [self.shader activate];
     [self.shader loadFogDensity:fog.density andGradient:fog.gradient];
     [self.shader deactivate];
+    
+    [self.instancingShader bind:^{
+        [self.instancingShader loadFogDensity:fog.density andGradient:fog.gradient];
+    }];
     
     [self.terrainShader activate];
     [self.terrainShader loadFogDensity:fog.density andGradient:fog.gradient];

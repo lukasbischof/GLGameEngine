@@ -1,9 +1,17 @@
+//
+//  VertexShader.vsh
+//  GLGameEngine
+//
+//  Created by Lukas Bischof on 15.11.15.
+//  Copyright © 2015 Lukas Bischof. All rights reserved.
+//
+
 #version 300 es
 #extension GL_APPLE_clip_distance : require
 
-in vec3 in_position;
-in vec2 in_texCoords;
-in vec3 in_normals;
+layout(location = 0) in vec3 in_position;
+layout(location = 1) in vec2 in_texCoords;
+layout(location = 2) in vec3 in_normals;
 
 out vec3 inout_normal;
 out vec2 inout_texCoords;

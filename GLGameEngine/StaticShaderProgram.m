@@ -68,9 +68,9 @@ NSString *const FRAGMENT_SHADER_FILE_NAME = @"FragmentShader";
 
 - (void)bindAttributes
 {
-    [super bindAttribute:0 toVariableName:IN_POSITION_NAME];
-    [super bindAttribute:1 toVariableName:IN_TEX_COORDS_NAME];
-    [super bindAttribute:2 toVariableName:IN_NORMALS_NAME];
+    /*
+     Specified in the shader
+     */
 }
 
 #define LOC(l) [super getUniformLocation:(l)]

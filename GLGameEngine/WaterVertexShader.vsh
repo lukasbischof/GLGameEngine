@@ -1,6 +1,6 @@
 #version 300 es
 
-in vec3 in_position;
+layout(location = 0) in vec3 in_position;
 
 out vec4 inout_clipSpace;
 out vec2 inout_textureCoordinates;

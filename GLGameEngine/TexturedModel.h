@@ -15,6 +15,7 @@
 @property (strong, nonatomic, readonly) RawModel *rawModel;
 @property (strong, nonatomic, readonly) ModelTexture *texture;
 @property (strong, nonatomic) NSUUID *UUID;
+@property (strong, nonatomic) NSString *debugLabel;
 
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithRawModel:(RawModel *)rawModel andTexture:(ModelTexture *)texture NS_DESIGNATED_INITIALIZER;

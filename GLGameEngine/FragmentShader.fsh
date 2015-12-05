@@ -1,3 +1,11 @@
+//
+//  FragmentShader.fsh
+//  GLGameEngine
+//
+//  Created by Lukas Bischof on 15.11.15.
+//  Copyright © 2015 Lukas Bischof. All rights reserved.
+//
+
 #version 300 es
 
 precision mediump float;
@@ -27,6 +35,7 @@ float getAttenuation(int i, float lightDistance) {
 
 void main(void) {
     vec4 textureColor = texture(u_textureSampler, inout_texCoords);
+    
     if (textureColor.a < 0.5)
         discard;
     

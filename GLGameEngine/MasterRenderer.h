@@ -13,6 +13,8 @@
 #import "SkyboxRenderer.h"
 #import "WaterRenderer.h"
 #import "GUIRenderer.h"
+#import "InstancingShaderProgram.h"
+#import "InstanceableTexturedModel.h"
 
 typedef struct {
     GLfloat density;
@@ -37,6 +39,7 @@ typedef struct _RGBA RGBA;
 @property (assign, nonatomic) Fog fog;
 
 @property (strong, nonatomic, nonnull) StaticShaderProgram *shader;
+@property (strong, nonatomic, nonnull) InstancingShaderProgram *instancingShader;
 @property (strong, nonatomic, nonnull) TerrainShader *terrainShader;
 @property (strong, nonatomic, nonnull) EntityRenderer *entityRenderer;
 @property (strong, nonatomic, nonnull) TerrainRenderer *terrainRenderer;
@@ -53,6 +56,7 @@ typedef struct _RGBA RGBA;
 
 - (void)updateProjectionForAspect:(float)aspect;
 - (void)processEntity:(Entity *_Nonnull)entity;
+- (void)processInstanceableModel:(InstanceableTexturedModel *_Nonnull)model;
 - (void)processTerrain:(Terrain *_Nonnull)terrain;
 - (void)processWaterTile:(WaterTile *_Nonnull)tile;
 - (void)renderWithLights:(NSArray<Light *> *_Nonnull)lights camera:(Camera *_Nonnull)camera andClippingPlane:(GLKVector4)clippingPlane;

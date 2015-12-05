@@ -50,9 +50,9 @@
     RawModel *model = terrain.model;
     [model bindVAO];
     
-    glEnableVertexAttribArray(0);
+    /*glEnableVertexAttribArray(0);
     glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
+    glEnableVertexAttribArray(2);*/
     
     [self bindTexturesForTerrain:terrain];
 }
@@ -75,9 +75,9 @@
 
 - (void)unbindTerrain
 {
-    glDisableVertexAttribArray(0);
+    /*glDisableVertexAttribArray(0);
     glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(2);
+    glDisableVertexAttribArray(2);*/
 }
 
 - (void)loadTerrainMatricesWithTerrain:(Terrain *)terrain andViewMatrix:(GLKMatrix4)viewMat

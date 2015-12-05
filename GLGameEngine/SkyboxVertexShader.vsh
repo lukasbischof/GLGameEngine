@@ -1,6 +1,6 @@
 #version 300 core
 
-in vec3 in_position;
+layout(location = 0) in vec3 in_position;
 out vec3 inout_texCoords;
 
 uniform mat4 u_projectionMatrix;
