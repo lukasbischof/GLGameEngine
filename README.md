@@ -1,2 +1,2 @@
 # GLGameEngine
-A light iOS game engine
+A light OpenGL iOS game engine
