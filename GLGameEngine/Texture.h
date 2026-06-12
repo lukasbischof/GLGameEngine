@@ -7,21 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <GLKit/GLKit.h>
-#import <TargetConditionals.h>
-
-#if TARGET_OS_IPHONE
-#   import <OpenGLES/ES3/gl.h>
-#else
-#   import <OpenGL/gl3.h>
-#endif
+#import <Metal/Metal.h>
+#import "GLTypesShim.h"
 
 @interface Texture : NSObject <NSCopying>
 
-@property (assign, nonatomic, readonly) GLuint textureID;
-@property (assign, nonatomic, readonly) GLenum textureTarget;
+// The texture object; its textureType encodes what the GL textureTarget did
+// (2D vs. cube map).
+@property (strong, nonatomic, readonly, nullable) id<MTLTexture> texture;
 
-- (_Nonnull instancetype)initWithTextureID:(GLuint)textureID andTextureTarget:(GLenum)textureTarget;
-- (_Nonnull instancetype)initWithTextureInfo:(GLKTextureInfo *_Nonnull)info;
+- (_Nonnull instancetype)initWithMTLTexture:(id<MTLTexture> _Nullable)texture;
 
 @end

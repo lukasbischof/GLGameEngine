@@ -12,40 +12,25 @@
 
 @implementation GUITexture
 
-+ (GUITexture *)textureWithTexInfo:(GLKTextureInfo *)info position:(GLKVector2)position andScale:(GLKVector2)scale
++ (GUITexture *)textureWithMTLTexture:(id<MTLTexture>)texture position:(GLKVector2)position andScale:(GLKVector2)scale
 {
-    return [[GUITexture alloc] initWithTexInfo:info position:position andScale:scale];
-}
-
-+ (GUITexture *)textureWithTextureID:(GLuint)textureID textureTarget:(GLenum)textureTarget position:(GLKVector2)position andScale:(GLKVector2)scale
-{
-    return [[GUITexture alloc] initWithTextureID:textureID
-                                   textureTarget:textureTarget
-                                        position:position
-                                        andScale:scale];
+    return [[GUITexture alloc] initWithMTLTexture:texture
+                                         position:position
+                                         andScale:scale];
 }
 
 - (instancetype)init
 {
-    return [self initWithTexInfo:nil position:GLKVector2Make(0, 0) andScale:GLKVector2Make(0, 0)];
+    return [self initWithMTLTexture:nil position:GLKVector2Make(0, 0) andScale:GLKVector2Make(0, 0)];
 }
 
-- (instancetype)initWithTextureID:(GLuint)textureID textureTarget:(GLenum)textureTarget position:(GLKVector2)position andScale:(GLKVector2)scale
+- (instancetype)initWithMTLTexture:(id<MTLTexture>)texture position:(GLKVector2)position andScale:(GLKVector2)scale
 {
-    if ((self = [super initWithTextureID:textureID andTextureTarget:textureTarget])) {
+    if ((self = [super initWithMTLTexture:texture])) {
         self.position = position;
         self.scale = scale;
     }
-    
-    return self;
-}
 
-- (instancetype)initWithTexInfo:(GLKTextureInfo *)info position:(GLKVector2)position andScale:(GLKVector2)scale
-{
-    if ((self = [self initWithTextureID:info.name textureTarget:info.target position:position andScale:scale])) {
-        
-    }
-    
     return self;
 }
 

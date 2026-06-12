@@ -7,16 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <TargetConditionals.h>
-#if TARGET_OS_IPHONE
-#import <OpenGLES/ES3/gl.h>
-#import <OpenGLES/ES3/glext.h>
-#else
-#import <OpenGL/gl3.h>
-#endif
-#import <GLKit/GLKit.h>
-
-#define SHADER_FILE(name, extension) ([[NSBundle mainBundle] pathForResource:(name) ofType:(extension)])
+#import <Metal/Metal.h>
+#import <GLKit/GLKMath.h>
+#import "GLTypesShim.h"
+#import "ShaderTypes.h"
 
 #ifndef MAX_LIGHTS
 #define MAX_LIGHTS 4
@@ -24,45 +18,36 @@
 
 /*!
  @class ShaderProgram
- @brief abstract class that represents a Shader Program
+ @brief abstract class that represents a shader program: a Metal render
+        pipeline state (the former GL program) plus the uniform values the
+        subclasses accumulate via their load…: methods (the former glUniform
+        state, which persists across draws exactly like it did per program).
 */
 @interface ShaderProgram : NSObject
 
-@property (assign, nonatomic, readonly) GLuint programID;
-@property (assign, nonatomic, readonly) GLuint vertexShaderID;
-@property (assign, nonatomic, readonly) GLuint fragmentShaderID;
+@property (strong, nonatomic, readonly) id<MTLRenderPipelineState> pipelineState;
 
-- (instancetype)initWithVertexShaderName:(NSString *)vertexName
-                   andFragmentShaderName:(NSString *)fragmentName NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithVertexFunctionName:(NSString *)vertexName
+                   andFragmentFunctionName:(NSString *)fragmentName NS_DESIGNATED_INITIALIZER;
 
-// Needs to be implemented by subclasses
-- (void)bindAttributes;
-- (void)getAllUniformLocations;
+// Needs to be implemented by subclasses (replaces bindAttributes / getAllUniformLocations)
+- (MTLVertexDescriptor *)createVertexDescriptor;
 
-// Helpers. Only for subclasses
-- (void)bindAttribute:(GLuint)index toVariableName:(const GLchar *)variableName;
-- (GLuint)getUniformLocation:(const GLchar *)uniformName;
-- (void)loadFloat:(GLfloat)value toLocation:(GLuint)location;
-- (void)loadFloatVector2:(GLKVector2)value toLocation:(GLuint)location;
-- (void)loadFloatVector3:(GLKVector3)value toLocation:(GLuint)location;
-- (void)loadFloatVector4:(GLKVector4)value toLocation:(GLuint)location;
-- (void)loadBool:(BOOL)value toLocation:(GLuint)location;
-- (void)loadInt:(GLint)value toLocation:(GLuint)location;
-- (void)loadMatrix4x4:(GLKMatrix4)value toLocation:(GLuint)location;
-- (void)loadMatrix3x3:(GLKMatrix3)value toLocation:(GLuint)location;
-// End Helpers.
+// Optional subclass hook for pipeline configuration (e.g. blending)
+- (void)configurePipelineDescriptor:(MTLRenderPipelineDescriptor *)descriptor;
 
-// "Binds" the program; calls glUseProgram
+// Writes the accumulated uniform structs onto the current render command
+// encoder. Called immediately before each draw call.
+- (void)uploadUniforms;
+
+// "Binds" the program; sets the pipeline state on the current encoder
 - (void)activate;
 
-// "Unbinds" the program; calls glUseProgram
+// "Unbinds" the program (no-op in Metal, kept for the GL call sites)
 - (void)deactivate;
 
 - (void)cleanUp;
 
 - (void)bind:(void(^)(void))block;
-
-@property (NS_NONATOMIC_IOSONLY, readonly) BOOL validateProgram;
-@property (NS_NONATOMIC_IOSONLY, readonly) BOOL linkProgram;
 
 @end

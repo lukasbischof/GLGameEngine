@@ -18,7 +18,7 @@
 #if !(TARGET_OS_IPHONE)
 #include <OpenGL/OpenGL.h>
 #else
-#include <OpenGLES/gltypes.h>
+#include "GLTypesShim.h"
 #endif
 
 #if TARGET_OS_WIN32

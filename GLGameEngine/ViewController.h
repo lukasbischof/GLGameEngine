@@ -7,22 +7,13 @@
 //
 
 #import <UIKit/UIKit.h>
-#import <TargetConditionals.h>
-#if TARGET_OS_IPHONE
-#import <OpenGLES/EAGL.h>
-#import <OpenGLES/EAGLDrawable.h>
-#import <OpenGLES/gltypes.h>
-#import <OpenGLES/ES3/gl.h>
-#import <OpenGLES/ES3/glext.h>
-#else
-#import <OpenGL/OpenGL.h>
-#endif
-#import <GLKit/GLKit.h>
+#import <Metal/Metal.h>
+#import <MetalKit/MetalKit.h>
+#import <GLKit/GLKMath.h>
 #import <QuartzCore/QuartzCore.h>
 
-@interface ViewController : GLKViewController
+@interface ViewController : UIViewController <MTKViewDelegate>
 
-@property (nonatomic) GLKView *glview;
+@property (nonatomic, readonly) MTKView *glview;
 
 @end
-

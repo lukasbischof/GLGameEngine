@@ -6,6 +6,7 @@
 //  Copyright © 2015 Lukas Bischof. All rights reserved.
 //
 
+#import <GLKit/GLKMath.h>
 #import "TexturedModel.h"
 
 @interface InstanceableTexturedModel : TexturedModel

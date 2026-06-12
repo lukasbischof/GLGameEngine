@@ -7,19 +7,18 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <OpenGLES/ES3/gl.h>
+#import <Metal/Metal.h>
 
 @interface WaterFrameBuffers : NSObject
 
-@property (assign, nonatomic) GLuint reflectionTexture;
-@property (assign, nonatomic) GLuint refractionTexture;
-@property (assign, nonatomic) GLuint refractionDepthTexture;
+@property (strong, nonatomic, readonly) id<MTLTexture> reflectionTexture;
+@property (strong, nonatomic, readonly) id<MTLTexture> refractionTexture;
+@property (strong, nonatomic, readonly) id<MTLTexture> refractionDepthTexture;
 
 + (WaterFrameBuffers *)frameBuffers;
 
 - (void)bindReflectionFrameBuffer;
 - (void)bindRefractionFrameBuffer;
-- (void)unbindCurrentFrameBuffer;
 - (void)cleanUp;
 
 @end

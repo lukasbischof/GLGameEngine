@@ -7,23 +7,15 @@
 //
 
 #import "WaterShader.h"
+#import "MetalContext.h"
+#import "SIMDBridge.h"
 
-NSString *const WATER_VERTEX_SHADER_FILE_NAME = @"WaterVertexShader";
-NSString *const WATER_FRAGMENT_SHADER_FILE_NAME = @"WaterFragmentShader";
+NSString *const WATER_VERTEX_FUNCTION_NAME = @"vertex_water";
+NSString *const WATER_FRAGMENT_FUNCTION_NAME = @"fragment_water";
 
 @implementation WaterShader {
-    GLuint uniform_projection_matrix_location,
-           uniform_view_matrix_location,
-           uniform_transformation_matrix_location,
-           uniform_reflection_texture_location,
-           uniform_refraction_texture_location,
-           uniform_dudv_map_location,
-           uniform_normal_map_location,
-           uniform_depth_map_location,
-           uniform_move_factor_location,
-           uniform_camera_position_location,
-           uniform_light_position_location,
-           uniform_light_color_location;
+    WaterVertexUniforms _vertexUniforms;
+    WaterFragmentUniforms _fragmentUniforms;
 }
 
 #pragma mark - init
@@ -34,70 +26,75 @@ NSString *const WATER_FRAGMENT_SHADER_FILE_NAME = @"WaterFragmentShader";
 
 - (instancetype)init
 {
-    if ((self = [super initWithVertexShaderName:WATER_VERTEX_SHADER_FILE_NAME
-                          andFragmentShaderName:WATER_FRAGMENT_SHADER_FILE_NAME])) {
-        
+    if ((self = [super initWithVertexFunctionName:WATER_VERTEX_FUNCTION_NAME
+                          andFragmentFunctionName:WATER_FRAGMENT_FUNCTION_NAME])) {
+
     }
-    
+
     return self;
 }
 
-#pragma mark - location stuff
-- (void)bindAttributes
+- (MTLVertexDescriptor *)createVertexDescriptor
 {
-    [self bindAttribute:0 toVariableName:"in_position"];
+    MTLVertexDescriptor *descriptor = [MTLVertexDescriptor vertexDescriptor];
+
+    descriptor.attributes[0].format = MTLVertexFormatFloat3;
+    descriptor.attributes[0].offset = 0;
+    descriptor.attributes[0].bufferIndex = BufferIndexPositions;
+    descriptor.layouts[BufferIndexPositions].stride = sizeof(float) * 3;
+
+    return descriptor;
 }
 
-- (void)getAllUniformLocations
+- (void)configurePipelineDescriptor:(MTLRenderPipelineDescriptor *)descriptor
 {
-    uniform_projection_matrix_location = [self getUniformLocation:"u_projectionMatrix"];
-    uniform_view_matrix_location = [self getUniformLocation:"u_viewMatrix"];
-    uniform_transformation_matrix_location = [self getUniformLocation:"u_transformationMatrix"];
-    uniform_reflection_texture_location = [self getUniformLocation:"u_reflectionTexture"];
-    uniform_refraction_texture_location = [self getUniformLocation:"u_refractionTexture"];
-    uniform_dudv_map_location = [self getUniformLocation:"u_dudvMap"];
-    uniform_move_factor_location = [self getUniformLocation:"u_moveFactor"];
-    uniform_camera_position_location = [self getUniformLocation:"u_cameraPosition"];
-    uniform_normal_map_location = [self getUniformLocation:"u_normalMap"];
-    uniform_depth_map_location = [self getUniformLocation:"u_depthMap"];
-    uniform_light_position_location = [self getUniformLocation:"u_lightPosition"];
-    uniform_light_color_location = [self getUniformLocation:"u_lightColor"];
+    // glEnable(GL_BLEND) + glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    MTLRenderPipelineColorAttachmentDescriptor *colorAttachment = descriptor.colorAttachments[0];
+    colorAttachment.blendingEnabled = YES;
+    colorAttachment.sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
+    colorAttachment.destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
+    colorAttachment.sourceAlphaBlendFactor = MTLBlendFactorSourceAlpha;
+    colorAttachment.destinationAlphaBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
+}
+
+- (void)uploadUniforms
+{
+    id<MTLRenderCommandEncoder> encoder = [MetalContext sharedContext].currentEncoder;
+
+    [encoder setVertexBytes:&_vertexUniforms length:sizeof(_vertexUniforms) atIndex:BufferIndexVertexUniforms];
+    [encoder setFragmentBytes:&_fragmentUniforms length:sizeof(_fragmentUniforms) atIndex:BufferIndexFragmentUniforms];
 }
 
 - (void)loadLight:(Light *)light
 {
-    [self loadFloatVector3:light.color toLocation:uniform_light_color_location];
-    [self loadFloatVector3:light.position toLocation:uniform_light_position_location];
+    _fragmentUniforms.lightColor = SIMD_Vector3(light.color);
+    _vertexUniforms.lightPosition = SIMD_Vector3(light.position);
 }
 
 - (void)loadMoveFactor:(GLfloat)moveFactor
 {
-    [self loadFloat:moveFactor toLocation:uniform_move_factor_location];
+    _fragmentUniforms.moveFactor = moveFactor;
 }
 
 - (void)loadTextureUnits
 {
-    [self loadInt:0 toLocation:uniform_reflection_texture_location];
-    [self loadInt:1 toLocation:uniform_refraction_texture_location];
-    [self loadInt:2 toLocation:uniform_dudv_map_location];
-    [self loadInt:3 toLocation:uniform_normal_map_location];
-    [self loadInt:4 toLocation:uniform_depth_map_location];
+    // texture indices are fixed in the shader ([[texture(n)]]), nothing to do
 }
 
 - (void)loadTransformationMatrix:(GLKMatrix4)transformationMatrix
 {
-    [self loadMatrix4x4:transformationMatrix toLocation:uniform_transformation_matrix_location];
+    _vertexUniforms.transformationMatrix = SIMD_Matrix4(transformationMatrix);
 }
 
 - (void)loadViewMatrix:(Camera *)cam
 {
-    [self loadMatrix4x4:cam.viewMatrix toLocation:uniform_view_matrix_location];
-    [self loadFloatVector3:cam.position toLocation:uniform_camera_position_location];
+    _vertexUniforms.viewMatrix = SIMD_Matrix4(cam.viewMatrix);
+    _vertexUniforms.cameraPosition = SIMD_Vector3(cam.position);
 }
 
 - (void)loadProjectionMatrix:(GLKMatrix4)projectionMatrix
 {
-    [self loadMatrix4x4:projectionMatrix toLocation:uniform_projection_matrix_location];
+    _vertexUniforms.projectionMatrix = SIMD_Matrix4(projectionMatrix);
 }
 
 @end

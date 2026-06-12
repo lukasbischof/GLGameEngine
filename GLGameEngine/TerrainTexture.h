@@ -11,7 +11,8 @@
 
 @interface TerrainTexture : Texture
 
-- (instancetype)initWithID:(GLuint)textureID andTarget:(GLenum)target enableTiling:(BOOL)enableTiling NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithTextureInfo:(GLKTextureInfo *)texInfo andTiling:(BOOL)enableTiling;
+- (instancetype)initWithMTLTexture:(id<MTLTexture>)texture enableTiling:(BOOL)enableTiling NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithMTLTexture:(id<MTLTexture>)texture;
+- (instancetype)initWithMTLTexture:(id<MTLTexture>)texture andTiling:(BOOL)enableTiling;
 
 @end

@@ -7,13 +7,15 @@
 //
 
 #import "InstanceableTexturedModel.h"
+#import "MetalContext.h"
+#import "ShaderTypes.h"
 #include <vector>
 #include <stdio.h>
 #include <iostream>
 
 @implementation InstanceableTexturedModel {
     std::vector<GLKMatrix4> _matrices;
-    GLuint _buffer;
+    id<MTLBuffer> _buffer;
 }
 
 - (instancetype)initWithRawModel:(RawModel *)rawModel andTexture:(ModelTexture *)texture
@@ -22,7 +24,7 @@
         _instanceCount = 0;
         self->_matrices = std::vector<GLKMatrix4>();
     }
-    
+
     return self;
 }
 
@@ -46,34 +48,20 @@
         NSLog(@"No Instances created!");
         return;
     }
-    
-    [self.rawModel bindVAO];
-    glGenBuffers(1, &self->_buffer);
+
+    // The per-instance layout (mat4 = attributes 3-6, stepFunction perInstance)
+    // is part of the instancing pipeline's vertex descriptor; only the buffer
+    // itself needs to be created here.
     [self bake];
-    
-    GLsizei vec4size = sizeof(GLKVector4);
-    GLsizei mat4size = sizeof(GLKMatrix4);
-    glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, mat4size, (GLvoid *)(0));
-    glEnableVertexAttribArray(3);
-    glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, mat4size, (GLchar *)NULL + (vec4size));
-    glEnableVertexAttribArray(4);
-    glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, mat4size, (GLchar *)NULL + (vec4size * 2));
-    glEnableVertexAttribArray(5);
-    glVertexAttribPointer(6, 4, GL_FLOAT, GL_FALSE, mat4size, (GLchar *)NULL + (vec4size * 3));
-    glEnableVertexAttribArray(6);
-    
-    glVertexAttribDivisor(3, 1);
-    glVertexAttribDivisor(4, 1);
-    glVertexAttribDivisor(5, 1);
-    glVertexAttribDivisor(6, 1);
-    
-    [self.rawModel unbindVAO];
 }
 
 - (void)bake
 {
-    glBindBuffer(GL_ARRAY_BUFFER, self->_buffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(GLKMatrix4) * self->_matrices.size(), self->_matrices.data(), GL_STATIC_DRAW);
+    _buffer = [[MetalContext sharedContext].device newBufferWithBytes:self->_matrices.data()
+                                                               length:sizeof(GLKMatrix4) * self->_matrices.size()
+                                                              options:MTLResourceStorageModeShared];
+
+    [self.rawModel setVertexBuffer:_buffer offset:0 atIndex:BufferIndexInstanceMatrices];
 }
 
 @end

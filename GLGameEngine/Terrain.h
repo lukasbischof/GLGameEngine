@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <OpenGLES/ES3/gl.h>
+#import "GLTypesShim.h"
 #import "RawModel.h"
 #import "TerrainTexturePackage.h"
 #import "Loader.h"

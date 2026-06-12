@@ -9,17 +9,15 @@
 #import "SkyboxShader.h"
 #import "TimeController.h"
 #import "MathUtils.h"
+#import "MetalContext.h"
+#import "SIMDBridge.h"
 
-NSString *const SKYBOX_VERTEX_SHADER_FILE_NAME = @"SkyboxVertexShader";
-NSString *const SKYBOX_FRAGMENT_SHADER_FILE_NAME = @"SkyboxFragmentShader";
+NSString *const SKYBOX_VERTEX_FUNCTION_NAME = @"vertex_skybox";
+NSString *const SKYBOX_FRAGMENT_FUNCTION_NAME = @"fragment_skybox";
 
 @implementation SkyboxShader {
-    GLuint uniform_projection_matrix_location,
-           uniform_view_matrix_location,
-           uniform_fog_color_location,
-           uniform_blend_factor_location,
-           uniform_cube_sampler1_location,
-           uniform_cube_sampler2_location;
+    SkyboxVertexUniforms _vertexUniforms;
+    SkyboxFragmentUniforms _fragmentUniforms;
 }
 
 + (SkyboxShader *)skyboxShaderProgram
@@ -29,43 +27,47 @@ NSString *const SKYBOX_FRAGMENT_SHADER_FILE_NAME = @"SkyboxFragmentShader";
 
 - (instancetype)init
 {
-    if ((self = [super initWithVertexShaderName:SKYBOX_VERTEX_SHADER_FILE_NAME
-                          andFragmentShaderName:SKYBOX_FRAGMENT_SHADER_FILE_NAME])) {
+    if ((self = [super initWithVertexFunctionName:SKYBOX_VERTEX_FUNCTION_NAME
+                          andFragmentFunctionName:SKYBOX_FRAGMENT_FUNCTION_NAME])) {
         self.rotation_speed = 0.f;
     }
-    
+
     return self;
 }
 
-- (void)bindAttributes
+- (MTLVertexDescriptor *)createVertexDescriptor
 {
-    [self bindAttribute:0 toVariableName:"in_position"];
+    MTLVertexDescriptor *descriptor = [MTLVertexDescriptor vertexDescriptor];
+
+    descriptor.attributes[0].format = MTLVertexFormatFloat3;
+    descriptor.attributes[0].offset = 0;
+    descriptor.attributes[0].bufferIndex = BufferIndexPositions;
+    descriptor.layouts[BufferIndexPositions].stride = sizeof(float) * 3;
+
+    return descriptor;
 }
 
-- (void)getAllUniformLocations
+- (void)uploadUniforms
 {
-    uniform_projection_matrix_location = [self getUniformLocation:"u_projectionMatrix"];
-    uniform_view_matrix_location = [self getUniformLocation:"u_viewMatrix"];
-    uniform_fog_color_location = [self getUniformLocation:"u_fogColor"];
-    uniform_blend_factor_location = [self getUniformLocation:"u_blendFactor"];
-    uniform_cube_sampler1_location = [self getUniformLocation:"u_cubeSampler1"];
-    uniform_cube_sampler2_location = [self getUniformLocation:"u_cubeSampler2"];
+    id<MTLRenderCommandEncoder> encoder = [MetalContext sharedContext].currentEncoder;
+
+    [encoder setVertexBytes:&_vertexUniforms length:sizeof(_vertexUniforms) atIndex:BufferIndexVertexUniforms];
+    [encoder setFragmentBytes:&_fragmentUniforms length:sizeof(_fragmentUniforms) atIndex:BufferIndexFragmentUniforms];
 }
 
 - (void)loadTextureUnits
 {
-    [self loadInt:0 toLocation:uniform_cube_sampler1_location];
-    [self loadInt:1 toLocation:uniform_cube_sampler2_location];
+    // texture indices are fixed in the shader ([[texture(n)]]), nothing to do
 }
 
 - (void)loadBlendFactor:(GLfloat)blendFactor
 {
-    [self loadFloat:blendFactor toLocation:uniform_blend_factor_location];
+    _fragmentUniforms.blendFactor = blendFactor;
 }
 
 - (void)loadProjectionMatrix:(GLKMatrix4)projectionMatrix
 {
-    [self loadMatrix4x4:projectionMatrix toLocation:uniform_projection_matrix_location];
+    _vertexUniforms.projectionMatrix = SIMD_Matrix4(projectionMatrix);
 }
 
 - (void)loadViewMatrix:(GLKMatrix4)viewMatrix
@@ -73,16 +75,16 @@ NSString *const SKYBOX_FRAGMENT_SHADER_FILE_NAME = @"SkyboxFragmentShader";
     viewMatrix.m30 = 0.0;
     viewMatrix.m31 = 0.0;
     viewMatrix.m32 = 0.0;
-    
+
     GLfloat currentRotation = fmodf(([TimeController sharedController].passedTime * self.rotation_speed), 360);
-    
+
     viewMatrix = GLKMatrix4Rotate(viewMatrix, MathUtils_DegToRad(currentRotation), 0, 1, 0);
-    [self loadMatrix4x4:viewMatrix toLocation:uniform_view_matrix_location];
+    _vertexUniforms.viewMatrix = SIMD_Matrix4(viewMatrix);
 }
 
 - (void)loadFogColor:(GLKVector3)fogColor
 {
-    [self loadFloatVector3:fogColor toLocation:uniform_fog_color_location];
+    _fragmentUniforms.fogColor = SIMD_Vector3(fogColor);
 }
 
 @end

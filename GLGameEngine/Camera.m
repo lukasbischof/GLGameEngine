@@ -7,7 +7,6 @@
 //
 
 #import "Camera.h"
-#import <OpenGLES/ES3/glext.h>
 
 @implementation Camera
 

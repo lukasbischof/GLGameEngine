@@ -7,18 +7,16 @@
 //
 
 #import "Loader.h"
-#include <vector>
-#include <stdio.h>
-#include <iostream>
-
-#define BUFFER_OFFSET(i) ((char *)NULL + (i))
+#import "MetalContext.h"
+#import <UIKit/UIKit.h>
 
 @interface Loader () {
-    std::vector<GLuint> vaos;
-    std::vector<GLuint> vbos;
-    std::vector<GLuint> textures;
-    
-    NSMutableArray<GLKMeshBuffer *> *buffers;
+    // Metal objects are reference counted by ARC; these arrays keep
+    // everything alive until cleanUp (the former GL id lists).
+    NSMutableArray<id<MTLBuffer>> *buffers;
+    NSMutableArray<id<MTLTexture>> *textures;
+
+    MTKTextureLoader *textureLoader;
 }
 
 @end
@@ -33,78 +31,112 @@
 - (instancetype)init
 {
     if ((self = [super init])) {
+        textureLoader = [[MTKTextureLoader alloc] initWithDevice:[MetalContext sharedContext].device];
         [self restoreObjectsCreationLists];
     }
-    
+
     return self;
 }
 
-// Initialisiert die Listen, die dafür zuständig sind, alle GL-IDs der erstellten Objekte zu halten,    \
+// Initialisiert die Listen, die dafür zuständig sind, alle erstellten Objekte zu halten,    \
     damit wir sie auch wieder löschen können.
 - (void)restoreObjectsCreationLists
 {
-    vaos = std::vector<GLuint>();
-    vbos = std::vector<GLuint>();
-    textures = std::vector<GLuint>();
-    buffers = (NSMutableArray<GLKMeshBuffer *> *)[@[] mutableCopy];
+    buffers = [NSMutableArray array];
+    textures = [NSMutableArray array];
 }
 
-- (GLKTextureInfo *)loadCubeTexture:(NSArray<NSString *> *)textureNames
+- (id<MTLTexture>)loadCubeTexture:(NSArray<NSString *> *)textureNames
 {
     if (!textureNames) {
         NSLog(@"[Loader]: Can't load cube texture %@", textureNames);
         return nil;
     }
-    
-    NSError *error;
-    NSDictionary *options = @{
-        GLKTextureLoaderOriginBottomLeft: @NO
-    };
-    
-    GLKTextureInfo *info = [GLKTextureLoader cubeMapWithContentsOfFiles:textureNames
-                                                                options:options
-                                                                  error:&error];
-    
-    if (error) {
-        NSLog(@"[Loader]: Can't load texture: %@", error);
-        NSLog(@"OpenGL Error: %u", glGetError());
-        return nil;
+
+    // MTKTextureLoader can't build a cube map from six separate files, so the
+    // faces are decoded to RGBA8 and copied into the slices directly. The file
+    // order matches GLKTextureLoader / the Metal slice order: +X,-X,+Y,-Y,+Z,-Z.
+    id<MTLTexture> cubeTexture = nil;
+
+    for (NSUInteger face = 0; face < 6; face++) {
+        UIImage *image = [UIImage imageWithContentsOfFile:textureNames[face]];
+        CGImageRef cgImage = image.CGImage;
+
+        if (!cgImage) {
+            NSLog(@"[Loader]: Can't load texture: %@", textureNames[face]);
+            return nil;
+        }
+
+        size_t size = CGImageGetWidth(cgImage);
+
+        if (!cubeTexture) {
+            MTLTextureDescriptor *descriptor = [MTLTextureDescriptor textureCubeDescriptorWithPixelFormat:MTLPixelFormatRGBA8Unorm
+                                                                                                     size:size
+                                                                                                mipmapped:NO];
+            descriptor.usage = MTLTextureUsageShaderRead;
+            cubeTexture = [[MetalContext sharedContext].device newTextureWithDescriptor:descriptor];
+        }
+
+        NSMutableData *pixelData = [NSMutableData dataWithLength:size * size * 4];
+        CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+        CGContextRef context = CGBitmapContextCreate(pixelData.mutableBytes, size, size, 8, size * 4, colorSpace,
+                                                     kCGImageAlphaPremultipliedLast | kCGBitmapByteOrder32Big);
+        CGColorSpaceRelease(colorSpace);
+
+        if (!context) {
+            NSLog(@"[Loader]: Can't decode cube face: %@", textureNames[face]);
+            return nil;
+        }
+
+        CGContextDrawImage(context, CGRectMake(0, 0, size, size), cgImage);
+        CGContextRelease(context);
+
+        [cubeTexture replaceRegion:MTLRegionMake2D(0, 0, size, size)
+                       mipmapLevel:0
+                             slice:face
+                         withBytes:pixelData.bytes
+                       bytesPerRow:size * 4
+                     bytesPerImage:size * size * 4];
     }
-    
-    textures.push_back(info.name);
-    
-    return info;
+
+    [textures addObject:cubeTexture];
+
+    return cubeTexture;
 }
 
-- (GLKTextureInfo *)loadTexture:(NSString *)textureName withExtension:(NSString *)extension flipped:(BOOL)flipped
+- (id<MTLTexture>)loadTexture:(NSString *)textureName withExtension:(NSString *)extension flipped:(BOOL)flipped
 {
     NSString *path = [[NSBundle mainBundle] pathForResource:textureName ofType:extension];
     if (!path) {
         NSLog(@"[Loader]: Can't load texture %@.%@", textureName, extension);
         return nil;
     }
-    
+
     NSError *error;
     NSDictionary *options = @{
-        GLKTextureLoaderOriginBottomLeft: @(flipped),
-        GLKTextureLoaderGenerateMipmaps: @YES
+        // GLKTextureLoaderOriginBottomLeft: @(flipped)
+        MTKTextureLoaderOptionOrigin: flipped ? MTKTextureLoaderOriginBottomLeft : MTKTextureLoaderOriginTopLeft,
+        // GLKTextureLoaderGenerateMipmaps: @YES
+        MTKTextureLoaderOptionGenerateMipmaps: @YES,
+        // GL loaded everything linear (GL_RGBA); don't let image metadata opt into sRGB
+        MTKTextureLoaderOptionSRGB: @NO,
+        MTKTextureLoaderOptionTextureUsage: @(MTLTextureUsageShaderRead)
     };
-    GLKTextureInfo *texInfo = [GLKTextureLoader textureWithContentsOfFile:path
-                                                                  options:options
-                                                                    error:&error];
-    
+    id<MTLTexture> texture = [textureLoader newTextureWithContentsOfURL:[NSURL fileURLWithPath:path]
+                                                                options:options
+                                                                  error:&error];
+
     if (error) {
         NSLog(@"[Loader]: Can't load texture: %@", error);
-        NSLog(@"OpenGL Error: %u", glGetError());
         return nil;
     }
-    
-    textures.push_back(texInfo.name);
-    
-    return texInfo;
+
+    [textures addObject:texture];
+
+    return texture;
 }
 
-- (GLKTextureInfo *)loadTexture:(NSString *)textureName withExtension:(NSString *)extension
+- (id<MTLTexture>)loadTexture:(NSString *)textureName withExtension:(NSString *)extension
 {
     return [self loadTexture:textureName withExtension:extension flipped:YES];
 }
@@ -113,16 +145,12 @@
 {
     if (positions.data == NULL)
         return nil;
-    
+
     GLuint vertexCount = (GLuint)(positions.length / sizeof(GLfloat) / dimensions);
-    RawModel *model = [RawModel modelByCreatingVAOWithVertexCount:vertexCount];
-    
-    vaos.push_back(model.vaoID);
-    
-    [model bindVAO];
-    [self storeData:positions inVAOAttribIndex:0 withAttribSize:dimensions];
-    [model unbindVAO];
-    
+    RawModel *model = [RawModel modelWithVertexCount:vertexCount];
+
+    [self storeData:positions inVAOAttribIndex:0 ofModel:model];
+
     return model;
 }
 
@@ -132,18 +160,14 @@
 {
     if (positions.data == NULL || indices.data == NULL || normals.data == NULL)
         return nil;
-    
+
     GLuint vertexCount = (GLuint)(indices.length / UINT_BUFFER_ELEMENT_SIZE);
-    RawModel *model = [RawModel modelByCreatingVAOWithVertexCount:vertexCount];
-    
-    vaos.push_back(model.vaoID);
-    
-    [model bindVAO];
-    [self bindIndicesBuffer:indices];
-    [self storeData:positions inVAOAttribIndex:0 withAttribSize:3];
-    [self storeData:normals inVAOAttribIndex:2 withAttribSize:3];
-    [model unbindVAO];
-    
+    RawModel *model = [RawModel modelWithVertexCount:vertexCount];
+
+    [self bindIndicesBuffer:indices toModel:model];
+    [self storeData:positions inVAOAttribIndex:0 ofModel:model];
+    [self storeData:normals inVAOAttribIndex:2 ofModel:model];
+
     return model;
 }
 
@@ -154,39 +178,29 @@
 {
     if (positions.data == NULL || indices.data == NULL || normals.data == NULL || texCoords.data == NULL)
         return nil;
-    
+
     GLuint vertexCount = (GLuint)(indices.length / UINT_BUFFER_ELEMENT_SIZE);
-    RawModel *model = [RawModel modelByCreatingVAOWithVertexCount:vertexCount];
-    
-    vaos.push_back(model.vaoID);
-    
-    [model bindVAO];
-    [self bindIndicesBuffer:indices];
-    [self storeData:positions inVAOAttribIndex:0 withAttribSize:3];
-    [self storeData:texCoords inVAOAttribIndex:1 withAttribSize:2];
-    [self storeData:normals inVAOAttribIndex:2 withAttribSize:3];
-    [model unbindVAO];
-    
+    RawModel *model = [RawModel modelWithVertexCount:vertexCount];
+
+    [self bindIndicesBuffer:indices toModel:model];
+    [self storeData:positions inVAOAttribIndex:0 ofModel:model];
+    [self storeData:texCoords inVAOAttribIndex:1 ofModel:model];
+    [self storeData:normals inVAOAttribIndex:2 ofModel:model];
+
     return model;
 }
 
 - (TexturedModel *)createTexturedModelWithPositions:(FloatBuffer)positions
-                                           normals:(FloatBuffer)normals
-                                textureCoordinates:(FloatBuffer)texCoords
-                                           indices:(UintBuffer)indices
-                                        andTexture:(ModelTexture *)texture
+                                            normals:(FloatBuffer)normals
+                                 textureCoordinates:(FloatBuffer)texCoords
+                                            indices:(UintBuffer)indices
+                                         andTexture:(ModelTexture *)texture
 {
     RawModel *rawModel = [self createRawModelWithPositions:positions normals:normals andIndices:indices];
-    
-    [rawModel bindVAO];
-    [self storeData:texCoords inVAOAttribIndex:1 withAttribSize:2];
-    [rawModel unbindVAO];
-    
+
+    [self storeData:texCoords inVAOAttribIndex:1 ofModel:rawModel];
+
     return [[TexturedModel alloc] initWithRawModel:rawModel andTexture:texture];
-    
-//    RawModel *rawModel = [self createRawModelWithPositions:positions normals:normals textureCoords:texCoords andIndices:indices];
-//    
-//    return [[TexturedModel alloc] initWithRawModel:rawModel andTexture:texture];
 }
 
 - (TexturedModel *)createTexturedModelWithPositions:(GLfloat *)positions
@@ -203,7 +217,7 @@
     FloatBuffer texCoordsBuf = FloatBufferCreateWithDataNoCopy(textureCoordinates, texCoordsLength);
     UintBuffer indicesBuf = UintBufferCreateWithDataNoCopy(indices, indicesLength);
     FloatBuffer normalsBuf = FloatBufferCreateWithDataNoCopy(normals, normalsLength);
-    
+
     return [self createTexturedModelWithPositions:positionBuf
                                           normals:normalsBuf
                                textureCoordinates:texCoordsBuf
@@ -211,88 +225,70 @@
                                        andTexture:texture];
 }
 
-- (TexturedModel *)createTexturedModelWithPositions:(GLKMeshBuffer *)positions
-                                            normlas:(GLKMeshBuffer *)normals
-                                 textureCoordinates:(GLKMeshBuffer *)texCoords
+- (TexturedModel *)createTexturedModelWithPositions:(MTKMeshBuffer *)positions
+                                            normlas:(MTKMeshBuffer *)normals
+                                 textureCoordinates:(MTKMeshBuffer *)texCoords
                                         vertexCount:(NSUInteger)vertexCount
-                                          submeshes:(NSArray<GLKSubmesh *> *)submeshes
+                                          submeshes:(NSArray<MTKSubmesh *> *)submeshes
                                          andTexture:(ModelTexture *)texture
 {
     if (!positions || !normals || !texCoords || !submeshes || !texture) {
         NSLog(@"[Loader]: Can't create textured model in %s", __PRETTY_FUNCTION__);
         return nil;
     }
-    
-    RawModel *model = [RawModel modelByCreatingVAOWithVertexCount:(GLuint)vertexCount];
-    
-    vaos.push_back(model.vaoID);
-    
-    GLKSubmesh *submesh = submeshes[0];
-    
-    [model bindVAO];
-    [self setBuffer:positions inVAOAttribIndex:0 withAttribSize:3 andType:GL_FLOAT];
-    [self setBuffer:texCoords inVAOAttribIndex:1 withAttribSize:2 andType:GL_HALF_FLOAT];
-    [self setBuffer:normals inVAOAttribIndex:2 withAttribSize:3 andType:GL_FLOAT];
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, submesh.elementBuffer.glBufferName);
-    
-    [model unbindVAO];
-    
+
+    RawModel *model = [RawModel modelWithVertexCount:(GLuint)vertexCount];
+
+    MTKSubmesh *submesh = submeshes[0];
+
+    [self setBuffer:positions inVAOAttribIndex:0 ofModel:model];
+    [self setBuffer:texCoords inVAOAttribIndex:1 ofModel:model];
+    [self setBuffer:normals inVAOAttribIndex:2 ofModel:model];
+
+    model.indexBuffer = submesh.indexBuffer.buffer;
+    model.indexBufferOffset = submesh.indexBuffer.offset;
+    model.indexType = submesh.indexType;
+
+    [buffers addObject:submesh.indexBuffer.buffer];
+
     return [[TexturedModel alloc] initWithRawModel:model andTexture:texture];
 }
 
-- (void)setBuffer:(GLKMeshBuffer *)buffer inVAOAttribIndex:(GLuint)attribIndex withAttribSize:(GLint)size andType:(GLenum)type
+- (void)setBuffer:(MTKMeshBuffer *)buffer inVAOAttribIndex:(GLuint)attribIndex ofModel:(RawModel *)model
 {
-    vbos.push_back(buffer.glBufferName);
+    [buffers addObject:buffer.buffer];
+
+    [model setVertexBuffer:buffer.buffer offset:buffer.offset atIndex:attribIndex];
+}
+
+- (void)storeData:(FloatBuffer)data inVAOAttribIndex:(GLuint)attribIndex ofModel:(RawModel *)model
+{
+    id<MTLBuffer> buffer = [[MetalContext sharedContext].device newBufferWithBytes:data.data
+                                                                            length:data.length
+                                                                           options:MTLResourceStorageModeShared];
+
     [buffers addObject:buffer];
-    
-    glBindBuffer(GL_ARRAY_BUFFER, buffer.glBufferName);
-    glVertexAttribPointer(attribIndex, size, type, GL_FALSE, 0, BUFFER_OFFSET(buffer.offset));
-    glEnableVertexAttribArray(attribIndex);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+    [model setVertexBuffer:buffer offset:0 atIndex:attribIndex];
 }
 
-- (void)storeData:(FloatBuffer)data inVAOAttribIndex:(GLuint)attribIndex withAttribSize:(GLint)size
+- (void)bindIndicesBuffer:(UintBuffer)indexBuffer toModel:(RawModel *)model
 {
-    GLuint vboID;
-    glGenBuffers(1, &vboID);
-    
-    vbos.push_back(vboID);
-    
-    glBindBuffer(GL_ARRAY_BUFFER, vboID);
-    glBufferData(GL_ARRAY_BUFFER, data.length, data.data, GL_STATIC_DRAW);
-    glVertexAttribPointer(attribIndex, size, GL_FLOAT, GL_FALSE, 0, 0);
-    glEnableVertexAttribArray(attribIndex);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-}
+    id<MTLBuffer> buffer = [[MetalContext sharedContext].device newBufferWithBytes:indexBuffer.data
+                                                                            length:indexBuffer.length
+                                                                           options:MTLResourceStorageModeShared];
 
-- (void)bindIndicesBuffer:(UintBuffer)indexBuffer
-{
-    GLuint vbo;
-    glGenBuffers(1, &vbo);
-    
-    vbos.push_back(vbo);
-    
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, indexBuffer.length, indexBuffer.data, GL_STATIC_DRAW);
+    [buffers addObject:buffer];
+
+    model.indexBuffer = buffer;
+    model.indexBufferOffset = 0;
+    model.indexType = MTLIndexTypeUInt32;
 }
 
 - (void)cleanUp
 {
-    // auto: C++11
-    for (auto &vao : vaos) {
-        glDeleteVertexArrays(1, &vao);
-    }
-    
-    for (auto &vbo : vbos) {
-        glDeleteBuffers(1, &vbo);
-    }
-    
-    for (auto &tex : textures) {
-        glDeleteTextures(1, &tex);
-    }
-    
     [buffers removeAllObjects];
+    [textures removeAllObjects];
     [self restoreObjectsCreationLists];
 }
 

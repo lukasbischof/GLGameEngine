@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <OpenGLES/gltypes.h>
+#import "GLTypesShim.h"
 #import <GLKit/GLKit.h>
 
 @interface WaterTile : NSObject

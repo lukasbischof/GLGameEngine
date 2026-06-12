@@ -10,6 +10,8 @@
 #import "TexturedModel.h"
 #import "Entity.h"
 #import "NSObject+class.h"
+#import "MetalContext.h"
+#import <UIKit/UIKit.h>
 
 // Field of View in degrees
 static const GLfloat FOVY = 45.0;
@@ -82,14 +84,14 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 
 + (void)enableCulling
 {
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
-    glCullFace(GL_BACK);
+    // glEnable(GL_CULL_FACE) + glFrontFace(GL_CCW) + glCullFace(GL_BACK);
+    // the CCW winding is set once per encoder by MetalContext
+    [MetalContext sharedContext].cullingEnabled = YES;
 }
 
 + (void)disableCulling
 {
-    glDisable(GL_CULL_FACE);
+    [MetalContext sharedContext].cullingEnabled = NO;
 }
 
 - (void)updateProjectionForAspect:(float)aspect
@@ -120,14 +122,13 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 - (void)renderWithLights:(NSArray<Light *> *)lights camera:(Camera * _Nonnull)camera andClippingPlane:(GLKVector4)clippingPlane
 {
     [self prepare];
-    
+
     [self.skyboxRenderer renderWithCamera:camera];
-    
-    // The depth will be turned on after the skybox render call automatically
-    glDepthFunc(GL_LESS);
-    
-    glEnable(GL_CLIP_DISTANCE0_APPLE);
-    
+
+    // The depth state (less + write) is restored after the skybox render call.
+    // Clipping ([[clip_distance]]) is always active; the main pass passes a
+    // plane that never clips, so glEnable(GL_CLIP_DISTANCE0_APPLE) is gone.
+
     [self.shader activate];
     [self.shader loadClippingPlane:clippingPlane];
     [self.shader loadLights:lights];
@@ -167,9 +168,15 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 
 - (void)prepare
 {
-    glClearColor(self.skyColor.r, self.skyColor.g, self.skyColor.b, self.skyColor.a);
-    glClearDepthf(1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // glClearColor + glClearDepthf + glClear: configure the staged render pass
+    // descriptor; the clear happens when the pass's encoder is created (on the
+    // first draw of this pass).
+    MTLRenderPassDescriptor *descriptor = [MetalContext sharedContext].stagedPassDescriptor;
+
+    descriptor.colorAttachments[0].clearColor = MTLClearColorMake(self.skyColor.r, self.skyColor.g, self.skyColor.b, self.skyColor.a);
+    descriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+    descriptor.depthAttachment.clearDepth = 1.0;
+    descriptor.depthAttachment.loadAction = MTLLoadActionClear;
 }
 
 #pragma mark - Entity Map
@@ -222,7 +229,17 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 #pragma mark - private methods
 - (void)createProjectionMatrixWithAspect:(float)aspect
 {
-    _projectionMatrix = GLKMatrix4MakePerspective(MathUtils_DegToRad(FOVY), aspect, NEARZ, FARZ);
+    GLKMatrix4 perspective = GLKMatrix4MakePerspective(MathUtils_DegToRad(FOVY), aspect, NEARZ, FARZ);
+
+    // GL clip space has z in [-1,1], Metal in [0,1]: z' = 0.5z + 0.5w.
+    // Depth buffer values then equal GL window-space depth, so all shader
+    // depth math (water linearizeDepth, gl_FragCoord.z) stays unchanged.
+    const GLKMatrix4 glToMetal = GLKMatrix4Make(1, 0, 0,   0,
+                                                0, 1, 0,   0,
+                                                0, 0, 0.5, 0,
+                                                0, 0, 0.5, 1);
+
+    _projectionMatrix = GLKMatrix4Multiply(glToMetal, perspective);
 }
 
 #pragma mark - Memory

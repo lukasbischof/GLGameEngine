@@ -1,14 +1,14 @@
 //
-//  GLKView+aspect.m
+//  UIView+aspect.m
 //  GLGameEngine
 //
 //  Created by Lukas Bischof on 24.08.15.
 //  Copyright © 2015 Lukas Bischof. All rights reserved.
 //
 
-#import "GLKView+aspect.h"
+#import "UIView+aspect.h"
 
-@implementation GLKView (aspect)
+@implementation UIView (aspect)
 
 - (float)aspect
 {
