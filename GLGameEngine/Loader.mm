@@ -237,9 +237,8 @@
         return nil;
     }
 
-    RawModel *model = [RawModel modelWithVertexCount:(GLuint)vertexCount];
-
     MTKSubmesh *submesh = submeshes[0];
+    RawModel *model = [RawModel modelWithVertexCount:(GLuint)submesh.indexCount];
 
     [self setBuffer:positions inVAOAttribIndex:0 ofModel:model];
     [self setBuffer:texCoords inVAOAttribIndex:1 ofModel:model];

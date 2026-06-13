@@ -29,7 +29,8 @@
     return self;
 }
 
-- (instancetype)initWithShaderProgram:(StaticShaderProgram *)shader andInstancingShaderProgram:(InstancingShaderProgram *)instancingShader
+- (instancetype)initWithShaderProgram:(StaticShaderProgram *)shader
+           andInstancingShaderProgram:(InstancingShaderProgram *)instancingShader
 {
     if ((self = [super init])) {
         self.shaderProgram = shader;
@@ -39,7 +40,8 @@
     return self;
 }
 
-+ (EntityRenderer *)rendererWithShaderProgram:(StaticShaderProgram *)shader andInstancingShaderProgram:(InstancingShaderProgram *)instancingShader
++ (EntityRenderer *)rendererWithShaderProgram:(StaticShaderProgram *)shader
+                   andInstancingShaderProgram:(InstancingShaderProgram *)instancingShader
 {
     return [[EntityRenderer alloc] initWithShaderProgram:shader andInstancingShaderProgram:instancingShader];
 }
