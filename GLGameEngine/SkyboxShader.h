@@ -19,6 +19,5 @@
 - (void)loadViewMatrix:(GLKMatrix4)viewMatrix;
 - (void)loadFogColor:(GLKVector3)fogColor;
 - (void)loadBlendFactor:(GLfloat)blendFactor;
-- (void)loadTextureUnits;
 
 @end

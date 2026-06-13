@@ -119,7 +119,6 @@
             TexturedModel *model = [loader createTexturedModelWithPositions:positionBuffer
                                                                     normlas:normalBuffer
                                                          textureCoordinates:texCoordBuffer
-                                                                vertexCount:mesh.vertexCount
                                                                   submeshes:mesh.submeshes
                                                                  andTexture:texture];
 

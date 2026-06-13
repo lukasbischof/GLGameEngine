@@ -23,7 +23,7 @@ static const GLfloat NIGHT_DURATION = 11;
     SIZE, -SIZE, 0.0
 };*/
 
-__attribute__((aligned(16))) const float vertices[] = {
+__attribute__((aligned(16))) static const float vertices[] = {
     -SIZE,  SIZE, -SIZE,
     -SIZE, -SIZE, -SIZE,
     SIZE, -SIZE, -SIZE,
@@ -126,9 +126,6 @@ static inline NSArray<NSString *> *getNightTextureFiles() {
         self.nightTexture = [loader loadCubeTexture:getNightTextureFiles()];
 
         self.shader = [SkyboxShader skyboxShaderProgram];
-        [self.shader activate];
-        [self.shader loadTextureUnits];
-        [self.shader deactivate];
     }
 
     return self;
@@ -136,17 +133,12 @@ static inline NSArray<NSString *> *getNightTextureFiles() {
 
 - (void)updateProjectionMatrix:(GLKMatrix4)projMat
 {
-    [self.shader bind:^{
-        [self.shader loadProjectionMatrix:projMat];
-    }];
+    [self.shader loadProjectionMatrix:projMat];
 }
 
 - (void)updateFogColor:(GLKVector3)fogColor
 {
-    [self.shader bind:^{
-        [self.shader loadFogColor:fogColor];
-    }];
-
+    [self.shader loadFogColor:fogColor];
 }
 
 - (void)renderWithCamera:(Camera *)camera
@@ -171,8 +163,6 @@ static inline NSArray<NSString *> *getNightTextureFiles() {
     // glEnable(GL_DEPTH_TEST) + glEnable(GL_CULL_FACE)
     [encoder setDepthStencilState:context.dsLessWrite];
     context.cullingEnabled = YES;
-
-    [self.shader deactivate];
 }
 
 - (void)bindTextures

@@ -70,11 +70,6 @@ NSString *const TERRAIN_FRAGMENT_FUNCTION_NAME = @"fragment_terrain";
     _vertexUniforms.clippingPlane = SIMD_Vector4(clippingPlane);
 }
 
-- (void)loadTextureUnits
-{
-    // texture indices are fixed in the shader ([[texture(n)]]), nothing to do
-}
-
 - (void)loadFogDensity:(GLfloat)density andGradient:(GLfloat)gradient
 {
     _vertexUniforms.density = density;

@@ -76,11 +76,6 @@ NSString *const WATER_FRAGMENT_FUNCTION_NAME = @"fragment_water";
     _fragmentUniforms.moveFactor = moveFactor;
 }
 
-- (void)loadTextureUnits
-{
-    // texture indices are fixed in the shader ([[texture(n)]]), nothing to do
-}
-
 - (void)loadTransformationMatrix:(GLKMatrix4)transformationMatrix
 {
     _vertexUniforms.transformationMatrix = SIMD_Matrix4(transformationMatrix);

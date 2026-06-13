@@ -26,9 +26,6 @@
 {
     if ((self = [super init])) {
         self.shader = shader;
-        [self.shader activate];
-        [self.shader loadTextureUnits];
-        [self.shader deactivate];
     }
 
     return self;

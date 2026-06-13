@@ -88,32 +88,17 @@
 {
     MetalContext *context = [MetalContext sharedContext];
 
-    // glUseProgram outside a render pass had no visible effect; encoding
-    // only happens once a pass is staged (the load…: calls that follow such
-    // activates just write into the uniform structs).
+    // Defensive: only meaningful inside a staged render pass. (The load…:
+    // methods just write into the uniform structs and don't need the pipeline.)
     if (!context.canEncode)
         return;
 
     [context.currentEncoder setRenderPipelineState:self.pipelineState];
 }
 
-- (void)deactivate
-{
-    // glUseProgram(0) -- nothing to do in Metal
-}
-
-- (void)bind:(void (^)(void))block
-{
-    [self activate];
-    block();
-    [self deactivate];
-}
-
 #pragma mark - Memory management
 - (void)cleanUp
 {
-    [self deactivate];
-
     self.pipelineState = nil;
 }
 

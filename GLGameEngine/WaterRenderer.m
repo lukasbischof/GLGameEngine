@@ -11,7 +11,7 @@
 #import "TimeController.h"
 #import "MetalContext.h"
 
-const float quadVertices[] = {
+static const float quadVertices[] = {
     -1, 0, -1,
      1, 0, -1,
     -1, 0,  1,
@@ -53,10 +53,6 @@ static const GLfloat WAVE_SPEED = 0.015f;
         // GL_REPEAT wrapping is part of the sampler state (samplerMipRepeat)
         self.dudvMap = [[Texture alloc] initWithMTLTexture:[loader loadTexture:DUDV_MAP_NAME withExtension:DUDV_MAP_EXT]];
         self.normalMap = [[Texture alloc] initWithMTLTexture:[loader loadTexture:NORMAL_MAP_NAME withExtension:NORMAL_MAP_EXT]];
-
-        [self.shader bind:^{
-            [self.shader loadTextureUnits];
-        }];
     }
 
     return self;
@@ -65,9 +61,7 @@ static const GLfloat WAVE_SPEED = 0.015f;
 #pragma mark - rendering
 - (void)updateProjectionMatrix:(GLKMatrix4)projMat
 {
-    [self.shader bind:^{
-        [[self shader] loadProjectionMatrix:projMat];
-    }];
+    [self.shader loadProjectionMatrix:projMat];
 }
 
 - (void)render:(NSArray<WaterTile *> *)tiles withCamera:(Camera *)camera andLight:(Light *)light
@@ -119,7 +113,6 @@ static const GLfloat WAVE_SPEED = 0.015f;
 {
     // glEnable(GL_CULL_FACE)
     [MetalContext sharedContext].cullingEnabled = YES;
-    [self.shader deactivate];
 }
 
 - (void)cleanUp

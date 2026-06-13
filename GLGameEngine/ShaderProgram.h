@@ -43,11 +43,6 @@
 // "Binds" the program; sets the pipeline state on the current encoder
 - (void)activate;
 
-// "Unbinds" the program (no-op in Metal, kept for the GL call sites)
-- (void)deactivate;
-
 - (void)cleanUp;
-
-- (void)bind:(void(^)(void))block;
 
 @end

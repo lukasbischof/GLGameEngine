@@ -228,7 +228,6 @@
 - (TexturedModel *)createTexturedModelWithPositions:(MTKMeshBuffer *)positions
                                             normlas:(MTKMeshBuffer *)normals
                                  textureCoordinates:(MTKMeshBuffer *)texCoords
-                                        vertexCount:(NSUInteger)vertexCount
                                           submeshes:(NSArray<MTKSubmesh *> *)submeshes
                                          andTexture:(ModelTexture *)texture
 {

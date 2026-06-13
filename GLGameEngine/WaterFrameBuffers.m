@@ -47,7 +47,7 @@ static const NSUInteger REFRACTION_HEIGHT = 512;
 
 - (void)initReflectionFrameBuffer
 {
-    self.reflectionTexture = [self createTextureAttachmentWithWidth:REFLECTION_HEIGHT andHeight:REFLECTION_HEIGHT];
+    self.reflectionTexture = [self createTextureAttachmentWithWidth:REFLECTION_WIDTH andHeight:REFLECTION_HEIGHT];
     _reflectionDepthBuffer = [self createDepthBufferAttachmentWithWidth:REFLECTION_WIDTH andHeight:REFLECTION_HEIGHT];
 
     _reflectionPassDescriptor = [MTLRenderPassDescriptor renderPassDescriptor];

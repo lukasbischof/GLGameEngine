@@ -17,7 +17,6 @@
 - (void)loadTransformationMatrix:(GLKMatrix4)transformationMatrix;
 - (void)loadProjectionMatrix:(GLKMatrix4)projectionMatrix;
 - (void)loadViewMatrix:(Camera *)cam;
-- (void)loadTextureUnits;
 - (void)loadMoveFactor:(GLfloat)moveFactor;
 - (void)loadLight:(Light *)light;
 

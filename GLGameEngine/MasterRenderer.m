@@ -97,18 +97,13 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 - (void)updateProjectionForAspect:(float)aspect
 {
     [self createProjectionMatrixWithAspect:aspect];
-    [self.shader activate];
+
+    // load…: methods only write into the uniform structs, so no pipeline needs
+    // to be bound here (this also runs before any pass is staged).
     [self.shader loadProjectionMatrix:_projectionMatrix];
-    [self.shader deactivate];
-    
-    [self.instancingShader bind:^{
-        [self.instancingShader loadProjectionMatrix:_projectionMatrix];
-    }];
-    
-    [self.terrainShader activate];
+    [self.instancingShader loadProjectionMatrix:_projectionMatrix];
     [self.terrainShader loadProjectionMatrix:_projectionMatrix];
-    [self.terrainShader deactivate];
-    
+
     [self.skyboxRenderer updateProjectionMatrix:_projectionMatrix];
     [self.waterRenderer updateProjectionMatrix:_projectionMatrix];
 }
@@ -135,23 +130,20 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
     [self.shader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
     [self.shader loadViewMatrix:[camera getViewMatrix]];
     [self.entityRenderer render:self.entities withCamera:camera];
-    [self.shader deactivate];
-    
+
     [self.instancingShader activate];
     [self.instancingShader loadClippingPlane:clippingPlane];
     [self.instancingShader loadLights:lights];
     [self.instancingShader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
     [self.instancingShader loadViewMatrix:[camera getViewMatrix]];
     [self.entityRenderer renderInstances:self.instancedEntities withCamera:camera];
-    [self.instancingShader deactivate];
-    
+
     [self.terrainShader activate];
     [self.terrainShader loadClippingPlane:clippingPlane];
     [self.terrainShader loadLights:lights];
     [self.terrainShader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
     [self.terrainShader loadViewMatrix:[camera getViewMatrix]];
     [self.terrainRenderer render:self.terrains withCamera:camera];
-    [self.terrainShader deactivate];
 }
 
 - (void)renderWaterWithCamera:(Camera *)camera andLight:(Light * _Nonnull)light
@@ -258,18 +250,10 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 {
     // NSLog(@"set");
     _fog = fog;
-    
-    [self.shader activate];
+
     [self.shader loadFogDensity:fog.density andGradient:fog.gradient];
-    [self.shader deactivate];
-    
-    [self.instancingShader bind:^{
-        [self.instancingShader loadFogDensity:fog.density andGradient:fog.gradient];
-    }];
-    
-    [self.terrainShader activate];
+    [self.instancingShader loadFogDensity:fog.density andGradient:fog.gradient];
     [self.terrainShader loadFogDensity:fog.density andGradient:fog.gradient];
-    [self.terrainShader deactivate];
 }
 
 - (void)setSkyColor:(RGBA)skyColor

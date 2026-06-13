@@ -10,7 +10,7 @@
 #import "MathUtils.h"
 #import "MetalContext.h"
 
-const float quad2DVertices[] = {
+static const float quad2DVertices[] = {
     -1,  1,
     -1, -1,
      1,  1,
@@ -70,7 +70,6 @@ const float quad2DVertices[] = {
 
     [encoder setDepthStencilState:context.dsLessWrite];
     [self.quadModel unbindVAO];
-    [self.shader deactivate];
 }
 
 - (void)cleanUp

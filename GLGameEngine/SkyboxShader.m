@@ -55,11 +55,6 @@ NSString *const SKYBOX_FRAGMENT_FUNCTION_NAME = @"fragment_skybox";
     [encoder setFragmentBytes:&_fragmentUniforms length:sizeof(_fragmentUniforms) atIndex:BufferIndexFragmentUniforms];
 }
 
-- (void)loadTextureUnits
-{
-    // texture indices are fixed in the shader ([[texture(n)]]), nothing to do
-}
-
 - (void)loadBlendFactor:(GLfloat)blendFactor
 {
     _fragmentUniforms.blendFactor = blendFactor;
