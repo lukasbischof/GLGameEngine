@@ -7,8 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		4816CED01BC564E800F35C2E /* TerrainVertexShader.vsh in Resources */ = {isa = PBXBuildFile; fileRef = 4816CECE1BC564E800F35C2E /* TerrainVertexShader.vsh */; };
-		4816CED41BC5650A00F35C2E /* TerrainFragmentShader.fsh in Resources */ = {isa = PBXBuildFile; fileRef = 4816CED21BC5650A00F35C2E /* TerrainFragmentShader.fsh */; };
+		0D49ECA60815D3314AEC5282 /* SIMDBridgeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9306E92DF32FB8D309ADEF6A /* SIMDBridgeTests.m */; };
+		15DB0D10697C497421D0A5A0 /* MathUtilsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FF41DAD0FED6AFC0C42073 /* MathUtilsTests.m */; };
+		41C114C4D55333B8F8B34D78 /* BufferTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27DC5A2214F1ED3C54AA60CC /* BufferTests.m */; };
+		41FCFC4CAA0D34C0C0A528AE /* EntityTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3433ED4BCA36402BC2CA435 /* EntityTests.m */; };
+		4816CED01BC564E800F35C2E /* BuildFile in Resources */ = {isa = PBXBuildFile; };
+		4816CED41BC5650A00F35C2E /* BuildFile in Resources */ = {isa = PBXBuildFile; };
 		4816CED81BC5655800F35C2E /* TerrainShader.m in Sources */ = {isa = PBXBuildFile; fileRef = 4816CED71BC5655800F35C2E /* TerrainShader.m */; };
 		4816CEDD1BC5663800F35C2E /* TerrainRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 4816CEDC1BC5663800F35C2E /* TerrainRenderer.m */; };
 		4816CEE11BC56D1900F35C2E /* grass.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 4816CEE01BC56D1900F35C2E /* grass.jpg */; };
@@ -57,13 +61,14 @@
 		4D450000000000000000B008 /* GUIShaders.metal in Sources */ = {isa = PBXBuildFile; fileRef = 4D450000000000000000F00D /* GUIShaders.metal */; };
 		4D450000000000000000B009 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D450000000000000000F00E /* Metal.framework */; };
 		4D450000000000000000B00A /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4D450000000000000000F00F /* MetalKit.framework */; };
+		6C071182E1AB5198B259F842 /* TerrainTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 52B20B263DB9DAD30495E26A /* TerrainTests.m */; };
+		7727253F9A4256ADF1840A76 /* TexturedModelTests.m in Sources */ = {isa = PBXBuildFile; fileRef = EB0D51FF8F15E7BF302B9C65 /* TexturedModelTests.m */; };
 		802639391B0E34D3009B42D6 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 802639381B0E34D3009B42D6 /* main.m */; };
 		8026393C1B0E34D3009B42D6 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 8026393B1B0E34D3009B42D6 /* AppDelegate.m */; };
 		8026393F1B0E34D3009B42D6 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8026393E1B0E34D3009B42D6 /* ViewController.m */; };
 		802639421B0E34D3009B42D6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 802639401B0E34D3009B42D6 /* Main.storyboard */; };
 		802639441B0E34D3009B42D6 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 802639431B0E34D3009B42D6 /* Images.xcassets */; };
 		802639471B0E34D3009B42D6 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 802639451B0E34D3009B42D6 /* LaunchScreen.xib */; };
-		802639531B0E34D3009B42D6 /* GLGameEngineTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 802639521B0E34D3009B42D6 /* GLGameEngineTests.m */; };
 		8026395F1B0E34F9009B42D6 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8026395D1B0E34F9009B42D6 /* GLKit.framework */; };
 		802639641B0E5279009B42D6 /* RawModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 802639631B0E5279009B42D6 /* RawModel.m */; };
 		802639671B0E535C009B42D6 /* Loader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 802639661B0E535C009B42D6 /* Loader.mm */; };
@@ -132,6 +137,7 @@
 		80FFE4291B1A2C0B008DE7DB /* stall.obj in Resources */ = {isa = PBXBuildFile; fileRef = 80FFE4271B1A2C0B008DE7DB /* stall.obj */; };
 		80FFE42A1B1A2C0B008DE7DB /* stallTexture.png in Resources */ = {isa = PBXBuildFile; fileRef = 80FFE4281B1A2C0B008DE7DB /* stallTexture.png */; };
 		80FFE42D1B1A615E008DE7DB /* Light.m in Sources */ = {isa = PBXBuildFile; fileRef = 80FFE42C1B1A615E008DE7DB /* Light.m */; };
+		BC410C7006B67189056AFB09 /* CameraTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 15E4F2331B33396F61FAC303 /* CameraTests.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -145,6 +151,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		15E4F2331B33396F61FAC303 /* CameraTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = CameraTests.m; sourceTree = "<group>"; };
+		27DC5A2214F1ED3C54AA60CC /* BufferTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = BufferTests.m; sourceTree = "<group>"; };
 		4816CED61BC5655800F35C2E /* TerrainShader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TerrainShader.h; sourceTree = "<group>"; };
 		4816CED71BC5655800F35C2E /* TerrainShader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TerrainShader.m; sourceTree = "<group>"; };
 		4816CEDB1BC5663800F35C2E /* TerrainRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TerrainRenderer.h; sourceTree = "<group>"; };
@@ -203,6 +211,8 @@
 		4D450000000000000000F00D /* GUIShaders.metal */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.metal; path = GUIShaders.metal; sourceTree = "<group>"; };
 		4D450000000000000000F00E /* Metal.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Metal.framework; path = System/Library/Frameworks/Metal.framework; sourceTree = SDKROOT; };
 		4D450000000000000000F00F /* MetalKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MetalKit.framework; path = System/Library/Frameworks/MetalKit.framework; sourceTree = SDKROOT; };
+		52B20B263DB9DAD30495E26A /* TerrainTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = TerrainTests.m; sourceTree = "<group>"; };
+		68FF41DAD0FED6AFC0C42073 /* MathUtilsTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = MathUtilsTests.m; sourceTree = "<group>"; };
 		802639331B0E34D3009B42D6 /* GLGameEngine.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = GLGameEngine.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		802639371B0E34D3009B42D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		802639381B0E34D3009B42D6 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -215,7 +225,6 @@
 		802639461B0E34D3009B42D6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		8026394C1B0E34D3009B42D6 /* GLGameEngineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GLGameEngineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		802639511B0E34D3009B42D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		802639521B0E34D3009B42D6 /* GLGameEngineTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = GLGameEngineTests.m; sourceTree = "<group>"; };
 		8026395D1B0E34F9009B42D6 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		8026395E1B0E34F9009B42D6 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		802639621B0E5279009B42D6 /* RawModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RawModel.h; sourceTree = "<group>"; };
@@ -300,6 +309,10 @@
 		80FFE4281B1A2C0B008DE7DB /* stallTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = stallTexture.png; sourceTree = "<group>"; };
 		80FFE42B1B1A615E008DE7DB /* Light.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Light.h; sourceTree = "<group>"; };
 		80FFE42C1B1A615E008DE7DB /* Light.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Light.m; sourceTree = "<group>"; };
+		9306E92DF32FB8D309ADEF6A /* SIMDBridgeTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = SIMDBridgeTests.m; sourceTree = "<group>"; };
+		D3433ED4BCA36402BC2CA435 /* EntityTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EntityTests.m; sourceTree = "<group>"; };
+		EB0D51FF8F15E7BF302B9C65 /* TexturedModelTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = TexturedModelTests.m; sourceTree = "<group>"; };
+		ECEAD828560AABDED088F312 /* MatrixAssertions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MatrixAssertions.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -521,8 +534,15 @@
 		8026394F1B0E34D3009B42D6 /* GLGameEngineTests */ = {
 			isa = PBXGroup;
 			children = (
-				802639521B0E34D3009B42D6 /* GLGameEngineTests.m */,
 				802639501B0E34D3009B42D6 /* Supporting Files */,
+				68FF41DAD0FED6AFC0C42073 /* MathUtilsTests.m */,
+				15E4F2331B33396F61FAC303 /* CameraTests.m */,
+				D3433ED4BCA36402BC2CA435 /* EntityTests.m */,
+				EB0D51FF8F15E7BF302B9C65 /* TexturedModelTests.m */,
+				27DC5A2214F1ED3C54AA60CC /* BufferTests.m */,
+				9306E92DF32FB8D309ADEF6A /* SIMDBridgeTests.m */,
+				52B20B263DB9DAD30495E26A /* TerrainTests.m */,
+				ECEAD828560AABDED088F312 /* MatrixAssertions.h */,
 			);
 			path = GLGameEngineTests;
 			sourceTree = "<group>";
@@ -923,10 +943,10 @@
 			files = (
 				805071301BE808FD00CBB310 /* top.jpg in Resources */,
 				805071261BE808FD00CBB310 /* back.jpg in Resources */,
-				4816CED41BC5650A00F35C2E /* TerrainFragmentShader.fsh in Resources */,
+				4816CED41BC5650A00F35C2E /* BuildFile in Resources */,
 				805071421BE8128C00CBB310 /* nightLeft.jpg in Resources */,
 				805071461BE8128C00CBB310 /* nightTop.jpg in Resources */,
-				4816CED01BC564E800F35C2E /* TerrainVertexShader.vsh in Resources */,
+				4816CED01BC564E800F35C2E /* BuildFile in Resources */,
 				805071401BE8128C00CBB310 /* nightFront.jpg in Resources */,
 				4816CEE21BC56D1900F35C2E /* grass.jpg in Resources */,
 				805071441BE8128C00CBB310 /* nightRight.jpg in Resources */,
@@ -997,7 +1017,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				802639531B0E34D3009B42D6 /* GLGameEngineTests.m in Sources */,
+				15DB0D10697C497421D0A5A0 /* MathUtilsTests.m in Sources */,
+				BC410C7006B67189056AFB09 /* CameraTests.m in Sources */,
+				41FCFC4CAA0D34C0C0A528AE /* EntityTests.m in Sources */,
+				7727253F9A4256ADF1840A76 /* TexturedModelTests.m in Sources */,
+				41C114C4D55333B8F8B34D78 /* BufferTests.m in Sources */,
+				0D49ECA60815D3314AEC5282 /* SIMDBridgeTests.m in Sources */,
+				6C071182E1AB5198B259F842 /* TerrainTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1157,10 +1183,12 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = GLGameEngineTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "de.pf-control.aseider.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GLGameEngine.app/GLGameEngine";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/GLGameEngine";
 			};
 			name = Debug;
 		};
@@ -1173,10 +1201,12 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = GLGameEngineTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "de.pf-control.aseider.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/GLGameEngine.app/GLGameEngine";
+				USER_HEADER_SEARCH_PATHS = "$(SRCROOT)/GLGameEngine";
 			};
 			name = Release;
 		};

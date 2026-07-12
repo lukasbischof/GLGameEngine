@@ -81,6 +81,26 @@ static const GLint MAX_PIXEL_COLOR = 256 + 256 + 256;
     return self;
 }
 
+- (instancetype)initWithGridX:(GLint)gridX
+                        gridZ:(GLint)gridZ
+                heightMapData:(const uint8_t *)data
+                        width:(NSUInteger)width
+                       height:(NSUInteger)height
+{
+    if ((self = [super init])) {
+        self.x = gridX * TERRAIN_SIZE;
+        self.z = gridZ * TERRAIN_SIZE;
+
+        _width = width;
+        _height = height;
+        _bytesPerRow = 4 * width;
+        _data = (uint8_t *)calloc(height * width * 4, sizeof(uint8_t));
+        memcpy(_data, data, height * width * 4);
+    }
+
+    return self;
+}
+
 - (void)dealloc
 {
     // _data is the calloc'd heightmap bitmap from getBinaryDataForImage:flipped:
