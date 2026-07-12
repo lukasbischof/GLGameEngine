@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 An iOS 3D game engine, originally written against OpenGL ES (following ThinMatrix's OpenGL tutorial series — hence the "GL" name and the ThinMatrix assets). It is **mid-migration to Metal**: the iOS target (`GLGameEngine`) now renders entirely with Metal/MetalKit, while retaining the OpenGL-era class structure and naming. The engine renders a scene of terrain, entities (rocks, trees, grass, farmhouse, boat, lamps), a skybox, and reflective/refractive water.
 
-Objective-C, no package manager, no test suite of substance — it is a personal graphics project built with Xcode.
+Objective-C, no package manager — it is a personal graphics project built with Xcode. Unit tests for the GPU-free logic live in `GLGameEngineTests` (see below).
 
 ## Build & run
 
@@ -19,11 +19,15 @@ xcodebuild -project GLGameEngine.xcodeproj -scheme GLGameEngine -sdk iphoneos bu
 # Build for the simulator (works despite the clip-distance GPU check — see below)
 xcodebuild -project GLGameEngine.xcodeproj -scheme GLGameEngine -sdk iphonesimulator build
 
+# Run the unit tests (hosted in the app, so they need a Metal-capable simulator)
+xcodebuild -project GLGameEngine.xcodeproj -scheme GLGameEngine \
+  -destination 'platform=iOS Simulator,name=iPhone 17' test
+
 # List schemes/targets
 xcodebuild -list -project GLGameEngine.xcodeproj
 ```
 
-Targets: `GLGameEngine` (iOS, deployment target 17.0 — **this is the one to work on**), `GLGameEngine Mac` (legacy macOS, deployment target 10.11), plus `GLGameEngineTests` / `GLGameEngine MacTests` (empty scaffolding). The Mac target predates the Metal migration and is not maintained.
+Targets: `GLGameEngine` (iOS, deployment target 17.0) and `GLGameEngineTests` (XCTest bundle hosted in the app; tests import engine headers via `USER_HEADER_SEARCH_PATHS` and link against the host app's symbols, so engine sources are not compiled twice). A legacy `GLGameEngine Mac` target existed pre-Metal-migration but was removed (see git history).
 
 Requires a real device or a Metal-capable simulator: `ViewController initMetalContext` calls `exit()` if no Metal device is found, and asserts `MTLGPUFamilyApple4` (A11+) support for `[[clip_distance]]` — but only on real devices (`#if !TARGET_OS_SIMULATOR`).
 
@@ -49,7 +53,7 @@ The migration deliberately preserved the OpenGL call structure and mapped each G
 - `TextureIndex` — fragment texture slots, mirroring the old GL texture units per shader family.
 - One `…VertexUniforms` / `…FragmentUniforms` struct per shader program (each GLSL shader's uniforms collapsed into a struct). `MAX_LIGHTS` is 4.
 
-**Active shaders are the `.metal` files** (`StaticShaders.metal`, `TerrainShaders.metal`, `SkyboxShaders.metal`, `WaterShaders.metal`, `InstancingShaders.metal`, `GUIShaders.metal`) — these are what the Sources build phase compiles. The `.vsh`/`.fsh` GLSL files are the **legacy OpenGL originals, kept for reference only** and not built. When changing a shader, edit the `.metal` file (and matching struct in `ShaderTypes.h`), not the `.vsh`/`.fsh`.
+**Shaders are the `.metal` files** (`StaticShaders.metal`, `TerrainShaders.metal`, `SkyboxShaders.metal`, `WaterShaders.metal`, `InstancingShaders.metal`, `GUIShaders.metal`). The legacy `.vsh`/`.fsh` GLSL originals were deleted (they live in git history). When changing a shader, edit the `.metal` file and the matching struct in `ShaderTypes.h`.
 
 ### Rendering pipeline — `MasterRenderer` + `ViewController`
 
@@ -64,11 +68,17 @@ The migration deliberately preserved the OpenGL call structure and mapped each G
 
 ### Scene construction
 
-`ViewController setupEntities` hand-builds the demo scene: loads OBJ models via `OBJLoader2` (`OBJLoader` is the older variant), scatters rocks/trees/grass/flowers using `MathUtils_RandomFloat` and terrain height sampling (`Terrain getHeightAtWorldX:worldZ:`), and places lights. Instanced rendering (`InstanceableTexturedModel`, the `instanceableModels` path) is scaffolded but currently commented out in favor of per-entity draws.
+`ViewController setupEntities` hand-builds the demo scene: loads OBJ models via `OBJLoader2` (the older `OBJLoader` v1 was removed), scatters rocks/trees/grass/flowers using `MathUtils_RandomFloat` and terrain height sampling (`Terrain getHeightAtWorldX:worldZ:`), and places lights. Instanced rendering (`InstanceableTexturedModel` / `InstancingShaderProgram` / `InstancingShaders.metal`) is unused scaffolding: nothing feeds `instancedEntities`, and `MasterRenderer` skips the instancing shader when that collection is empty.
+
+Entities cache their transformation matrix behind a dirty flag (`Entity.m`); any new mutation path for position/rotation/scale must invalidate it (route through the property setters). `MasterRenderer`'s batch dictionary and arrays are reused across frames — `clearEntities` empties the batches rather than removing them, and `EntityRenderer` skips empty batches. `TexturedModel` keys that dictionary via UUID-based `isEqual:`/`hash` (copies share the UUID and therefore the batch).
 
 ### Model formats
 
-`.mm` files (Objective-C++) are used where C++ is needed — the OBJ loaders (`OBJLoader.mm`, `OBJLoader2.mm`), `Loader.mm`, `Buffer.mm`, `InstanceableTexturedModel.mm`, `Terrain.mm`. Plain `.m` elsewhere. `SIMDBridge.h` bridges `GLKit` matrix types to `simd` types for the uniform structs.
+`.mm` files (Objective-C++) are used where C++ is needed — `OBJLoader2.mm`, `Loader.mm`, `Buffer.mm`, `InstanceableTexturedModel.mm`, `Terrain.mm`. Plain `.m` elsewhere. `SIMDBridge.h` bridges `GLKit` matrix types to `simd` types for the uniform structs.
+
+## Testing
+
+`GLGameEngineTests` covers the GPU-free logic: `MathUtils` (barycentric terrain interpolation, transformation/normal matrices), `Camera`, `Entity` (incl. the transform cache), `TexturedModel` equality/hashing, the `Buffer` C API, `SIMDBridge` conversions, and `Terrain` height sampling (via its CPU-only `initWithGridX:gridZ:heightMapData:width:height:` initializer). Renderers/shaders/loaders need a `MetalContext` device and are not unit-tested. When touching entity/camera/matrix math, run the tests — they pin the exact matrix outputs.
 
 ## Conventions
 
