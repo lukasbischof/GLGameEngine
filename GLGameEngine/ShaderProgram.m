@@ -28,15 +28,19 @@
     if ((self = [super init])) {
         MetalContext *context = [MetalContext sharedContext];
 
+        // A nil return silently no-ops in activate (canEncode guard), so make
+        // the failure loud in debug builds instead of rendering nothing.
         id<MTLFunction> vertexFunction = [context.library newFunctionWithName:vertexName];
         if (!vertexFunction) {
             NSLog(@"ERROR: CANT LOAD VERTEX FUNCTION %@", vertexName);
+            NSAssert(NO, @"%@: vertex function '%@' not found in default library", NSStringFromClass([self class]), vertexName);
             return nil;
         }
 
         id<MTLFunction> fragmentFunction = [context.library newFunctionWithName:fragmentName];
         if (!fragmentFunction) {
             NSLog(@"ERROR: CANT LOAD FRAGMENT FUNCTION %@", fragmentName);
+            NSAssert(NO, @"%@: fragment function '%@' not found in default library", NSStringFromClass([self class]), fragmentName);
             return nil;
         }
 
@@ -57,6 +61,7 @@
 
         if (!_pipelineState) {
             NSLog(@"ERROR: FAILED TO CREATE PIPELINE STATE %@: %@", descriptor.label, error);
+            NSAssert(NO, @"%@: pipeline state creation failed: %@", descriptor.label, error);
             return nil;
         }
 

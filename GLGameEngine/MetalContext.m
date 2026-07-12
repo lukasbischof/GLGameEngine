@@ -42,7 +42,7 @@
         _device = MTLCreateSystemDefaultDevice();
         if (!_device) {
             NSLog(@"SORRY, METAL ISN'T AVAILABLE ON YOUR DEVICE :(");
-            exit(EXIT_SUCCESS);
+            exit(EXIT_FAILURE);
         }
 
         _commandQueue = [_device newCommandQueue];

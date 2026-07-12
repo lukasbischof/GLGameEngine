@@ -89,7 +89,7 @@ NSString *deviceName()
     MetalContext *context = [MetalContext sharedContext];
     if (!context.device) {
         NSLog(@"SORRY, METAL ISN'T AVAILABLE ON YOUR DEVICE :(");
-        exit(EXIT_SUCCESS);
+        exit(EXIT_FAILURE);
     } else {
         NSLog(@"Metal context initialized for %@.", deviceName());
     }

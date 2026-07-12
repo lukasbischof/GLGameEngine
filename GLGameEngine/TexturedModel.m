@@ -42,8 +42,15 @@
             return YES;
         }
     }
-    
+
     return NO;
+}
+
+// isEqual: is UUID-based, so hash must be too — otherwise copies (same UUID)
+// land in different NSDictionary buckets and get their own render batch.
+- (NSUInteger)hash
+{
+    return self.UUID.hash;
 }
 
 @end

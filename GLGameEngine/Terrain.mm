@@ -81,6 +81,13 @@ static const GLint MAX_PIXEL_COLOR = 256 + 256 + 256;
     return self;
 }
 
+- (void)dealloc
+{
+    // _data is the calloc'd heightmap bitmap from getBinaryDataForImage:flipped:
+    free(_data);
+    _data = NULL;
+}
+
 #pragma mark - Image Processing
 - (BOOL)getImageData:(UIImage *)image
 {

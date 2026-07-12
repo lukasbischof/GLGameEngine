@@ -67,6 +67,10 @@ struct _UintBuffer {
 typedef struct _UintBuffer UintBuffer;
 
 
+// Ownership: the …NoCopy variants alias the caller's memory (the caller keeps
+// ownership). The …Copy variants malloc a private copy — the caller owns the
+// returned buffer's data and must free((void *)buffer.data) when done.
+
 EXPORT
 Buffer BufferCreateWithDataNoCopy(const void *data, size_t length);
 
