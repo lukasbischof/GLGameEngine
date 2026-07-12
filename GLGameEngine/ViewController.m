@@ -11,7 +11,6 @@
 #import "EntityRenderer.h"
 #import "StaticShaderProgram.h"
 #import "Entity.h"
-#import "OBJLoader.h"
 #import "OBJLoader2.h"
 #import "Camera.h"
 #import "MasterRenderer.h"
@@ -173,17 +172,6 @@ NSString *deviceName()
                   *fernModel   = models[6],
                   *lampModel   = models[7],
                   *boatModel   = models[8];
-    /*InstanceableTexturedModel *rockModel = [[InstanceableTexturedModel alloc] initWithRawModel:models[0].rawModel
-                                                                                    andTexture:models[0].texture];
-    InstanceableTexturedModel *treeModel = [[InstanceableTexturedModel alloc] initWithRawModel:models[1].rawModel
-                                                                                    andTexture:models[1].texture];
-    TexturedModel *rockModel   = models[0],
-                  *grassModel  = models[2],
-                  *flowerModel = models[3],
-                  *farmModel   = models[4],
-                  *wagenModel  = models[5],
-                  *fernModel   = models[6],
-                  *lampModel   = models[7];*/
 
     fernModel.texture.hasAlpha = YES;
     grassModel.texture.hasAlpha = YES;
@@ -232,11 +220,7 @@ NSString *deviceName()
         entity.model.texture.reflectivity = .1;
 
         [self.entities addObject:entity];
-        //[rockModel updateTransformationMatrix:entity.currentTransformationMatrix forInstance:(GLuint)i];
     }
-
-    //[rockModel lock];
-    //[self.instanceableModels addObject:rockModel];
 
     // TREE SETUP
     NSUInteger numb = [deviceName() isEqualToString:@"iPad5,3"] ? 75 : 50;
@@ -255,11 +239,7 @@ NSString *deviceName()
         entity.model.texture.reflectivity = 0;
 
         [self.entities addObject:entity];
-        //[treeModel updateTransformationMatrix:entity.currentTransformationMatrix forInstance:(GLuint)i];
     }
-
-    //[treeModel lock];
-    //[self.instanceableModels addObject:treeModel];
 
     // GRASS SETUP
     numb = [deviceName() isEqualToString:@"iPad5,3"] ? 850 : 650;
@@ -423,10 +403,6 @@ NSString *deviceName()
     for (Entity *entity in self.entities) {
         [self.renderer processEntity:entity];
     }
-
-    /*for (InstanceableTexturedModel *model in self.instanceableModels) {
-        [self.renderer processInstanceableModel:model];
-    }*/
 
     [self.renderer processTerrain:self.terrain];
     [self.renderer processWaterTile:self.water];

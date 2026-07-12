@@ -131,12 +131,16 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
     [self.shader loadViewMatrix:[camera getViewMatrix]];
     [self.entityRenderer render:self.entities withCamera:camera];
 
-    [self.instancingShader activate];
-    [self.instancingShader loadClippingPlane:clippingPlane];
-    [self.instancingShader loadLights:lights];
-    [self.instancingShader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
-    [self.instancingShader loadViewMatrix:[camera getViewMatrix]];
-    [self.entityRenderer renderInstances:self.instancedEntities withCamera:camera];
+    // Instancing is scaffolding: nothing feeds instancedEntities right now, so
+    // skip the shader activation entirely unless there is something to draw.
+    if (self.instancedEntities.count > 0) {
+        [self.instancingShader activate];
+        [self.instancingShader loadClippingPlane:clippingPlane];
+        [self.instancingShader loadLights:lights];
+        [self.instancingShader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
+        [self.instancingShader loadViewMatrix:[camera getViewMatrix]];
+        [self.entityRenderer renderInstances:self.instancedEntities withCamera:camera];
+    }
 
     [self.terrainShader activate];
     [self.terrainShader loadClippingPlane:clippingPlane];
