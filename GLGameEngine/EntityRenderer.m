@@ -80,23 +80,35 @@
 {
     id<MTLRenderCommandEncoder> encoder = [MetalContext sharedContext].currentEncoder;
 
+    // The view matrix is identical for every entity in the pass; building it
+    // per entity used to dominate the CPU frame time.
+    GLKMatrix4 viewMatrix = camera.viewMatrix;
+
     [entities enumerateKeysAndObjectsUsingBlock:^(TexturedModel *_Nonnull key,
                                                   NSMutableArray<Entity *> *_Nonnull obj,
                                                   BOOL *_Nonnull stop) {
+        // batches are kept (empty) across frames to avoid collection churn
+        if (obj.count == 0)
+            return;
+
         [self prepareTexturedModel:key instancingEnabled:NO];
 
         [encoder pushDebugGroup:@"Draw entites"];
         for (Entity *entity in obj) {
-            [self prepareInstance:entity withViewMatrix:camera.viewMatrix];
+            [self prepareInstance:entity withViewMatrix:viewMatrix];
 
+#if DEBUG
             [encoder pushDebugGroup:key.debugLabel ?: @"entity"];
+#endif
             [self.shaderProgram uploadUniforms];
             [encoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle
                                 indexCount:key.rawModel.vertexCount
                                  indexType:key.rawModel.indexType
                                indexBuffer:key.rawModel.indexBuffer
                          indexBufferOffset:key.rawModel.indexBufferOffset];
+#if DEBUG
             [encoder popDebugGroup];
+#endif
         }
         [encoder popDebugGroup];
 
@@ -144,8 +156,10 @@
 
 - (void)prepareInstance:(Entity *)entity withViewMatrix:(GLKMatrix4)viewMat
 {
-    [self.shaderProgram loadTransformationMatrix:entity.currentTransformationMatrix];
-    [self.shaderProgram loadNormalMatrixWithModelMatrix:entity.currentTransformationMatrix
+    GLKMatrix4 transformationMatrix = entity.currentTransformationMatrix;
+
+    [self.shaderProgram loadTransformationMatrix:transformationMatrix];
+    [self.shaderProgram loadNormalMatrixWithModelMatrix:transformationMatrix
                                           andViewMatrix:viewMat];
     [self.shaderProgram loadOffset:GLKVector2Make([entity getTextureXOffset], [entity getTextureYOffset])];
 }

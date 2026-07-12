@@ -89,7 +89,10 @@ GLKMatrix3 MathUtils_CreateNormalMatrix(GLKMatrix4 transformationMatrix, GLKMatr
     GLKMatrix4 nMatrix = GLKMatrix4Invert(mvMatrix, &isInvertible);
     
     if (!isInvertible) {
+#if DEBUG
+        // this runs per entity per pass — keep the log out of release builds
         NSLog(@"<< ERROR >>: mvMatrix isn't invertible");
+#endif
         return GLKMatrix3Identity;
     }
     

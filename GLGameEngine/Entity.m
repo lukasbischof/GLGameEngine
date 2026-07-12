@@ -12,7 +12,13 @@
 
 @end
 
-@implementation Entity
+@implementation Entity {
+    // The transformation matrix is read up to three times per frame (once per
+    // render pass) for ~1000 static entities, so it is cached and only rebuilt
+    // when position/rotation/scale change.
+    GLKMatrix4 _cachedTransformationMatrix;
+    BOOL _transformationMatrixDirty;
+}
 
 #pragma mark - Initializer
 + (Entity *)entityWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation scale:(GLfloat)scale andTextureIndex:(GLuint)index
@@ -53,6 +59,7 @@
         _rotation = rotation;
         _scale = scale;
         _textureIndex = index;
+        _transformationMatrixDirty = YES;
     }
     
     return self;
@@ -85,7 +92,25 @@
     return self;
 }
 
-#pragma mark - Methods
+#pragma mark - Mutation (every path must invalidate the cached matrix)
+- (void)setPosition:(GLKVector3)position
+{
+    _position = position;
+    _transformationMatrixDirty = YES;
+}
+
+- (void)setRotation:(Rotation)rotation
+{
+    _rotation = rotation;
+    _transformationMatrixDirty = YES;
+}
+
+- (void)setScale:(GLfloat)scale
+{
+    _scale = scale;
+    _transformationMatrixDirty = YES;
+}
+
 - (void)increasePositionByVector:(GLKVector3)vec
 {
     self.position = GLKVector3Add(self.position, vec);
@@ -93,7 +118,7 @@
 
 - (void)increaseRotationByX:(GLfloat)x y:(GLfloat)y andZ:(GLfloat)z
 {
-    _rotation = MathUtils_RotationMake(_rotation.x + x, _rotation.y + y, _rotation.z + z);
+    self.rotation = MathUtils_RotationMake(_rotation.x + x, _rotation.y + y, _rotation.z + z);
 }
 
 - (void)increaseRotationByRotation:(Rotation)rot
@@ -103,13 +128,17 @@
 
 - (void)setRotationX:(GLfloat)x y:(GLfloat)y andZ:(GLfloat)z
 {
-    _rotation = MathUtils_RotationMake(x, y, z);
+    self.rotation = MathUtils_RotationMake(x, y, z);
 }
 
 - (GLKMatrix4)getCurrentTransformationMatrix
 {
-    GLKMatrix4 mat = MathUtils_CreateTransformationMatrixr(self.position, self.rotation, self.scale);
-    return mat;
+    if (_transformationMatrixDirty) {
+        _cachedTransformationMatrix = MathUtils_CreateTransformationMatrixr(self.position, self.rotation, self.scale);
+        _transformationMatrixDirty = NO;
+    }
+
+    return _cachedTransformationMatrix;
 }
 
 - (GLfloat)getTextureXOffset

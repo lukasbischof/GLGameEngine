@@ -124,11 +124,13 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
     // Clipping ([[clip_distance]]) is always active; the main pass passes a
     // plane that never clips, so glEnable(GL_CLIP_DISTANCE0_APPLE) is gone.
 
+    GLKMatrix4 viewMatrix = [camera getViewMatrix];
+
     [self.shader activate];
     [self.shader loadClippingPlane:clippingPlane];
     [self.shader loadLights:lights];
     [self.shader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
-    [self.shader loadViewMatrix:[camera getViewMatrix]];
+    [self.shader loadViewMatrix:viewMatrix];
     [self.entityRenderer render:self.entities withCamera:camera];
 
     // Instancing is scaffolding: nothing feeds instancedEntities right now, so
@@ -138,7 +140,7 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
         [self.instancingShader loadClippingPlane:clippingPlane];
         [self.instancingShader loadLights:lights];
         [self.instancingShader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
-        [self.instancingShader loadViewMatrix:[camera getViewMatrix]];
+        [self.instancingShader loadViewMatrix:viewMatrix];
         [self.entityRenderer renderInstances:self.instancedEntities withCamera:camera];
     }
 
@@ -146,7 +148,7 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
     [self.terrainShader loadClippingPlane:clippingPlane];
     [self.terrainShader loadLights:lights];
     [self.terrainShader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
-    [self.terrainShader loadViewMatrix:[camera getViewMatrix]];
+    [self.terrainShader loadViewMatrix:viewMatrix];
     [self.terrainRenderer render:self.terrains withCamera:camera];
 }
 
@@ -180,9 +182,9 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 {
     TexturedModel *entityModel = entity.model;
     NSMutableArray<Entity *> *batch = [self.entities objectForKey:entityModel];
-    
+
     if (batch != nil) {
-        [self.entities[entityModel] addObject:entity];
+        [batch addObject:entity];
     } else {
         NSMutableArray<Entity *> *newBatch = [NSMutableArray array];
         [newBatch addObject:entity];
@@ -208,7 +210,15 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 
 - (void)clearEntities
 {
-    [self.entities removeAllObjects];
+    // Keep the dictionary and its per-model batch arrays alive across frames
+    // (the scene re-feeds the same models every frame) — just empty the
+    // batches instead of re-allocating the whole map. EntityRenderer skips
+    // batches that stay empty.
+    [self.entities enumerateKeysAndObjectsUsingBlock:^(TexturedModel *_Nonnull key,
+                                                       NSMutableArray<Entity *> *_Nonnull batch,
+                                                       BOOL *_Nonnull stop) {
+        [batch removeAllObjects];
+    }];
     [self.instancedEntities removeAllObjects];
 }
 
