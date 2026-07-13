@@ -2,7 +2,7 @@
 //  SkyboxShaders.metal
 //  GLGameEngine
 //
-//  Metal translation of SkyboxVertexShader.vsh + SkyboxFragmentShader.fsh.
+//  Day/night cube-map skybox with horizon fog blending.
 //
 
 #include <metal_stdlib>

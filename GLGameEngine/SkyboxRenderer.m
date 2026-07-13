@@ -146,21 +146,21 @@ static inline NSArray<NSString *> *getNightTextureFiles() {
     MetalContext *context = [MetalContext sharedContext];
     id<MTLRenderCommandEncoder> encoder = context.currentEncoder;
 
-    [self.shader activate];
+    [self.shader bindPipeline];
     [self.shader loadViewMatrix:camera.viewMatrix];
 
-    [self.cube bindVAO];
+    [self.cube bindBuffersToEncoder];
 
     [self bindTextures];
 
-    // glDisable(GL_CULL_FACE) + glDisable(GL_DEPTH_TEST)
+    // skybox: no culling, no depth test/write (drawn behind everything)
     context.cullingEnabled = NO;
     [encoder setDepthStencilState:context.dsAlwaysNoWrite];
 
     [self.shader uploadUniforms];
     [encoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:0 vertexCount:self.cube.vertexCount];
 
-    // glEnable(GL_DEPTH_TEST) + glEnable(GL_CULL_FACE)
+    // restore depth testing and culling
     [encoder setDepthStencilState:context.dsLessWrite];
     context.cullingEnabled = YES;
 }

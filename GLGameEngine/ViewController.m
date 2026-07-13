@@ -68,9 +68,9 @@ NSString *deviceName()
     // Do any additional setup after loading the view, typically from a nib.
 
     [self initMetalContext];
-    [self initGLObjects];
+    [self initSceneObjects];
 
-    self.glview.delegate = self;
+    self.metalView.delegate = self;
 }
 
 - (BOOL)prefersStatusBarHidden
@@ -102,11 +102,11 @@ NSString *deviceName()
              @"This device doesn't support clip distances");
 #endif
 
-    self.glview.device = context.device;
-    self.glview.colorPixelFormat = MTLPixelFormatBGRA8Unorm;     // GLKViewDrawableColorFormatRGBA8888
-    self.glview.depthStencilPixelFormat = MTLPixelFormatDepth32Float; // GLKViewDrawableDepthFormat24
-    self.glview.clearDepth = 1.0;
-    self.glview.preferredFramesPerSecond = 60;
+    self.metalView.device = context.device;
+    self.metalView.colorPixelFormat = MTLPixelFormatBGRA8Unorm;
+    self.metalView.depthStencilPixelFormat = MTLPixelFormatDepth32Float;
+    self.metalView.clearDepth = 1.0;
+    self.metalView.preferredFramesPerSecond = 60;
 
     _lastUpdateTime = 0;
 }
@@ -118,7 +118,7 @@ NSString *deviceName()
     [self.fbos cleanUp];
 }
 
-- (void)initGLObjects
+- (void)initSceneObjects
 {
     self.loader = [Loader loader];
     self.fbos = [[WaterFrameBuffers alloc] init];
@@ -385,7 +385,7 @@ NSString *deviceName()
 
 - (void)drawInMTKView:(MTKView *)view
 {
-    // GLKViewController's update/draw split: timeSinceLastUpdate is 0 on the
+    // update/draw split: timeSinceLastUpdate is 0 on the
     // first frame, then the time between draws
     CFTimeInterval now = CACurrentMediaTime();
     NSTimeInterval timeSinceLastUpdate = (_lastUpdateTime == 0) ? 0 : now - _lastUpdateTime;
@@ -396,7 +396,7 @@ NSString *deviceName()
     [[MetalContext sharedContext] beginFrame];
 
     if (_pMatrixNeedsUpdate) {
-        [self.renderer updateProjectionForAspect:[self glview].aspect];
+        [self.renderer updateProjectionForAspect:[self metalView].aspect];
         _pMatrixNeedsUpdate = NO;
     }
 
@@ -434,14 +434,14 @@ NSString *deviceName()
     [[MetalContext sharedContext] endFrameAndPresentDrawable:view.currentDrawable];
 }
 
-// The former [self.glview bindDrawable]: stages the drawable's render pass
+// The former [self.metalView bindDrawable]: stages the drawable's render pass
 - (void)bindDrawable
 {
-    [[MetalContext sharedContext] stagePassDescriptor:self.glview.currentRenderPassDescriptor];
+    [[MetalContext sharedContext] stagePassDescriptor:self.metalView.currentRenderPassDescriptor];
 }
 
 #pragma mark - Getters
-- (MTKView *)glview
+- (MTKView *)metalView
 {
     return (MTKView *)self.view;
 }

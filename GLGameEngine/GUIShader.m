@@ -45,7 +45,7 @@ NSString *const GUI_FRAGMENT_FUNCTION_NAME = @"fragment_gui";
 
 - (void)configurePipelineDescriptor:(MTLRenderPipelineDescriptor *)descriptor
 {
-    // glEnable(GL_BLEND) + glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA)
+    // alpha blending: srcAlpha / oneMinusSrcAlpha
     MTLRenderPipelineColorAttachmentDescriptor *colorAttachment = descriptor.colorAttachments[0];
     colorAttachment.blendingEnabled = YES;
     colorAttachment.sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;

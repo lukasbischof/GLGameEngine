@@ -22,7 +22,7 @@
 - (instancetype)initWithMTLTexture:(id<MTLTexture>)texture enableTiling:(BOOL)enableTiling
 {
     if ((self = [super initWithMTLTexture:texture])) {
-        // Tiling (GL_REPEAT) is part of the sampler state in Metal; the
+        // Tiling (repeat address mode) is part of the sampler state; the
         // terrain sampler repeats, so there is nothing to configure here.
     }
 

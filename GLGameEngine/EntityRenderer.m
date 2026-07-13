@@ -120,7 +120,7 @@
 {
     MetalContext *context = [MetalContext sharedContext];
     RawModel *model = texturedModel.rawModel;
-    [model bindVAO];
+    [model bindBuffersToEncoder];
 
     if (!instancing) {
         [self.shaderProgram loadNumberOfRows:texturedModel.texture.numberOfRows];
@@ -170,7 +170,7 @@
     id<MTLRenderCommandEncoder> encoder = [MetalContext sharedContext].currentEncoder;
     TexturedModel *texturedModel = entity.model;
     RawModel *model = texturedModel.rawModel;
-    [model bindVAO];
+    [model bindBuffersToEncoder];
 
     [shader loadTransformationMatrix:entity.currentTransformationMatrix];
 
@@ -182,8 +182,6 @@
                          indexType:model.indexType
                        indexBuffer:model.indexBuffer
                  indexBufferOffset:model.indexBufferOffset];
-
-    [model unbindVAO];
 }
 
 @end

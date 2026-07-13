@@ -94,7 +94,7 @@ static const NSUInteger REFRACTION_HEIGHT = 512;
 
 - (id<MTLTexture>)createTextureAttachmentWithWidth:(NSUInteger)width andHeight:(NSUInteger)height
 {
-    // GL_RGB8 color attachment, GL_LINEAR + GL_CLAMP_TO_EDGE (sampler state now).
+    // Color attachment, sampled linear + clamp (samplerLinearClamp).
     // BGRA8 to match the drawable, so every pipeline is valid in all passes.
     MTLTextureDescriptor *descriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatBGRA8Unorm
                                                                                           width:width
@@ -108,7 +108,7 @@ static const NSUInteger REFRACTION_HEIGHT = 512;
 
 - (id<MTLTexture>)createDepthTextureAttachmentWithWidth:(NSUInteger)width andHeight:(NSUInteger)height
 {
-    // GL_DEPTH_COMPONENT32F depth texture, sampled with GL_NEAREST
+    // Depth texture, sampled with nearest filtering (samplerNearestClamp)
     MTLTextureDescriptor *descriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatDepth32Float
                                                                                           width:width
                                                                                          height:height
@@ -121,7 +121,7 @@ static const NSUInteger REFRACTION_HEIGHT = 512;
 
 - (id<MTLTexture>)createDepthBufferAttachmentWithWidth:(NSUInteger)width andHeight:(NSUInteger)height
 {
-    // GL_DEPTH_COMPONENT24 renderbuffer (never sampled)
+    // Depth attachment that is never sampled
     MTLTextureDescriptor *descriptor = [MTLTextureDescriptor texture2DDescriptorWithPixelFormat:MTLPixelFormatDepth32Float
                                                                                           width:width
                                                                                          height:height

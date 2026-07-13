@@ -42,7 +42,7 @@
     _vertexBufferOffsets[index] = offset;
 }
 
-- (void)bindVAO
+- (void)bindBuffersToEncoder
 {
     id<MTLRenderCommandEncoder> encoder = [MetalContext sharedContext].currentEncoder;
 
@@ -51,11 +51,6 @@
             [encoder setVertexBuffer:_vertexBuffers[i] offset:_vertexBufferOffsets[i] atIndex:i];
         }
     }
-}
-
-- (void)unbindVAO
-{
-    // glBindVertexArray(0) -- nothing to do in Metal
 }
 
 - (id)copyWithZone:(NSZone *)zone

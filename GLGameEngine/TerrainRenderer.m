@@ -53,7 +53,7 @@
 - (void)prepareTerrain:(Terrain *)terrain
 {
     RawModel *model = terrain.model;
-    [model bindVAO];
+    [model bindBuffersToEncoder];
 
     [self bindTexturesForTerrain:terrain];
 }

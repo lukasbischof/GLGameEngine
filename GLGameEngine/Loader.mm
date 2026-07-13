@@ -55,7 +55,7 @@
 
     // MTKTextureLoader can't build a cube map from six separate files, so the
     // faces are decoded to RGBA8 and copied into the slices directly. The file
-    // order matches GLKTextureLoader / the Metal slice order: +X,-X,+Y,-Y,+Z,-Z.
+    // order matches the Metal cube slice order: +X,-X,+Y,-Y,+Z,-Z.
     id<MTLTexture> cubeTexture = nil;
 
     for (NSUInteger face = 0; face < 6; face++) {
@@ -114,11 +114,9 @@
 
     NSError *error;
     NSDictionary *options = @{
-        // GLKTextureLoaderOriginBottomLeft: @(flipped)
         MTKTextureLoaderOptionOrigin: flipped ? MTKTextureLoaderOriginBottomLeft : MTKTextureLoaderOriginTopLeft,
-        // GLKTextureLoaderGenerateMipmaps: @YES
         MTKTextureLoaderOptionGenerateMipmaps: @YES,
-        // GL loaded everything linear (GL_RGBA); don't let image metadata opt into sRGB
+        // keep linear pixel formats; don't let image metadata opt into sRGB
         MTKTextureLoaderOptionSRGB: @NO,
         MTKTextureLoaderOptionTextureUsage: @(MTLTextureUsageShaderRead)
     };
@@ -149,7 +147,7 @@
     uint32_t vertexCount = (uint32_t)(positions.length / sizeof(float) / dimensions);
     RawModel *model = [RawModel modelWithVertexCount:vertexCount];
 
-    [self storeData:positions inVAOAttribIndex:0 ofModel:model];
+    [self storeData:positions inAttributeSlot:0 ofModel:model];
 
     return model;
 }
@@ -165,8 +163,8 @@
     RawModel *model = [RawModel modelWithVertexCount:vertexCount];
 
     [self bindIndicesBuffer:indices toModel:model];
-    [self storeData:positions inVAOAttribIndex:0 ofModel:model];
-    [self storeData:normals inVAOAttribIndex:2 ofModel:model];
+    [self storeData:positions inAttributeSlot:0 ofModel:model];
+    [self storeData:normals inAttributeSlot:2 ofModel:model];
 
     return model;
 }
@@ -183,9 +181,9 @@
     RawModel *model = [RawModel modelWithVertexCount:vertexCount];
 
     [self bindIndicesBuffer:indices toModel:model];
-    [self storeData:positions inVAOAttribIndex:0 ofModel:model];
-    [self storeData:texCoords inVAOAttribIndex:1 ofModel:model];
-    [self storeData:normals inVAOAttribIndex:2 ofModel:model];
+    [self storeData:positions inAttributeSlot:0 ofModel:model];
+    [self storeData:texCoords inAttributeSlot:1 ofModel:model];
+    [self storeData:normals inAttributeSlot:2 ofModel:model];
 
     return model;
 }
@@ -198,7 +196,7 @@
 {
     RawModel *rawModel = [self createRawModelWithPositions:positions normals:normals andIndices:indices];
 
-    [self storeData:texCoords inVAOAttribIndex:1 ofModel:rawModel];
+    [self storeData:texCoords inAttributeSlot:1 ofModel:rawModel];
 
     return [[TexturedModel alloc] initWithRawModel:rawModel andTexture:texture];
 }
@@ -239,9 +237,9 @@
     MTKSubmesh *submesh = submeshes[0];
     RawModel *model = [RawModel modelWithVertexCount:(uint32_t)submesh.indexCount];
 
-    [self setBuffer:positions inVAOAttribIndex:0 ofModel:model];
-    [self setBuffer:texCoords inVAOAttribIndex:1 ofModel:model];
-    [self setBuffer:normals inVAOAttribIndex:2 ofModel:model];
+    [self setBuffer:positions inAttributeSlot:0 ofModel:model];
+    [self setBuffer:texCoords inAttributeSlot:1 ofModel:model];
+    [self setBuffer:normals inAttributeSlot:2 ofModel:model];
 
     model.indexBuffer = submesh.indexBuffer.buffer;
     model.indexBufferOffset = submesh.indexBuffer.offset;
@@ -252,14 +250,14 @@
     return [[TexturedModel alloc] initWithRawModel:model andTexture:texture];
 }
 
-- (void)setBuffer:(MTKMeshBuffer *)buffer inVAOAttribIndex:(uint32_t)attribIndex ofModel:(RawModel *)model
+- (void)setBuffer:(MTKMeshBuffer *)buffer inAttributeSlot:(uint32_t)attribIndex ofModel:(RawModel *)model
 {
     [buffers addObject:buffer.buffer];
 
     [model setVertexBuffer:buffer.buffer offset:buffer.offset atIndex:attribIndex];
 }
 
-- (void)storeData:(FloatBuffer)data inVAOAttribIndex:(uint32_t)attribIndex ofModel:(RawModel *)model
+- (void)storeData:(FloatBuffer)data inAttributeSlot:(uint32_t)attribIndex ofModel:(RawModel *)model
 {
     id<MTLBuffer> buffer = [[MetalContext sharedContext].device newBufferWithBytes:data.data
                                                                             length:data.length

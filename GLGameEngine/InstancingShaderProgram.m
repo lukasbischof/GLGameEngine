@@ -54,8 +54,8 @@ NSString *const INSTANCING_FRAGMENT_FUNCTION_NAME = @"fragment_static";
     descriptor.attributes[2].bufferIndex = BufferIndexNormals;
     descriptor.layouts[BufferIndexNormals].stride = sizeof(float) * 3;
 
-    // GL attributes 3-6: in_transformationMatrix (mat4, one vec4 per location)
-    // with glVertexAttribDivisor(i, 1) -> per-instance step function
+    // attributes 3-6: in_transformationMatrix (one float4 column each),
+    // advanced with a per-instance step function
     for (NSUInteger i = 0; i < 4; i++) {
         descriptor.attributes[3 + i].format = MTLVertexFormatFloat4;
         descriptor.attributes[3 + i].offset = sizeof(float) * 4 * i;

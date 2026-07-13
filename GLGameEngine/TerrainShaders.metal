@@ -2,7 +2,7 @@
 //  TerrainShaders.metal
 //  GLGameEngine
 //
-//  Metal translation of TerrainVertexShader.vsh + TerrainFragmentShader.fsh.
+//  Multi-textured terrain: blend-map weighted tiling textures, lighting, fog.
 //
 
 #include <metal_stdlib>

@@ -52,9 +52,9 @@ static const float quad2DVertices[] = {
     MetalContext *context = [MetalContext sharedContext];
     id<MTLRenderCommandEncoder> encoder = context.currentEncoder;
 
-    [self.shader activate];
-    [self.quadModel bindVAO];
-    // blending is baked into the GUI pipeline; glDisable(GL_DEPTH_TEST):
+    [self.shader bindPipeline];
+    [self.quadModel bindBuffersToEncoder];
+    // blending is baked into the GUI pipeline; the GUI ignores depth:
     [encoder setDepthStencilState:context.dsAlwaysNoWrite];
 
     for (GUITexture *gui in guis) {
@@ -69,7 +69,6 @@ static const float quad2DVertices[] = {
     }
 
     [encoder setDepthStencilState:context.dsLessWrite];
-    [self.quadModel unbindVAO];
 }
 
 - (void)cleanUp

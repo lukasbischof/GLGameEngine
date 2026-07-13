@@ -3,11 +3,9 @@
 //  GLGameEngine
 //
 //  Owns the Metal device, command queue and the per-frame command buffer /
-//  render command encoder. Replaces the implicit global state of the
-//  EAGLContext: "binding a framebuffer" becomes staging a render pass
-//  descriptor; the encoder for it is created lazily on first use, so the
-//  GL call order (bind FBO -> set clear color -> clear -> draw) keeps
-//  working unchanged.
+//  render command encoder. Render passes are staged as descriptors and the
+//  encoder is created lazily on first use, so a pass's clear values can
+//  still be configured after the pass is staged but before its first draw.
 //
 
 #import <Foundation/Foundation.h>
@@ -23,16 +21,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (strong, nonatomic, readonly, nullable) id<MTLCommandBuffer> currentCommandBuffer;
 
-// Depth-stencil states (the two glEnable/glDisable(GL_DEPTH_TEST) configurations)
+// Prebuilt depth-stencil states: depth testing on (less + write) and off
 @property (strong, nonatomic, readonly) id<MTLDepthStencilState> dsLessWrite;
 @property (strong, nonatomic, readonly) id<MTLDepthStencilState> dsAlwaysNoWrite;
 
-// Sampler states (the three glTexParameteri configurations used by the engine)
+// Prebuilt sampler states (the three sampling configurations used by the engine)
 @property (strong, nonatomic, readonly) id<MTLSamplerState> samplerMipRepeat;
 @property (strong, nonatomic, readonly) id<MTLSamplerState> samplerLinearClamp;
 @property (strong, nonatomic, readonly) id<MTLSamplerState> samplerNearestClamp;
 
-// glEnable/glDisable(GL_CULL_FACE) replacement; applies to the current encoder immediately
+// Back-face culling toggle; applies to the current encoder immediately
 @property (assign, nonatomic) BOOL cullingEnabled;
 
 + (MetalContext *)sharedContext;
@@ -40,8 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 // Per-frame lifecycle
 - (void)beginFrame;
 
-// "glBindFramebuffer": ends the current encoder and stages the next pass.
-// The descriptor's clear values may still be changed until the first draw.
+// Ends the current encoder and stages the next render pass. The descriptor's
+// clear values may still be changed until the pass's first draw.
 - (void)stagePassDescriptor:(MTLRenderPassDescriptor *)passDescriptor;
 @property (strong, nonatomic, readonly, nullable) MTLRenderPassDescriptor *stagedPassDescriptor;
 

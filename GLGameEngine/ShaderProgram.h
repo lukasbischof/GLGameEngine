@@ -40,7 +40,7 @@
 - (void)uploadUniforms;
 
 // "Binds" the program; sets the pipeline state on the current encoder
-- (void)activate;
+- (void)bindPipeline;
 
 - (void)cleanUp;
 

@@ -2,9 +2,8 @@
 //  InstancingShaders.metal
 //  GLGameEngine
 //
-//  Metal translation of InstancingVertexShader.vsh. The fragment stage reuses
-//  fragment_static from StaticShaders.metal (the GL program linked
-//  InstancingVertexShader.vsh with FragmentShader.fsh).
+//  Instanced entity rendering: per-instance transformation matrices as
+//  vertex attributes. The fragment stage reuses fragment_static.
 //
 
 #include <metal_stdlib>

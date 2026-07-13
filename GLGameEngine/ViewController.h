@@ -14,6 +14,6 @@
 
 @interface ViewController : UIViewController <MTKViewDelegate>
 
-@property (nonatomic, readonly) MTKView *glview;
+@property (nonatomic, readonly) MTKView *metalView;
 
 @end

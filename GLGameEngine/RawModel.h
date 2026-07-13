@@ -14,10 +14,9 @@
 
 /*!
  @class RawModel
- @brief The former VAO: holds the vertex buffers (one per attribute, slots
-        0-3, mirroring the GL attribute locations) and the index buffer.
-        For indexed models, vertexCount stores the element (index) count,
-        exactly like it did under GL.
+ @brief Geometry container: holds the vertex buffers (one per attribute,
+        slots 0-3) and the index buffer. For indexed models, vertexCount
+        stores the index count.
 */
 @interface RawModel : NSObject <NSCopying>
 
@@ -32,9 +31,7 @@
 
 - (void)setVertexBuffer:(id<MTLBuffer> _Nonnull)buffer offset:(NSUInteger)offset atIndex:(NSUInteger)index;
 
-// "Binds" the model: sets all vertex buffers on the current render command
-// encoder (the former glBindVertexArray)
-- (void)bindVAO;
-- (void)unbindVAO;
+// Sets all vertex buffers on the current render command encoder
+- (void)bindBuffersToEncoder;
 
 @end

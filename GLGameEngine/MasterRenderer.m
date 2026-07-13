@@ -84,7 +84,7 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 
 + (void)enableCulling
 {
-    // glEnable(GL_CULL_FACE) + glFrontFace(GL_CCW) + glCullFace(GL_BACK);
+    // back-face culling;
     // the CCW winding is set once per encoder by MetalContext
     [MetalContext sharedContext].cullingEnabled = YES;
 }
@@ -122,32 +122,32 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 
     // The depth state (less + write) is restored after the skybox render call.
     // Clipping ([[clip_distance]]) is always active; the main pass passes a
-    // plane that never clips, so glEnable(GL_CLIP_DISTANCE0_APPLE) is gone.
+    // plane that never clips anything.
 
     simd_float4x4 viewMatrix = [camera getViewMatrix];
 
-    [self.shader activate];
+    [self.shader bindPipeline];
     [self.shader loadClippingPlane:clippingPlane];
     [self.shader loadLights:lights];
-    [self.shader loadSkyColor:RGBAGetsimd_float3(self.skyColor)];
+    [self.shader loadSkyColor:RGBAGetVector3(self.skyColor)];
     [self.shader loadViewMatrix:viewMatrix];
     [self.entityRenderer render:self.entities withCamera:camera];
 
     // Instancing is scaffolding: nothing feeds instancedEntities right now, so
     // skip the shader activation entirely unless there is something to draw.
     if (self.instancedEntities.count > 0) {
-        [self.instancingShader activate];
+        [self.instancingShader bindPipeline];
         [self.instancingShader loadClippingPlane:clippingPlane];
         [self.instancingShader loadLights:lights];
-        [self.instancingShader loadSkyColor:RGBAGetsimd_float3(self.skyColor)];
+        [self.instancingShader loadSkyColor:RGBAGetVector3(self.skyColor)];
         [self.instancingShader loadViewMatrix:viewMatrix];
         [self.entityRenderer renderInstances:self.instancedEntities withCamera:camera];
     }
 
-    [self.terrainShader activate];
+    [self.terrainShader bindPipeline];
     [self.terrainShader loadClippingPlane:clippingPlane];
     [self.terrainShader loadLights:lights];
-    [self.terrainShader loadSkyColor:RGBAGetsimd_float3(self.skyColor)];
+    [self.terrainShader loadSkyColor:RGBAGetVector3(self.skyColor)];
     [self.terrainShader loadViewMatrix:viewMatrix];
     [self.terrainRenderer render:self.terrains withCamera:camera];
 }
@@ -166,7 +166,7 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 
 - (void)prepare
 {
-    // glClearColor + glClearDepthf + glClear: configure the staged render pass
+    // Configure the staged render pass
     // descriptor; the clear happens when the pass's encoder is created (on the
     // first draw of this pass).
     MTLRenderPassDescriptor *descriptor = [MetalContext sharedContext].stagedPassDescriptor;
@@ -274,7 +274,7 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 {
     _skyColor = skyColor;
     
-    [self.skyboxRenderer updateFogColor:RGBAGetsimd_float3(skyColor)];
+    [self.skyboxRenderer updateFogColor:RGBAGetVector3(skyColor)];
 }
 
 @end
@@ -301,11 +301,11 @@ EXPORT RGBA RGBAMakeFromRGBHex(uint32_t hex) {
     };
 }
 
-EXPORT simd_float4 RGBAGetsimd_float4(RGBA rgba) {
+EXPORT simd_float4 RGBAGetVector4(RGBA rgba) {
     return simd_make_float4(rgba.r, rgba.g, rgba.b, rgba.a);
 }
 
-EXPORT simd_float3 RGBAGetsimd_float3(RGBA rgba) {
+EXPORT simd_float3 RGBAGetVector3(RGBA rgba) {
     return simd_make_float3(rgba.r, rgba.g, rgba.b);
 }
 

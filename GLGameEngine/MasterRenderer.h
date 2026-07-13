@@ -69,7 +69,7 @@ typedef struct _RGBA RGBA;
 
 EXPORT RGBA RGBAMake(float red, float green, float blue, float alpha);
 EXPORT RGBA RGBAMakeFromRGBHex(uint32_t hex);
-EXPORT simd_float4 RGBAGetsimd_float4(RGBA rgba);
-EXPORT simd_float3 RGBAGetsimd_float3(RGBA rgba);
+EXPORT simd_float4 RGBAGetVector4(RGBA rgba);
+EXPORT simd_float3 RGBAGetVector3(RGBA rgba);
 
 EXPORT Fog FogMake(float density, float gradient);

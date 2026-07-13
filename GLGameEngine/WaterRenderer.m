@@ -50,7 +50,7 @@ static const float WAVE_SPEED = 0.015f;
         self.shader = [WaterShader waterShaderProgram];
         self.fbos = waterFrameBuffers;
 
-        // GL_REPEAT wrapping is part of the sampler state (samplerMipRepeat)
+        // repeat wrapping is part of the sampler state (samplerMipRepeat)
         self.dudvMap = [[Texture alloc] initWithMTLTexture:[loader loadTexture:DUDV_MAP_NAME withExtension:DUDV_MAP_EXT]];
         self.normalMap = [[Texture alloc] initWithMTLTexture:[loader loadTexture:NORMAL_MAP_NAME withExtension:NORMAL_MAP_EXT]];
     }
@@ -87,12 +87,12 @@ static const float WAVE_SPEED = 0.015f;
     MetalContext *context = [MetalContext sharedContext];
     id<MTLRenderCommandEncoder> encoder = context.currentEncoder;
 
-    [self.shader activate];
+    [self.shader bindPipeline];
     [self.shader loadViewMatrix:cam];
     [self.shader loadMoveFactor:fmodf(WAVE_SPEED * [[TimeController sharedController] passedTime], 1.0)];
     [self.shader loadLight:light];
 
-    [self.quadModel bindVAO];
+    [self.quadModel bindBuffersToEncoder];
 
     [encoder setFragmentTexture:self.fbos.reflectionTexture atIndex:TextureIndexReflection];
     [encoder setFragmentTexture:self.fbos.refractionTexture atIndex:TextureIndexRefraction];
@@ -105,13 +105,13 @@ static const float WAVE_SPEED = 0.015f;
     [encoder setFragmentSamplerState:context.samplerNearestClamp atIndex:TextureIndexDepthMap];
 
     // blending (srcAlpha / oneMinusSrcAlpha) is baked into the water pipeline
-    // glDisable(GL_CULL_FACE):
+    // the water quad is visible from below, so draw both faces:
     context.cullingEnabled = NO;
 }
 
 - (void)unbind
 {
-    // glEnable(GL_CULL_FACE)
+    // restore back-face culling
     [MetalContext sharedContext].cullingEnabled = YES;
 }
 

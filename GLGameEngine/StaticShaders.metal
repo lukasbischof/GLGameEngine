@@ -2,7 +2,7 @@
 //  StaticShaders.metal
 //  GLGameEngine
 //
-//  Metal translation of VertexShader.vsh + FragmentShader.fsh.
+//  Per-entity lighting, fog, texture-atlas offsets and clipping.
 //
 
 #include <metal_stdlib>

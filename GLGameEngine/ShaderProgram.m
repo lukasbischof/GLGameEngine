@@ -89,7 +89,7 @@
 }
 
 #pragma mark - binding
-- (void)activate
+- (void)bindPipeline
 {
     MetalContext *context = [MetalContext sharedContext];
 

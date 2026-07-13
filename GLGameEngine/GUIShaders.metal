@@ -2,7 +2,7 @@
 //  GUIShaders.metal
 //  GLGameEngine
 //
-//  Metal translation of GUIVertexShader.vsh + GUIFragmentShader.fsh.
+//  Screen-space textured quads for debug overlays.
 //
 
 #include <metal_stdlib>

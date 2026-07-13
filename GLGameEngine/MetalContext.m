@@ -60,13 +60,13 @@
 {
     MTLDepthStencilDescriptor *descriptor = [[MTLDepthStencilDescriptor alloc] init];
 
-    // glEnable(GL_DEPTH_TEST) + glDepthFunc(GL_LESS)
+    // depth testing enabled: compare less, write depth
     descriptor.depthCompareFunction = MTLCompareFunctionLess;
     descriptor.depthWriteEnabled = YES;
     descriptor.label = @"less + write";
     self.dsLessWrite = [self.device newDepthStencilStateWithDescriptor:descriptor];
 
-    // glDisable(GL_DEPTH_TEST) (disables both testing and writing)
+    // depth testing disabled: always pass, no depth writes
     descriptor.depthCompareFunction = MTLCompareFunctionAlways;
     descriptor.depthWriteEnabled = NO;
     descriptor.label = @"always + no write";
@@ -77,7 +77,7 @@
 {
     MTLSamplerDescriptor *descriptor = [[MTLSamplerDescriptor alloc] init];
 
-    // GLKTextureLoader with mipmaps: GL_LINEAR_MIPMAP_LINEAR / GL_LINEAR + GL_REPEAT
+    // trilinear mipmapped + repeat (model/terrain textures)
     descriptor.minFilter = MTLSamplerMinMagFilterLinear;
     descriptor.magFilter = MTLSamplerMinMagFilterLinear;
     descriptor.mipFilter = MTLSamplerMipFilterLinear;
@@ -86,14 +86,14 @@
     descriptor.label = @"trilinear + repeat";
     self.samplerMipRepeat = [self.device newSamplerStateWithDescriptor:descriptor];
 
-    // GL_LINEAR + GL_CLAMP_TO_EDGE (FBO color textures, cube maps)
+    // linear + clamp to edge (offscreen color textures, cube maps)
     descriptor.mipFilter = MTLSamplerMipFilterNotMipmapped;
     descriptor.sAddressMode = MTLSamplerAddressModeClampToEdge;
     descriptor.tAddressMode = MTLSamplerAddressModeClampToEdge;
     descriptor.label = @"linear + clamp";
     self.samplerLinearClamp = [self.device newSamplerStateWithDescriptor:descriptor];
 
-    // GL_NEAREST + GL_CLAMP_TO_EDGE (refraction depth texture)
+    // nearest + clamp to edge (refraction depth texture)
     descriptor.minFilter = MTLSamplerMinMagFilterNearest;
     descriptor.magFilter = MTLSamplerMinMagFilterNearest;
     descriptor.label = @"nearest + clamp";
@@ -123,8 +123,8 @@
 
     self.encoder = [self.currentCommandBuffer renderCommandEncoderWithDescriptor:self.stagedPassDescriptor];
 
-    // Global GL state from MasterRenderer: glFrontFace(GL_CCW) (Metal's default
-    // winding is clockwise!), glCullFace(GL_BACK), glDepthFunc(GL_LESS).
+    // Per-encoder defaults: counter-clockwise front faces (Metal's default
+    // winding is clockwise!), back-face culling, less+write depth state.
     [self.encoder setFrontFacingWinding:MTLWindingCounterClockwise];
     [self.encoder setCullMode:self.cullingEnabled ? MTLCullModeBack : MTLCullModeNone];
     [self.encoder setDepthStencilState:self.dsLessWrite];

@@ -3,7 +3,8 @@
 //  WaterShaders.metal
 //  GLGameEngine
 //
-//  Metal translation of WaterVertexShader.vsh + WaterFragmentShader.fsh.
+//  Planar water: reflection/refraction sampling with DuDv distortion,
+//  normal-mapped specular and depth-based softening.
 //
 
 #include <metal_stdlib>

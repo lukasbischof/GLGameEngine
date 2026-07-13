@@ -68,7 +68,6 @@
 		802639421B0E34D3009B42D6 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 802639401B0E34D3009B42D6 /* Main.storyboard */; };
 		802639441B0E34D3009B42D6 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 802639431B0E34D3009B42D6 /* Images.xcassets */; };
 		802639471B0E34D3009B42D6 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 802639451B0E34D3009B42D6 /* LaunchScreen.xib */; };
-		8026395F1B0E34F9009B42D6 /* GLKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 8026395D1B0E34F9009B42D6 /* GLKit.framework */; };
 		802639641B0E5279009B42D6 /* RawModel.m in Sources */ = {isa = PBXBuildFile; fileRef = 802639631B0E5279009B42D6 /* RawModel.m */; };
 		802639671B0E535C009B42D6 /* Loader.mm in Sources */ = {isa = PBXBuildFile; fileRef = 802639661B0E535C009B42D6 /* Loader.mm */; };
 		8026396A1B0E5F5C009B42D6 /* EntityRenderer.m in Sources */ = {isa = PBXBuildFile; fileRef = 802639691B0E5F5C009B42D6 /* EntityRenderer.m */; };
@@ -222,7 +221,6 @@
 		802639461B0E34D3009B42D6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
 		8026394C1B0E34D3009B42D6 /* GLGameEngineTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GLGameEngineTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		802639511B0E34D3009B42D6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8026395D1B0E34F9009B42D6 /* GLKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GLKit.framework; path = System/Library/Frameworks/GLKit.framework; sourceTree = SDKROOT; };
 		8026395E1B0E34F9009B42D6 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		802639621B0E5279009B42D6 /* RawModel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RawModel.h; sourceTree = "<group>"; };
 		802639631B0E5279009B42D6 /* RawModel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RawModel.m; sourceTree = "<group>"; };
@@ -316,7 +314,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8026395F1B0E34F9009B42D6 /* GLKit.framework in Frameworks */,
 				4D450000000000000000B009 /* Metal.framework in Frameworks */,
 				4D450000000000000000B00A /* MetalKit.framework in Frameworks */,
 			);
@@ -551,7 +548,6 @@
 		8026395C1B0E34E7009B42D6 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				8026395D1B0E34F9009B42D6 /* GLKit.framework */,
 				8026395E1B0E34F9009B42D6 /* OpenGLES.framework */,
 				4D450000000000000000F00E /* Metal.framework */,
 				4D450000000000000000F00F /* MetalKit.framework */,

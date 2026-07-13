@@ -37,19 +37,19 @@ NSString *const FRAGMENT_FUNCTION_NAME = @"fragment_static";
 {
     MTLVertexDescriptor *descriptor = [MTLVertexDescriptor vertexDescriptor];
 
-    // GL attribute 0: in_position (vec3)
+    // attribute 0: in_position (float3)
     descriptor.attributes[0].format = MTLVertexFormatFloat3;
     descriptor.attributes[0].offset = 0;
     descriptor.attributes[0].bufferIndex = BufferIndexPositions;
     descriptor.layouts[BufferIndexPositions].stride = sizeof(float) * 3;
 
-    // GL attribute 1: in_texCoords (vec2, delivered as half2 by Model I/O -- OBJLoader2)
+    // attribute 1: in_texCoords (delivered as half2 by Model I/O -- OBJLoader2)
     descriptor.attributes[1].format = MTLVertexFormatHalf2;
     descriptor.attributes[1].offset = 0;
     descriptor.attributes[1].bufferIndex = BufferIndexTexCoords;
     descriptor.layouts[BufferIndexTexCoords].stride = sizeof(uint16_t) * 2;
 
-    // GL attribute 2: in_normals (vec3)
+    // attribute 2: in_normals (float3)
     descriptor.attributes[2].format = MTLVertexFormatFloat3;
     descriptor.attributes[2].offset = 0;
     descriptor.attributes[2].bufferIndex = BufferIndexNormals;
