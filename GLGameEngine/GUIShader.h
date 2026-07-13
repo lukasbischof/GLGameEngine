@@ -12,6 +12,6 @@
 
 + (GUIShader *)GUIShaderProgram;
 
-- (void)loadTransformationMatrix:(GLKMatrix4)transformationMatrix;
+- (void)loadTransformationMatrix:(simd_float4x4)transformationMatrix;
 
 @end

@@ -7,22 +7,31 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <TargetConditionals.h>
-#if TARGET_OS_IPHONE
-#import <OpenGLES/ES3/gl.h>
-#else
-#import <OpenGL/gl3.h>
-#endif
+#import <Metal/Metal.h>
+#import <simd/simd.h>
 
+#define RAW_MODEL_MAX_VERTEX_BUFFERS 4
+
+/*!
+ @class RawModel
+ @brief Geometry container: holds the vertex buffers (one per attribute,
+        slots 0-3) and the index buffer. For indexed models, vertexCount
+        stores the index count.
+*/
 @interface RawModel : NSObject <NSCopying>
 
-@property (assign, nonatomic, readonly) GLuint vaoID;
-@property (assign, nonatomic) GLuint vertexCount;
+@property (assign, nonatomic) uint32_t vertexCount;
 
-+ (RawModel *)modelByCreatingVAOWithVertexCount:(GLuint)vertexCount;
-- (instancetype)initWithVAOID:(GLuint)vaoID andVertexCount:(GLuint)vertexCount NS_DESIGNATED_INITIALIZER;
+@property (strong, nonatomic, nullable) id<MTLBuffer> indexBuffer;
+@property (assign, nonatomic) NSUInteger indexBufferOffset;
+@property (assign, nonatomic) MTLIndexType indexType;
 
-- (void)bindVAO;
-- (void)unbindVAO;
++ (RawModel *_Nonnull)modelWithVertexCount:(uint32_t)vertexCount;
+- (_Nonnull instancetype)initWithVertexCount:(uint32_t)vertexCount NS_DESIGNATED_INITIALIZER;
+
+- (void)setVertexBuffer:(id<MTLBuffer> _Nonnull)buffer offset:(NSUInteger)offset atIndex:(NSUInteger)index;
+
+// Sets all vertex buffers on the current render command encoder
+- (void)bindBuffersToEncoder;
 
 @end

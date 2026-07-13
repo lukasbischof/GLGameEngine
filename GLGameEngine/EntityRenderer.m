@@ -8,6 +8,7 @@
 
 #import "EntityRenderer.h"
 #import "MasterRenderer.h"
+#import "MetalContext.h"
 
 @interface EntityRenderer ()
 
@@ -24,21 +25,23 @@
     if ((self = [super init])) {
 
     }
-    
+
     return self;
 }
 
-- (instancetype)initWithShaderProgram:(StaticShaderProgram *)shader andInstancingShaderProgram:(InstancingShaderProgram *)instancingShader
+- (instancetype)initWithShaderProgram:(StaticShaderProgram *)shader
+           andInstancingShaderProgram:(InstancingShaderProgram *)instancingShader
 {
     if ((self = [super init])) {
         self.shaderProgram = shader;
         self.instancingShaderProgram = instancingShader;
     }
-    
+
     return self;
 }
 
-+ (EntityRenderer *)rendererWithShaderProgram:(StaticShaderProgram *)shader andInstancingShaderProgram:(InstancingShaderProgram *)instancingShader
++ (EntityRenderer *)rendererWithShaderProgram:(StaticShaderProgram *)shader
+                   andInstancingShaderProgram:(InstancingShaderProgram *)instancingShader
 {
     return [[EntityRenderer alloc] initWithShaderProgram:shader andInstancingShaderProgram:instancingShader];
 }
@@ -47,72 +50,77 @@
 #pragma mark Master-Rendering
 - (void)renderInstances:(NSMutableArray<InstanceableTexturedModel *> *)models withCamera:(Camera *)camera
 {
-    GLKMatrix4 viewMat = camera.viewMatrix;
-    
+    id<MTLRenderCommandEncoder> encoder = [MetalContext sharedContext].currentEncoder;
+    simd_float4x4 viewMat = camera.viewMatrix;
+
     for (InstanceableTexturedModel *model in models) {
         [self prepareTexturedModel:model instancingEnabled:YES];
-        
-        glPushGroupMarkerEXT(0, "Draw Instanced Entities");
-        
-        [self.instancingShaderProgram loadNormalMatrixWithModelMatrix:GLKMatrix4Identity
+
+        [encoder pushDebugGroup:@"Draw Instanced Entities"];
+
+        [self.instancingShaderProgram loadNormalMatrixWithModelMatrix:matrix_identity_float4x4
                                                         andViewMatrix:viewMat];
-        [self.instancingShaderProgram loadOffset:GLKVector2Make(0, 0)];
-        
-        glDrawElementsInstanced(GL_TRIANGLES, model.rawModel.vertexCount, GL_UNSIGNED_INT, 0, model.instanceCount);
-        GLenum err = glGetError();
-        if (err != GL_NO_ERROR) {
-            NSLog(@"instanced render error: %u", err);
-        }
-        
+        [self.instancingShaderProgram loadOffset:simd_make_float2(0, 0)];
+
+        [self.instancingShaderProgram uploadUniforms];
+        [encoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle
+                            indexCount:model.rawModel.vertexCount
+                             indexType:model.rawModel.indexType
+                           indexBuffer:model.rawModel.indexBuffer
+                     indexBufferOffset:model.rawModel.indexBufferOffset
+                         instanceCount:model.instanceCount];
+
         [self unbindInstancedTexturedModel];
-        
-        glPopGroupMarkerEXT();
+
+        [encoder popDebugGroup];
     }
-    
-    glBindVertexArray(0);
 }
 
 - (void)render:(NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> *)entities withCamera:(Camera *)camera
 {
+    id<MTLRenderCommandEncoder> encoder = [MetalContext sharedContext].currentEncoder;
+
+    // The view matrix is identical for every entity in the pass; building it
+    // per entity used to dominate the CPU frame time.
+    simd_float4x4 viewMatrix = camera.viewMatrix;
+
     [entities enumerateKeysAndObjectsUsingBlock:^(TexturedModel *_Nonnull key,
                                                   NSMutableArray<Entity *> *_Nonnull obj,
                                                   BOOL *_Nonnull stop) {
+        // batches are kept (empty) across frames to avoid collection churn
+        if (obj.count == 0)
+            return;
+
         [self prepareTexturedModel:key instancingEnabled:NO];
-        
-        glPushGroupMarkerEXT(0, "Draw entites");
+
+        [encoder pushDebugGroup:@"Draw entites"];
         for (Entity *entity in obj) {
-            [self prepareInstance:entity withViewMatrix:camera.viewMatrix];
-            
-            glPushGroupMarkerEXT(0, key.debugLabel.UTF8String);
-            glDrawElements(GL_TRIANGLES, key.rawModel.vertexCount, GL_UNSIGNED_INT, 0);
-            glPopGroupMarkerEXT();
-            
-            GLenum err = glGetError();
-            if (err != GL_NO_ERROR) {
-                NSLog(@"render error: %u", err);
-            }
+            [self prepareInstance:entity withViewMatrix:viewMatrix];
+
+#if DEBUG
+            [encoder pushDebugGroup:key.debugLabel ?: @"entity"];
+#endif
+            [self.shaderProgram uploadUniforms];
+            [encoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle
+                                indexCount:key.rawModel.vertexCount
+                                 indexType:key.rawModel.indexType
+                               indexBuffer:key.rawModel.indexBuffer
+                         indexBufferOffset:key.rawModel.indexBufferOffset];
+#if DEBUG
+            [encoder popDebugGroup];
+#endif
         }
-        glPopGroupMarkerEXT();
-        
+        [encoder popDebugGroup];
+
         [self unbindTexturedModel];
     }];
 }
 
 - (void)prepareTexturedModel:(TexturedModel *)texturedModel instancingEnabled:(BOOL)instancing
 {
+    MetalContext *context = [MetalContext sharedContext];
     RawModel *model = texturedModel.rawModel;
-    [model bindVAO];
-    
-    /*glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-    
-    if (instancing) {
-        glEnableVertexAttribArray(3);
-        glEnableVertexAttribArray(4);
-        glEnableVertexAttribArray(5);
-        glEnableVertexAttribArray(6);
-    }*/
+    [model bindBuffersToEncoder];
 
     if (!instancing) {
         [self.shaderProgram loadNumberOfRows:texturedModel.texture.numberOfRows];
@@ -123,71 +131,57 @@
         [self.instancingShaderProgram loadDamper:texturedModel.texture.shineDamper
                                  andReflectivity:texturedModel.texture.reflectivity];
     }
-    
-    if (texturedModel.texture.hasAlpha && glIsEnabled(GL_CULL_FACE)) {
+
+    if (texturedModel.texture.hasAlpha && context.cullingEnabled) {
         [MasterRenderer disableCulling];
     }
-    
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(texturedModel.texture.textureTarget, texturedModel.texture.textureID);
+
+    [context.currentEncoder setFragmentTexture:texturedModel.texture.texture atIndex:TextureIndexDiffuse];
+    [context.currentEncoder setFragmentSamplerState:context.samplerMipRepeat atIndex:TextureIndexDiffuse];
 }
 
 - (void)unbindTexturedModel
 {
-    if (!glIsEnabled(GL_CULL_FACE)) {
+    if (![MetalContext sharedContext].cullingEnabled) {
         [MasterRenderer enableCulling];
     }
-    
-    /*glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(2);*/
 }
 
 - (void)unbindInstancedTexturedModel
 {
-    if (!glIsEnabled(GL_CULL_FACE)) {
+    if (![MetalContext sharedContext].cullingEnabled) {
         [MasterRenderer enableCulling];
     }
-    
-    /*glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(2);
-    glDisableVertexAttribArray(3);
-    glDisableVertexAttribArray(4);
-    glDisableVertexAttribArray(5);
-    glDisableVertexAttribArray(6);*/
 }
 
-- (void)prepareInstance:(Entity *)entity withViewMatrix:(GLKMatrix4)viewMat
+- (void)prepareInstance:(Entity *)entity withViewMatrix:(simd_float4x4)viewMat
 {
-    [self.shaderProgram loadTransformationMatrix:entity.currentTransformationMatrix];
-    [self.shaderProgram loadNormalMatrixWithModelMatrix:entity.currentTransformationMatrix
+    simd_float4x4 transformationMatrix = entity.currentTransformationMatrix;
+
+    [self.shaderProgram loadTransformationMatrix:transformationMatrix];
+    [self.shaderProgram loadNormalMatrixWithModelMatrix:transformationMatrix
                                           andViewMatrix:viewMat];
-    [self.shaderProgram loadOffset:GLKVector2Make([entity getTextureXOffset], [entity getTextureYOffset])];
+    [self.shaderProgram loadOffset:simd_make_float2([entity getTextureXOffset], [entity getTextureYOffset])];
 }
 
 #pragma mark Old rendering
 - (void)render:(Entity *)entity withShaderProgram:(StaticShaderProgram *)shader
 {
+    id<MTLRenderCommandEncoder> encoder = [MetalContext sharedContext].currentEncoder;
     TexturedModel *texturedModel = entity.model;
     RawModel *model = texturedModel.rawModel;
-    [model bindVAO];
-    
-    glEnableVertexAttribArray(0);
-    glEnableVertexAttribArray(1);
-    glEnableVertexAttribArray(2);
-    
+    [model bindBuffersToEncoder];
+
     [shader loadTransformationMatrix:entity.currentTransformationMatrix];
-    
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(texturedModel.texture.textureTarget, texturedModel.texture.textureID);
-    glDrawElements(GL_TRIANGLES, model.vertexCount, GL_UNSIGNED_INT, 0);
-    glDisableVertexAttribArray(0);
-    glDisableVertexAttribArray(1);
-    glDisableVertexAttribArray(2);
-    
-    [model unbindVAO];
+
+    [encoder setFragmentTexture:texturedModel.texture.texture atIndex:TextureIndexDiffuse];
+    [encoder setFragmentSamplerState:[MetalContext sharedContext].samplerMipRepeat atIndex:TextureIndexDiffuse];
+    [shader uploadUniforms];
+    [encoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle
+                        indexCount:model.vertexCount
+                         indexType:model.indexType
+                       indexBuffer:model.indexBuffer
+                 indexBufferOffset:model.indexBufferOffset];
 }
 
 @end
-

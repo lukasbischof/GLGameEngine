@@ -8,8 +8,9 @@
 
 #import "GUIRenderer.h"
 #import "MathUtils.h"
+#import "MetalContext.h"
 
-const float quad2DVertices[] = {
+static const float quad2DVertices[] = {
     -1,  1,
     -1, -1,
      1,  1,
@@ -42,31 +43,32 @@ const float quad2DVertices[] = {
         self.quadModel = [loader createRawModelWithPositions:positions dimensions:2];
         self.shader = [GUIShader GUIShaderProgram];
     }
-    
+
     return self;
 }
 
 - (void)render:(NSArray<GUITexture *> *)guis
 {
-    [self.shader activate];
-    [self.quadModel bindVAO];
-    //glEnableVertexAttribArray(0);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glDisable(GL_DEPTH_TEST);
-    
+    MetalContext *context = [MetalContext sharedContext];
+    id<MTLRenderCommandEncoder> encoder = context.currentEncoder;
+
+    [self.shader bindPipeline];
+    [self.quadModel bindBuffersToEncoder];
+    // blending is baked into the GUI pipeline; the GUI ignores depth:
+    [encoder setDepthStencilState:context.dsAlwaysNoWrite];
+
     for (GUITexture *gui in guis) {
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(gui.textureTarget, gui.textureID);
+        // mirror the per-texture GL sampling state: loader textures have
+        // mipmaps + repeat, FBO textures (WATER_DEBUG) are linear + clamp
+        id<MTLSamplerState> sampler = gui.texture.mipmapLevelCount > 1 ? context.samplerMipRepeat : context.samplerLinearClamp;
+        [encoder setFragmentTexture:gui.texture atIndex:TextureIndexDiffuse];
+        [encoder setFragmentSamplerState:sampler atIndex:TextureIndexDiffuse];
         [self.shader loadTransformationMatrix:MathUtils_CreateGUITransformationMatrix(gui.position, gui.scale)];
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, self.quadModel.vertexCount);
+        [self.shader uploadUniforms];
+        [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:self.quadModel.vertexCount];
     }
-    
-    glEnable(GL_DEPTH_TEST);
-    glDisable(GL_BLEND);
-    //glDisableVertexAttribArray(0);
-    [self.quadModel unbindVAO];
-    [self.shader deactivate];
+
+    [encoder setDepthStencilState:context.dsLessWrite];
 }
 
 - (void)cleanUp

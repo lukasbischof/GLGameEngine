@@ -10,18 +10,20 @@
 #import "TexturedModel.h"
 #import "Entity.h"
 #import "NSObject+class.h"
+#import "MetalContext.h"
+#import <UIKit/UIKit.h>
 
 // Field of View in degrees
-static const GLfloat FOVY = 45.0;
-static const GLfloat NEARZ = 1.5;
-static const GLfloat FARZ = 300.0;
+static const float FOVY = 45.0;
+static const float NEARZ = 1.5;
+static const float FARZ = 300.0;
 
 typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityMap;
 typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 
 @interface MasterRenderer ()
 
-@property (assign, nonatomic) GLKMatrix4 projectionMatrix;
+@property (assign, nonatomic) simd_float4x4 projectionMatrix;
 @property (strong, nonatomic, nonnull) EntityMap *entities;
 @property (strong, nonnull, nonatomic) InstancingEntityMap *instancedEntities;
 @property (strong, nonatomic, nonnull) NSMutableArray<Terrain *> *terrains;
@@ -82,31 +84,26 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 
 + (void)enableCulling
 {
-    glEnable(GL_CULL_FACE);
-    glFrontFace(GL_CCW);
-    glCullFace(GL_BACK);
+    // back-face culling;
+    // the CCW winding is set once per encoder by MetalContext
+    [MetalContext sharedContext].cullingEnabled = YES;
 }
 
 + (void)disableCulling
 {
-    glDisable(GL_CULL_FACE);
+    [MetalContext sharedContext].cullingEnabled = NO;
 }
 
 - (void)updateProjectionForAspect:(float)aspect
 {
     [self createProjectionMatrixWithAspect:aspect];
-    [self.shader activate];
+
+    // load…: methods only write into the uniform structs, so no pipeline needs
+    // to be bound here (this also runs before any pass is staged).
     [self.shader loadProjectionMatrix:_projectionMatrix];
-    [self.shader deactivate];
-    
-    [self.instancingShader bind:^{
-        [self.instancingShader loadProjectionMatrix:_projectionMatrix];
-    }];
-    
-    [self.terrainShader activate];
+    [self.instancingShader loadProjectionMatrix:_projectionMatrix];
     [self.terrainShader loadProjectionMatrix:_projectionMatrix];
-    [self.terrainShader deactivate];
-    
+
     [self.skyboxRenderer updateProjectionMatrix:_projectionMatrix];
     [self.waterRenderer updateProjectionMatrix:_projectionMatrix];
 }
@@ -117,40 +114,42 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
     [self.guiRenderer render:guis];
 }
 
-- (void)renderWithLights:(NSArray<Light *> *)lights camera:(Camera * _Nonnull)camera andClippingPlane:(GLKVector4)clippingPlane
+- (void)renderWithLights:(NSArray<Light *> *)lights camera:(Camera * _Nonnull)camera andClippingPlane:(simd_float4)clippingPlane
 {
     [self prepare];
-    
+
     [self.skyboxRenderer renderWithCamera:camera];
-    
-    // The depth will be turned on after the skybox render call automatically
-    glDepthFunc(GL_LESS);
-    
-    glEnable(GL_CLIP_DISTANCE0_APPLE);
-    
-    [self.shader activate];
+
+    // The depth state (less + write) is restored after the skybox render call.
+    // Clipping ([[clip_distance]]) is always active; the main pass passes a
+    // plane that never clips anything.
+
+    simd_float4x4 viewMatrix = [camera getViewMatrix];
+
+    [self.shader bindPipeline];
     [self.shader loadClippingPlane:clippingPlane];
     [self.shader loadLights:lights];
-    [self.shader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
-    [self.shader loadViewMatrix:[camera getViewMatrix]];
+    [self.shader loadSkyColor:RGBAGetVector3(self.skyColor)];
+    [self.shader loadViewMatrix:viewMatrix];
     [self.entityRenderer render:self.entities withCamera:camera];
-    [self.shader deactivate];
-    
-    [self.instancingShader activate];
-    [self.instancingShader loadClippingPlane:clippingPlane];
-    [self.instancingShader loadLights:lights];
-    [self.instancingShader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
-    [self.instancingShader loadViewMatrix:[camera getViewMatrix]];
-    [self.entityRenderer renderInstances:self.instancedEntities withCamera:camera];
-    [self.instancingShader deactivate];
-    
-    [self.terrainShader activate];
+
+    // Instancing is scaffolding: nothing feeds instancedEntities right now, so
+    // skip the shader activation entirely unless there is something to draw.
+    if (self.instancedEntities.count > 0) {
+        [self.instancingShader bindPipeline];
+        [self.instancingShader loadClippingPlane:clippingPlane];
+        [self.instancingShader loadLights:lights];
+        [self.instancingShader loadSkyColor:RGBAGetVector3(self.skyColor)];
+        [self.instancingShader loadViewMatrix:viewMatrix];
+        [self.entityRenderer renderInstances:self.instancedEntities withCamera:camera];
+    }
+
+    [self.terrainShader bindPipeline];
     [self.terrainShader loadClippingPlane:clippingPlane];
     [self.terrainShader loadLights:lights];
-    [self.terrainShader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
-    [self.terrainShader loadViewMatrix:[camera getViewMatrix]];
+    [self.terrainShader loadSkyColor:RGBAGetVector3(self.skyColor)];
+    [self.terrainShader loadViewMatrix:viewMatrix];
     [self.terrainRenderer render:self.terrains withCamera:camera];
-    [self.terrainShader deactivate];
 }
 
 - (void)renderWaterWithCamera:(Camera *)camera andLight:(Light * _Nonnull)light
@@ -167,9 +166,15 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 
 - (void)prepare
 {
-    glClearColor(self.skyColor.r, self.skyColor.g, self.skyColor.b, self.skyColor.a);
-    glClearDepthf(1.0);
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    // Configure the staged render pass
+    // descriptor; the clear happens when the pass's encoder is created (on the
+    // first draw of this pass).
+    MTLRenderPassDescriptor *descriptor = [MetalContext sharedContext].stagedPassDescriptor;
+
+    descriptor.colorAttachments[0].clearColor = MTLClearColorMake(self.skyColor.r, self.skyColor.g, self.skyColor.b, self.skyColor.a);
+    descriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+    descriptor.depthAttachment.clearDepth = 1.0;
+    descriptor.depthAttachment.loadAction = MTLLoadActionClear;
 }
 
 #pragma mark - Entity Map
@@ -177,9 +182,9 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 {
     TexturedModel *entityModel = entity.model;
     NSMutableArray<Entity *> *batch = [self.entities objectForKey:entityModel];
-    
+
     if (batch != nil) {
-        [self.entities[entityModel] addObject:entity];
+        [batch addObject:entity];
     } else {
         NSMutableArray<Entity *> *newBatch = [NSMutableArray array];
         [newBatch addObject:entity];
@@ -205,7 +210,15 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 
 - (void)clearEntities
 {
-    [self.entities removeAllObjects];
+    // Keep the dictionary and its per-model batch arrays alive across frames
+    // (the scene re-feeds the same models every frame) — just empty the
+    // batches instead of re-allocating the whole map. EntityRenderer skips
+    // batches that stay empty.
+    [self.entities enumerateKeysAndObjectsUsingBlock:^(TexturedModel *_Nonnull key,
+                                                       NSMutableArray<Entity *> *_Nonnull batch,
+                                                       BOOL *_Nonnull stop) {
+        [batch removeAllObjects];
+    }];
     [self.instancedEntities removeAllObjects];
 }
 
@@ -222,7 +235,17 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 #pragma mark - private methods
 - (void)createProjectionMatrixWithAspect:(float)aspect
 {
-    _projectionMatrix = GLKMatrix4MakePerspective(MathUtils_DegToRad(FOVY), aspect, NEARZ, FARZ);
+    simd_float4x4 perspective = MathUtils_MatrixMakePerspective(MathUtils_DegToRad(FOVY), aspect, NEARZ, FARZ);
+
+    // GL clip space has z in [-1,1], Metal in [0,1]: z' = 0.5z + 0.5w.
+    // Depth buffer values then equal GL window-space depth, so all shader
+    // depth math (water linearizeDepth, gl_FragCoord.z) stays unchanged.
+    const simd_float4x4 glToMetal = simd_matrix(simd_make_float4(1, 0, 0, 0),
+                                                simd_make_float4(0, 1, 0, 0),
+                                                simd_make_float4(0, 0, 0.5, 0),
+                                                simd_make_float4(0, 0, 0.5, 1));
+
+    _projectionMatrix = simd_mul(glToMetal, perspective);
 }
 
 #pragma mark - Memory
@@ -241,31 +264,23 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 {
     // NSLog(@"set");
     _fog = fog;
-    
-    [self.shader activate];
+
     [self.shader loadFogDensity:fog.density andGradient:fog.gradient];
-    [self.shader deactivate];
-    
-    [self.instancingShader bind:^{
-        [self.instancingShader loadFogDensity:fog.density andGradient:fog.gradient];
-    }];
-    
-    [self.terrainShader activate];
+    [self.instancingShader loadFogDensity:fog.density andGradient:fog.gradient];
     [self.terrainShader loadFogDensity:fog.density andGradient:fog.gradient];
-    [self.terrainShader deactivate];
 }
 
 - (void)setSkyColor:(RGBA)skyColor
 {
     _skyColor = skyColor;
     
-    [self.skyboxRenderer updateFogColor:RGBAGetGLKVector3(skyColor)];
+    [self.skyboxRenderer updateFogColor:RGBAGetVector3(skyColor)];
 }
 
 @end
 
 
-EXPORT RGBA RGBAMake(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
+EXPORT RGBA RGBAMake(float red, float green, float blue, float alpha) {
     return (RGBA) {
         MAX(0., MIN(red, 1.)),
         MAX(0., MIN(green, 1.)),
@@ -286,16 +301,16 @@ EXPORT RGBA RGBAMakeFromRGBHex(uint32_t hex) {
     };
 }
 
-EXPORT GLKVector4 RGBAGetGLKVector4(RGBA rgba) {
-    return GLKVector4Make(rgba.r, rgba.g, rgba.b, rgba.a);
+EXPORT simd_float4 RGBAGetVector4(RGBA rgba) {
+    return simd_make_float4(rgba.r, rgba.g, rgba.b, rgba.a);
 }
 
-EXPORT GLKVector3 RGBAGetGLKVector3(RGBA rgba) {
-    return GLKVector3Make(rgba.r, rgba.g, rgba.b);
+EXPORT simd_float3 RGBAGetVector3(RGBA rgba) {
+    return simd_make_float3(rgba.r, rgba.g, rgba.b);
 }
 
 
-Fog FogMake(GLfloat density, GLfloat gradient) {
+Fog FogMake(float density, float gradient) {
     return (Fog) {
         density, gradient
     };

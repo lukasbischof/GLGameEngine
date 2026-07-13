@@ -7,53 +7,66 @@
 //
 
 #import "RawModel.h"
+#import "MetalContext.h"
 
-@implementation RawModel
+@implementation RawModel {
+    id<MTLBuffer> _vertexBuffers[RAW_MODEL_MAX_VERTEX_BUFFERS];
+    NSUInteger _vertexBufferOffsets[RAW_MODEL_MAX_VERTEX_BUFFERS];
+}
 
-+ (RawModel *)modelByCreatingVAOWithVertexCount:(GLuint)vertexCount
++ (RawModel *)modelWithVertexCount:(uint32_t)vertexCount
 {
-    GLuint vao = 0;
-    glGenVertexArrays(1, &vao);
-    RawModel *model = [[RawModel alloc] initWithVAOID:vao
-                                       andVertexCount:vertexCount];
-    
-    return model;
+    return [[RawModel alloc] initWithVertexCount:vertexCount];
 }
 
 - (instancetype)init
 {
-    if ((self = [self initWithVAOID:0 andVertexCount:0])) {
-        
-    }
-    
-    return self;
+    return [self initWithVertexCount:0];
 }
 
-- (instancetype)initWithVAOID:(GLuint)vaoID andVertexCount:(GLuint)vertexCount
+- (instancetype)initWithVertexCount:(uint32_t)vertexCount
 {
     if ((self = [super init])) {
-        _vaoID = vaoID;
         self.vertexCount = vertexCount;
+        self.indexType = MTLIndexTypeUInt32;
     }
-    
+
     return self;
 }
 
-- (void)bindVAO
+- (void)setVertexBuffer:(id<MTLBuffer>)buffer offset:(NSUInteger)offset atIndex:(NSUInteger)index
 {
-    glBindVertexArray(_vaoID);
+    NSAssert(index < RAW_MODEL_MAX_VERTEX_BUFFERS, @"vertex buffer index out of range");
+
+    _vertexBuffers[index] = buffer;
+    _vertexBufferOffsets[index] = offset;
 }
 
-- (void)unbindVAO
+- (void)bindBuffersToEncoder
 {
-    glBindVertexArray(0);
-}
+    id<MTLRenderCommandEncoder> encoder = [MetalContext sharedContext].currentEncoder;
 
+    for (NSUInteger i = 0; i < RAW_MODEL_MAX_VERTEX_BUFFERS; i++) {
+        if (_vertexBuffers[i]) {
+            [encoder setVertexBuffer:_vertexBuffers[i] offset:_vertexBufferOffsets[i] atIndex:i];
+        }
+    }
+}
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    RawModel *copy = [[RawModel alloc] initWithVAOID:self.vaoID andVertexCount:self.vertexCount];
-    
+    RawModel *copy = [[RawModel alloc] initWithVertexCount:self.vertexCount];
+
+    for (NSUInteger i = 0; i < RAW_MODEL_MAX_VERTEX_BUFFERS; i++) {
+        if (_vertexBuffers[i]) {
+            [copy setVertexBuffer:_vertexBuffers[i] offset:_vertexBufferOffsets[i] atIndex:i];
+        }
+    }
+
+    copy.indexBuffer = self.indexBuffer;
+    copy.indexBufferOffset = self.indexBufferOffset;
+    copy.indexType = self.indexType;
+
     return copy;
 }
 

@@ -15,7 +15,7 @@
     return [self initWithX:0.0 z:0.0 height:0.0 andSize:60.0];
 }
 
-- (instancetype)initWithX:(GLfloat)x z:(GLfloat)z height:(GLfloat)height andSize:(GLfloat)size
+- (instancetype)initWithX:(float)x z:(float)z height:(float)height andSize:(float)size
 {
     if ((self = [super init])) {
         self.x = x;
@@ -27,7 +27,7 @@
     return self;
 }
 
-- (instancetype)initWithX:(GLfloat)x z:(GLfloat)z andHeight:(GLfloat)height
+- (instancetype)initWithX:(float)x z:(float)z andHeight:(float)height
 {
     return [self initWithX:x z:z height:height andSize:60.0];
 }

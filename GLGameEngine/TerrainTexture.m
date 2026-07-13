@@ -12,40 +12,34 @@
 
 - (instancetype)init
 {
-    if ((self = [self initWithID:0 andTarget:GL_INVALID_ENUM enableTiling:NO])) {
-        
+    if ((self = [self initWithMTLTexture:nil enableTiling:NO])) {
+
     }
-    
+
     return self;
 }
 
-- (instancetype)initWithID:(GLuint)textureID andTarget:(GLenum)target enableTiling:(BOOL)enableTiling
+- (instancetype)initWithMTLTexture:(id<MTLTexture>)texture enableTiling:(BOOL)enableTiling
 {
-    if ((self = [super initWithTextureID:textureID andTextureTarget:target])) {
-        
-        if (enableTiling) {
-            glBindTexture(target, textureID);
-            // glTexParameteri(target, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            // glTexParameteri(target, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            glTexParameteri(target, GL_TEXTURE_WRAP_S, GL_REPEAT);
-            glTexParameteri(target, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        }
+    if ((self = [super initWithMTLTexture:texture])) {
+        // Tiling (repeat address mode) is part of the sampler state; the
+        // terrain sampler repeats, so there is nothing to configure here.
     }
-    
+
     return self;
 }
 
-- (instancetype)initWithTextureInfo:(GLKTextureInfo *)info
+- (instancetype)initWithMTLTexture:(id<MTLTexture>)texture
 {
-    self = [self initWithID:info.name andTarget:info.target enableTiling:YES];
-    
+    self = [self initWithMTLTexture:texture enableTiling:YES];
+
     return self;
 }
 
-- (instancetype)initWithTextureInfo:(GLKTextureInfo *)texInfo andTiling:(BOOL)enableTiling
+- (instancetype)initWithMTLTexture:(id<MTLTexture>)texture andTiling:(BOOL)enableTiling
 {
-    self = [self initWithID:texInfo.name andTarget:texInfo.target enableTiling:enableTiling];
-    
+    self = [self initWithMTLTexture:texture enableTiling:enableTiling];
+
     return self;
 }
 

@@ -13,14 +13,13 @@
 
 + (TerrainShader *)terrainShaderProgram;
 
-- (void)loadTransformationMatrix:(GLKMatrix4)transformationMatrix;
-- (void)loadProjectionMatrix:(GLKMatrix4)projectionMatrix;
-- (void)loadViewMatrix:(GLKMatrix4)viewMatrix;
-- (void)loadNormalMatrixWithModelMatrix:(GLKMatrix4)modelMatrix andViewMatrix:(GLKMatrix4)viewMatrix;
+- (void)loadTransformationMatrix:(simd_float4x4)transformationMatrix;
+- (void)loadProjectionMatrix:(simd_float4x4)projectionMatrix;
+- (void)loadViewMatrix:(simd_float4x4)viewMatrix;
+- (void)loadNormalMatrixWithModelMatrix:(simd_float4x4)modelMatrix andViewMatrix:(simd_float4x4)viewMatrix;
 - (void)loadLights:(NSArray<Light *> *)lights;
-- (void)loadSkyColor:(GLKVector3)skyColor;
-- (void)loadFogDensity:(GLfloat)density andGradient:(GLfloat)gradient;
-- (void)loadTextureUnits;
-- (void)loadClippingPlane:(GLKVector4)clippingPlane;
+- (void)loadSkyColor:(simd_float3)skyColor;
+- (void)loadFogDensity:(float)density andGradient:(float)gradient;
+- (void)loadClippingPlane:(simd_float4)clippingPlane;
 
 @end

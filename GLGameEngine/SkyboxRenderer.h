@@ -19,8 +19,8 @@
 
 - (instancetype)initWithLoader:(Loader *)loader;
 
-- (void)updateProjectionMatrix:(GLKMatrix4)projMat;
-- (void)updateFogColor:(GLKVector3)fogColor;
+- (void)updateProjectionMatrix:(simd_float4x4)projMat;
+- (void)updateFogColor:(simd_float3)fogColor;
 - (void)renderWithCamera:(Camera *)camera;
 
 - (void)cleanUp;

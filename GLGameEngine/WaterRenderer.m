@@ -9,8 +9,9 @@
 #import "WaterRenderer.h"
 #import "MathUtils.h"
 #import "TimeController.h"
+#import "MetalContext.h"
 
-const float quadVertices[] = {
+static const float quadVertices[] = {
     -1, 0, -1,
      1, 0, -1,
     -1, 0,  1,
@@ -21,7 +22,7 @@ static NSString *const DUDV_MAP_NAME = @"waterDuDv";
 static NSString *const DUDV_MAP_EXT = @"png";
 static NSString *const NORMAL_MAP_NAME = @"waterNormal";
 static NSString *const NORMAL_MAP_EXT = @"png";
-static const GLfloat WAVE_SPEED = 0.015f;
+static const float WAVE_SPEED = 0.015f;
 
 @interface WaterRenderer ()
 
@@ -45,89 +46,73 @@ static const GLfloat WAVE_SPEED = 0.015f;
     if ((self = [super init])) {
         FloatBuffer positionBuffer = FloatBufferCreateWithDataNoCopy(quadVertices, sizeof(quadVertices));
         self.quadModel = [loader createRawModelWithPositions:positionBuffer dimensions:3];
-        
+
         self.shader = [WaterShader waterShaderProgram];
         self.fbos = waterFrameBuffers;
-        
-        GLKTextureInfo *info = [loader loadTexture:DUDV_MAP_NAME withExtension:DUDV_MAP_EXT];
-        self.dudvMap = [[Texture alloc] initWithTextureInfo:info];
-        
-        info = [loader loadTexture:NORMAL_MAP_NAME withExtension:NORMAL_MAP_EXT];
-        self.normalMap = [[Texture alloc] initWithTextureInfo:info];
-        
-        glBindTexture(self.dudvMap.textureTarget, self.dudvMap.textureID);
-        glTexParameteri(self.dudvMap.textureTarget, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(self.dudvMap.textureTarget, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glBindTexture(self.normalMap.textureTarget, self.normalMap.textureID);
-        glTexParameteri(self.normalMap.textureTarget, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(self.normalMap.textureTarget, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glBindTexture(GL_TEXTURE_2D, 0);
-        
-        [self.shader bind:^{
-            [self.shader loadTextureUnits];
-        }];
+
+        // repeat wrapping is part of the sampler state (samplerMipRepeat)
+        self.dudvMap = [[Texture alloc] initWithMTLTexture:[loader loadTexture:DUDV_MAP_NAME withExtension:DUDV_MAP_EXT]];
+        self.normalMap = [[Texture alloc] initWithMTLTexture:[loader loadTexture:NORMAL_MAP_NAME withExtension:NORMAL_MAP_EXT]];
     }
-    
+
     return self;
 }
 
 #pragma mark - rendering
-- (void)updateProjectionMatrix:(GLKMatrix4)projMat
+- (void)updateProjectionMatrix:(simd_float4x4)projMat
 {
-    [self.shader bind:^{
-        [[self shader] loadProjectionMatrix:projMat];
-    }];
+    [self.shader loadProjectionMatrix:projMat];
 }
 
 - (void)render:(NSArray<WaterTile *> *)tiles withCamera:(Camera *)camera andLight:(Light *)light
 {
+    id<MTLRenderCommandEncoder> encoder = [MetalContext sharedContext].currentEncoder;
+
     [self prepareForRenderingWithCam:camera andLight:light];
-    
+
     for (WaterTile *tile in tiles) {
-        GLKMatrix4 modelMatrix = MathUtils_CreateTransformationMatrixr(GLKVector3Make(tile.x, tile.height, tile.z), MathUtils_ZeroRotation, tile.size);
-        
+        simd_float4x4 modelMatrix = MathUtils_CreateTransformationMatrixr(simd_make_float3(tile.x, tile.height, tile.z), MathUtils_ZeroRotation, tile.size);
+
         [self.shader loadTransformationMatrix:modelMatrix];
-        
-        glDrawArrays(GL_TRIANGLE_STRIP, 0, self.quadModel.vertexCount);
+
+        [self.shader uploadUniforms];
+        [encoder drawPrimitives:MTLPrimitiveTypeTriangleStrip vertexStart:0 vertexCount:self.quadModel.vertexCount];
     }
-    
+
     [self unbind];
 }
 
 - (void)prepareForRenderingWithCam:(Camera *)cam andLight:(Light *)light
 {
-    [self.shader activate];
+    MetalContext *context = [MetalContext sharedContext];
+    id<MTLRenderCommandEncoder> encoder = context.currentEncoder;
+
+    [self.shader bindPipeline];
     [self.shader loadViewMatrix:cam];
     [self.shader loadMoveFactor:fmodf(WAVE_SPEED * [[TimeController sharedController] passedTime], 1.0)];
     [self.shader loadLight:light];
-    
-    glBindVertexArray(self.quadModel.vaoID);
-    glEnableVertexAttribArray(0);
-    
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, self.fbos.reflectionTexture);
-    glActiveTexture(GL_TEXTURE1);
-    glBindTexture(GL_TEXTURE_2D, self.fbos.refractionTexture);
-    glActiveTexture(GL_TEXTURE2);
-    glBindTexture(self.dudvMap.textureTarget, self.dudvMap.textureID);
-    glActiveTexture(GL_TEXTURE3);
-    glBindTexture(self.normalMap.textureTarget, self.normalMap.textureID);
-    glActiveTexture(GL_TEXTURE4);
-    glBindTexture(GL_TEXTURE_2D, self.fbos.refractionDepthTexture);
-    
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
-    glDisable(GL_CULL_FACE);
+
+    [self.quadModel bindBuffersToEncoder];
+
+    [encoder setFragmentTexture:self.fbos.reflectionTexture atIndex:TextureIndexReflection];
+    [encoder setFragmentTexture:self.fbos.refractionTexture atIndex:TextureIndexRefraction];
+    [encoder setFragmentTexture:self.dudvMap.texture atIndex:TextureIndexDuDvMap];
+    [encoder setFragmentTexture:self.normalMap.texture atIndex:TextureIndexNormalMap];
+    [encoder setFragmentTexture:self.fbos.refractionDepthTexture atIndex:TextureIndexDepthMap];
+
+    [encoder setFragmentSamplerState:context.samplerLinearClamp atIndex:TextureIndexReflection];
+    [encoder setFragmentSamplerState:context.samplerMipRepeat atIndex:TextureIndexDuDvMap];
+    [encoder setFragmentSamplerState:context.samplerNearestClamp atIndex:TextureIndexDepthMap];
+
+    // blending (srcAlpha / oneMinusSrcAlpha) is baked into the water pipeline
+    // the water quad is visible from below, so draw both faces:
+    context.cullingEnabled = NO;
 }
 
 - (void)unbind
 {
-    glDisable(GL_BLEND);
-    glDisableVertexAttribArray(0);
-    glBindVertexArray(0);
-    glEnable(GL_CULL_FACE);
-    [self.shader deactivate];
+    // restore back-face culling
+    [MetalContext sharedContext].cullingEnabled = YES;
 }
 
 - (void)cleanUp

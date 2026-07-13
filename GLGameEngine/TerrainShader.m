@@ -8,49 +8,14 @@
 
 #import "TerrainShader.h"
 #import "MathUtils.h"
+#import "MetalContext.h"
 
-NSString *const TERRAIN_VERTEX_SHADER_FILE_NAME = @"TerrainVertexShader";
-NSString *const TERRAIN_FRAGMENT_SHADER_FILE_NAME = @"TerrainFragmentShader";
-
-#define IN_POSITION_NAME "in_position"
-#define IN_TEX_COORDS_NAME "in_texCoords"
-#define IN_NORMALS_NAME "in_normals"
-
-#define UNIFORM_IN_NORMAL_NAME "in_normal"
-#define UNIFORM_TRANSFORMATION_MATRIX_NAME "u_transformationMatrix"
-#define UNIFORM_PROJECTION_MATRIX_NAME "u_projectionMatrix"
-#define UNIFORM_NORMAL_MATRIX_NAME "u_normalMatrix"
-#define UNIFORM_VIEW_MATRIX_NAME "u_viewMatrix"
-#define UNIFORM_LIGHT_COLOR_NAME(i) ([NSString stringWithFormat:@"u_lightColor[%d]", (i)].UTF8String)
-#define UNIFORM_LIGHT_POSITION_NAME(i) ([NSString stringWithFormat:@"u_lightPosition[%d]", (i)].UTF8String)
-#define UNIFORM_ATTENUATION_NAME(i) ([NSString stringWithFormat:@"u_attenuation[%d]", (i)].UTF8String)
-#define UNIFORM_SKY_COLOR_NAME "u_skyColor"
-#define UNIFORM_DENSITY_NAME "u_density"
-#define UNIFORM_GRADIENT_NAME "u_gradient"
-#define UNIFORM_BACKGROUND_SAMPLER_NAME "u_backgroundSampler"
-#define UNIFORM_R_SAMPLER_NAME "u_rSampler"
-#define UNIFORM_G_SAMPLER_NAME "u_gSampler"
-#define UNIFORM_B_SAMPLER_NAME "u_bSampler"
-#define UNIFORM_BLEND_MAP_SAMPLER_NAME "u_blendMapSampler"
-#define UNIFORM_CLIPPING_PLANE_NAME "u_clippingPlane"
+NSString *const TERRAIN_VERTEX_FUNCTION_NAME = @"vertex_terrain";
+NSString *const TERRAIN_FRAGMENT_FUNCTION_NAME = @"fragment_terrain";
 
 @implementation TerrainShader {
-    GLuint uniform_transformation_matrix_location,
-           uniform_projection_matrix_location,
-           uniform_normal_matrix_location,
-           uniform_view_matrix_location,
-           uniform_light_color_locations[MAX_LIGHTS],
-           uniform_light_position_locations[MAX_LIGHTS],
-           uniform_attenuation_locations[MAX_LIGHTS],
-           uniform_sky_color_location,
-           uniform_density_location,
-           uniform_gradient_location,
-           uniform_background_sampler_location,
-           uniform_r_sampler_location,
-           uniform_g_sampler_location,
-           uniform_b_sampler_location,
-           uniform_blend_map_sampler_location,
-           uniform_clipping_plane_location;
+    TerrainVertexUniforms _vertexUniforms;
+    TerrainFragmentUniforms _fragmentUniforms;
 }
 
 + (TerrainShader *)terrainShaderProgram
@@ -60,102 +25,94 @@ NSString *const TERRAIN_FRAGMENT_SHADER_FILE_NAME = @"TerrainFragmentShader";
 
 - (instancetype)init
 {
-    if ((self = [super initWithVertexShaderName:TERRAIN_VERTEX_SHADER_FILE_NAME
-                          andFragmentShaderName:TERRAIN_FRAGMENT_SHADER_FILE_NAME])) {
-        
+    if ((self = [super initWithVertexFunctionName:TERRAIN_VERTEX_FUNCTION_NAME
+                          andFragmentFunctionName:TERRAIN_FRAGMENT_FUNCTION_NAME])) {
+
     }
-    
+
     return self;
 }
 
-- (void)bindAttributes
+- (MTLVertexDescriptor *)createVertexDescriptor
 {
-    [super bindAttribute:0 toVariableName:IN_POSITION_NAME];
-    [super bindAttribute:1 toVariableName:IN_TEX_COORDS_NAME];
-    [super bindAttribute:2 toVariableName:IN_NORMALS_NAME];
+    MTLVertexDescriptor *descriptor = [MTLVertexDescriptor vertexDescriptor];
+
+    descriptor.attributes[0].format = MTLVertexFormatFloat3;
+    descriptor.attributes[0].offset = 0;
+    descriptor.attributes[0].bufferIndex = BufferIndexPositions;
+    descriptor.layouts[BufferIndexPositions].stride = sizeof(float) * 3;
+
+    // terrain texture coordinates are packed floats (Loader storeData), not half2
+    descriptor.attributes[1].format = MTLVertexFormatFloat2;
+    descriptor.attributes[1].offset = 0;
+    descriptor.attributes[1].bufferIndex = BufferIndexTexCoords;
+    descriptor.layouts[BufferIndexTexCoords].stride = sizeof(float) * 2;
+
+    descriptor.attributes[2].format = MTLVertexFormatFloat3;
+    descriptor.attributes[2].offset = 0;
+    descriptor.attributes[2].bufferIndex = BufferIndexNormals;
+    descriptor.layouts[BufferIndexNormals].stride = sizeof(float) * 3;
+
+    return descriptor;
 }
 
-- (void)getAllUniformLocations
+- (void)uploadUniforms
 {
-    uniform_transformation_matrix_location = [super getUniformLocation:UNIFORM_TRANSFORMATION_MATRIX_NAME];
-    uniform_projection_matrix_location = [super getUniformLocation:UNIFORM_PROJECTION_MATRIX_NAME];
-    uniform_normal_matrix_location = [super getUniformLocation:UNIFORM_NORMAL_MATRIX_NAME];
-    uniform_view_matrix_location = [super getUniformLocation:UNIFORM_VIEW_MATRIX_NAME];
-    uniform_sky_color_location = [super getUniformLocation:UNIFORM_SKY_COLOR_NAME];
-    uniform_density_location = [super getUniformLocation:UNIFORM_DENSITY_NAME];
-    uniform_gradient_location = [super getUniformLocation:UNIFORM_GRADIENT_NAME];
-    uniform_background_sampler_location = [super getUniformLocation:UNIFORM_BACKGROUND_SAMPLER_NAME];
-    uniform_r_sampler_location = [super getUniformLocation:UNIFORM_R_SAMPLER_NAME];
-    uniform_g_sampler_location = [super getUniformLocation:UNIFORM_G_SAMPLER_NAME];
-    uniform_b_sampler_location = [super getUniformLocation:UNIFORM_B_SAMPLER_NAME];
-    uniform_blend_map_sampler_location = [super getUniformLocation:UNIFORM_BLEND_MAP_SAMPLER_NAME];
-    uniform_clipping_plane_location = [super getUniformLocation:UNIFORM_CLIPPING_PLANE_NAME];
-    
-    for (GLuint i = 0; i < MAX_LIGHTS; i++) {
-        uniform_light_position_locations[i] = [super getUniformLocation:UNIFORM_LIGHT_POSITION_NAME(i)];
-        uniform_light_color_locations[i] = [super getUniformLocation:UNIFORM_LIGHT_COLOR_NAME(i)];
-        uniform_attenuation_locations[i] = [super getUniformLocation:UNIFORM_ATTENUATION_NAME(i)];
-    }
+    id<MTLRenderCommandEncoder> encoder = [MetalContext sharedContext].currentEncoder;
+
+    [encoder setVertexBytes:&_vertexUniforms length:sizeof(_vertexUniforms) atIndex:BufferIndexVertexUniforms];
+    [encoder setFragmentBytes:&_fragmentUniforms length:sizeof(_fragmentUniforms) atIndex:BufferIndexFragmentUniforms];
 }
 
-- (void)loadClippingPlane:(GLKVector4)clippingPlane
+- (void)loadClippingPlane:(simd_float4)clippingPlane
 {
-    [super loadFloatVector4:clippingPlane toLocation:uniform_clipping_plane_location];
+    _vertexUniforms.clippingPlane = clippingPlane;
 }
 
-- (void)loadTextureUnits
+- (void)loadFogDensity:(float)density andGradient:(float)gradient
 {
-    [super loadInt:0 toLocation:uniform_background_sampler_location];
-    [super loadInt:1 toLocation:uniform_r_sampler_location];
-    [super loadInt:2 toLocation:uniform_g_sampler_location];
-    [super loadInt:3 toLocation:uniform_b_sampler_location];
-    [super loadInt:4 toLocation:uniform_blend_map_sampler_location];
+    _vertexUniforms.density = density;
+    _vertexUniforms.gradient = gradient;
 }
 
-- (void)loadFogDensity:(GLfloat)density andGradient:(GLfloat)gradient
+- (void)loadSkyColor:(simd_float3)skyColor
 {
-    [super loadFloat:density toLocation:uniform_density_location];
-    [super loadFloat:gradient toLocation:uniform_gradient_location];
-}
-
-- (void)loadSkyColor:(GLKVector3)skyColor
-{
-    [super loadFloatVector3:skyColor toLocation:uniform_sky_color_location];
+    _fragmentUniforms.skyColor = skyColor;
 }
 
 - (void)loadLights:(NSArray<Light *> *)lights
 {
-    for (GLuint i = 0; i < MAX_LIGHTS; i++) {
+    for (uint32_t i = 0; i < MAX_LIGHTS; i++) {
         if (i < lights.count) {
-            [super loadFloatVector3:lights[i].position toLocation:uniform_light_position_locations[i]];
-            [super loadFloatVector3:lights[i].color toLocation:uniform_light_color_locations[i]];
-            [super loadFloatVector3:lights[i].attenuation toLocation:uniform_attenuation_locations[i]];
+            _vertexUniforms.lightPosition[i] = lights[i].position;
+            _fragmentUniforms.lightColor[i] = lights[i].color;
+            _fragmentUniforms.attenuation[i] = lights[i].attenuation;
         } else {
-            [super loadFloatVector3:GLKVector3Make(0, 0, 0) toLocation:uniform_light_position_locations[i]];
-            [super loadFloatVector3:GLKVector3Make(0, 0, 0) toLocation:uniform_light_color_locations[i]];
-            [super loadFloatVector3:GLKVector3Make(1, 0, 0) toLocation:uniform_attenuation_locations[i]];
+            _vertexUniforms.lightPosition[i] = simd_make_float3(0, 0, 0);
+            _fragmentUniforms.lightColor[i] = simd_make_float3(0, 0, 0);
+            _fragmentUniforms.attenuation[i] = simd_make_float3(1, 0, 0);
         }
     }
 }
 
-- (void)loadTransformationMatrix:(GLKMatrix4)transformationMatrix
+- (void)loadTransformationMatrix:(simd_float4x4)transformationMatrix
 {
-    [super loadMatrix4x4:transformationMatrix toLocation:uniform_transformation_matrix_location];
+    _vertexUniforms.transformationMatrix = transformationMatrix;
 }
 
-- (void)loadProjectionMatrix:(GLKMatrix4)projectionMatrix
+- (void)loadProjectionMatrix:(simd_float4x4)projectionMatrix
 {
-    [super loadMatrix4x4:projectionMatrix toLocation:uniform_projection_matrix_location];
+    _vertexUniforms.projectionMatrix = projectionMatrix;
 }
 
-- (void)loadViewMatrix:(GLKMatrix4)viewMatrix
+- (void)loadViewMatrix:(simd_float4x4)viewMatrix
 {
-    [super loadMatrix4x4:viewMatrix toLocation:uniform_view_matrix_location];
+    _vertexUniforms.viewMatrix = viewMatrix;
 }
 
-- (void)loadNormalMatrixWithModelMatrix:(GLKMatrix4)modelMatrix andViewMatrix:(GLKMatrix4)viewMatrix
+- (void)loadNormalMatrixWithModelMatrix:(simd_float4x4)modelMatrix andViewMatrix:(simd_float4x4)viewMatrix
 {
-    [super loadMatrix3x3:MathUtils_CreateNormalMatrix(modelMatrix, viewMatrix) toLocation:uniform_normal_matrix_location];
+    _vertexUniforms.normalMatrix = MathUtils_CreateNormalMatrix(modelMatrix, viewMatrix);
 }
 
 @end

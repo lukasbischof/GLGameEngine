@@ -19,7 +19,7 @@
 
 - (instancetype)initWithLoader:(Loader *)loader andFBOs:(WaterFrameBuffers *)waterFrameBuffers;
 
-- (void)updateProjectionMatrix:(GLKMatrix4)projMat;
+- (void)updateProjectionMatrix:(simd_float4x4)projMat;
 - (void)render:(NSArray<WaterTile *> *)tiles withCamera:(Camera *)camera andLight:(Light *)light;
 
 - (void)cleanUp;

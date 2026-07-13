@@ -13,15 +13,15 @@
 
 + (InstancingShaderProgram *)instancingShaderProgram;
 
-- (void)loadProjectionMatrix:(GLKMatrix4)projectionMatrix;
-- (void)loadViewMatrix:(GLKMatrix4)viewMatrix;
-- (void)loadNormalMatrixWithModelMatrix:(GLKMatrix4)modelMatrix andViewMatrix:(GLKMatrix4)viewMatrix;
+- (void)loadProjectionMatrix:(simd_float4x4)projectionMatrix;
+- (void)loadViewMatrix:(simd_float4x4)viewMatrix;
+- (void)loadNormalMatrixWithModelMatrix:(simd_float4x4)modelMatrix andViewMatrix:(simd_float4x4)viewMatrix;
 - (void)loadLights:(NSArray<Light *> *)lights;
-- (void)loadSkyColor:(GLKVector3)skyColor;
-- (void)loadFogDensity:(GLfloat)density andGradient:(GLfloat)gradient;
-- (void)loadNumberOfRows:(GLint)numberOfRows;
-- (void)loadOffset:(GLKVector2)offset;
-- (void)loadDamper:(GLfloat)damper andReflectivity:(GLfloat)reflectivity;
-- (void)loadClippingPlane:(GLKVector4)clippingPlane;
+- (void)loadSkyColor:(simd_float3)skyColor;
+- (void)loadFogDensity:(float)density andGradient:(float)gradient;
+- (void)loadNumberOfRows:(int32_t)numberOfRows;
+- (void)loadOffset:(simd_float2)offset;
+- (void)loadDamper:(float)damper andReflectivity:(float)reflectivity;
+- (void)loadClippingPlane:(simd_float4)clippingPlane;
 
 @end

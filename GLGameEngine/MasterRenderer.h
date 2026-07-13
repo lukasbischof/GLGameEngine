@@ -17,8 +17,8 @@
 #import "InstanceableTexturedModel.h"
 
 typedef struct {
-    GLfloat density;
-    GLfloat gradient;
+    float density;
+    float gradient;
 } Fog;
 
 static const Fog kDefaultFog = (Fog) {
@@ -29,7 +29,7 @@ static const Fog kDefaultFog = (Fog) {
 static const Fog kNoFog = (Fog){ 0.f, 1.f };
 
 struct _RGBA {
-    GLfloat r, g, b, a;
+    float r, g, b, a;
 };
 typedef struct _RGBA RGBA;
 
@@ -59,7 +59,7 @@ typedef struct _RGBA RGBA;
 - (void)processInstanceableModel:(InstanceableTexturedModel *_Nonnull)model;
 - (void)processTerrain:(Terrain *_Nonnull)terrain;
 - (void)processWaterTile:(WaterTile *_Nonnull)tile;
-- (void)renderWithLights:(NSArray<Light *> *_Nonnull)lights camera:(Camera *_Nonnull)camera andClippingPlane:(GLKVector4)clippingPlane;
+- (void)renderWithLights:(NSArray<Light *> *_Nonnull)lights camera:(Camera *_Nonnull)camera andClippingPlane:(simd_float4)clippingPlane;
 - (void)renderWaterWithCamera:(Camera *_Nonnull)camera andLight:(Light *_Nonnull)light;
 - (void)finishedFrame;
 - (void)renderGUI:(NSArray<GUITexture *> *_Nonnull)guis;
@@ -67,9 +67,9 @@ typedef struct _RGBA RGBA;
 
 @end
 
-EXPORT RGBA RGBAMake(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha);
+EXPORT RGBA RGBAMake(float red, float green, float blue, float alpha);
 EXPORT RGBA RGBAMakeFromRGBHex(uint32_t hex);
-EXPORT GLKVector4 RGBAGetGLKVector4(RGBA rgba);
-EXPORT GLKVector3 RGBAGetGLKVector3(RGBA rgba);
+EXPORT simd_float4 RGBAGetVector4(RGBA rgba);
+EXPORT simd_float3 RGBAGetVector3(RGBA rgba);
 
-EXPORT Fog FogMake(GLfloat density, GLfloat gradient);
+EXPORT Fog FogMake(float density, float gradient);

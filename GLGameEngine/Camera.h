@@ -7,13 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <TargetConditionals.h>
-#if TARGET_OS_IPHONE
-#import <OpenGLES/ES3/gl.h>
-#else
-#import <OpenGL/gl3.h>
-#endif
-#import <GLKit/GLKit.h>
+#import <simd/simd.h>
 #import "MathUtils.h"
 
 @interface Camera : NSObject
@@ -22,30 +16,30 @@
  @property position
  @abstract The position of the camera.
  */
-@property (assign, nonatomic) GLKVector3 position;
+@property (assign, nonatomic) simd_float3 position;
 
 /**
  @property yaw
  @abstract The yaw (rotation around the Y-axis) of the camera. In degrees
 */
-@property (assign, nonatomic) GLfloat yaw;
+@property (assign, nonatomic) float yaw;
 
 /**
  @property pitch
  @abstract The pitch (rotation around the X-axis) of the camera. In degrees
  */
-@property (assign, nonatomic) GLfloat pitch;
+@property (assign, nonatomic) float pitch;
 
 /**
  @property roll
  @abstract The roll (rotation around the Z-axis) of the camera. In degrees
  */
-@property (assign, nonatomic) GLfloat roll;
-@property (assign, nonatomic, readonly, getter=getViewMatrix) GLKMatrix4 viewMatrix;
+@property (assign, nonatomic) float roll;
+@property (assign, nonatomic, readonly, getter=getViewMatrix) simd_float4x4 viewMatrix;
 
 + (Camera *)camera;
 
-- (void)move:(GLKVector3)vec;
+- (void)move:(simd_float3)vec;
 - (void)invertPitch;
 
 @end

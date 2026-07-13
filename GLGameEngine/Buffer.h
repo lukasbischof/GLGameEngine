@@ -15,12 +15,6 @@
 #include <sys/types.h>
 #include <TargetConditionals.h>
 
-#if !(TARGET_OS_IPHONE)
-#include <OpenGL/OpenGL.h>
-#else
-#include <OpenGLES/gltypes.h>
-#endif
-
 #if TARGET_OS_WIN32
     #if !defined(EXPORT)
         #if !defined(__cplusplus)
@@ -39,10 +33,10 @@
     #endif
 #endif
 
-#define FLOAT_BUFFER_DATA_TYPE GLfloat
+#define FLOAT_BUFFER_DATA_TYPE float
 #define FLOAT_BUFFER_ELEMENT_SIZE sizeof(FLOAT_BUFFER_DATA_TYPE)
 
-#define UINT_BUFFER_DATA_TYPE GLuint
+#define UINT_BUFFER_DATA_TYPE uint32_t
 #define UINT_BUFFER_ELEMENT_SIZE sizeof(UINT_BUFFER_DATA_TYPE)
 
 struct _Buffer {
@@ -66,6 +60,10 @@ struct _UintBuffer {
 };
 typedef struct _UintBuffer UintBuffer;
 
+
+// Ownership: the …NoCopy variants alias the caller's memory (the caller keeps
+// ownership). The …Copy variants malloc a private copy — the caller owns the
+// returned buffer's data and must free((void *)buffer.data) when done.
 
 EXPORT
 Buffer BufferCreateWithDataNoCopy(const void *data, size_t length);

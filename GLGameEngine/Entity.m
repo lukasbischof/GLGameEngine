@@ -12,20 +12,26 @@
 
 @end
 
-@implementation Entity
+@implementation Entity {
+    // The transformation matrix is read up to three times per frame (once per
+    // render pass) for ~1000 static entities, so it is cached and only rebuilt
+    // when position/rotation/scale change.
+    simd_float4x4 _cachedTransformationMatrix;
+    BOOL _transformationMatrixDirty;
+}
 
 #pragma mark - Initializer
-+ (Entity *)entityWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation scale:(GLfloat)scale andTextureIndex:(GLuint)index
++ (Entity *)entityWithTexturedModel:(TexturedModel *)model position:(simd_float3)position rotation:(Rotation)rotation scale:(float)scale andTextureIndex:(uint32_t)index
 {
     return [[Entity alloc] initWithTexturedModel:model position:position rotation:rotation scale:scale andTextureIndex:index];
 }
 
-+ (Entity *)entityWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation andScale:(GLfloat)scale
++ (Entity *)entityWithTexturedModel:(TexturedModel *)model position:(simd_float3)position rotation:(Rotation)rotation andScale:(float)scale
 {
     return [[Entity alloc] initWithTexturedModel:model position:position rotation:rotation andScale:scale];
 }
 
-+ (Entity *)entityWithTexturedModel:(TexturedModel *)model rotation:(Rotation)rotation andScale:(GLfloat)scale
++ (Entity *)entityWithTexturedModel:(TexturedModel *)model rotation:(Rotation)rotation andScale:(float)scale
 {
     return [[Entity alloc] initWithTexturedModel:model rotation:rotation andScale:scale];
 }
@@ -45,7 +51,7 @@
     return [self initWithTexturedModel:nil];
 }
 
-- (instancetype)initWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation scale:(GLfloat)scale andTextureIndex:(GLuint)index
+- (instancetype)initWithTexturedModel:(TexturedModel *)model position:(simd_float3)position rotation:(Rotation)rotation scale:(float)scale andTextureIndex:(uint32_t)index
 {
     if ((self = [super init])) {
         _model = model;
@@ -53,47 +59,66 @@
         _rotation = rotation;
         _scale = scale;
         _textureIndex = index;
+        _transformationMatrixDirty = YES;
     }
     
     return self;
 }
 
-- (instancetype)initWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation andScale:(GLfloat)scale
+- (instancetype)initWithTexturedModel:(TexturedModel *)model position:(simd_float3)position rotation:(Rotation)rotation andScale:(float)scale
 {
     self = [self initWithTexturedModel:model position:position rotation:rotation scale:scale andTextureIndex:0];
     return self;
 }
 
-- (instancetype)initWithTexturedModel:(TexturedModel *)model rotation:(Rotation)rotation andScale:(GLfloat)scale
+- (instancetype)initWithTexturedModel:(TexturedModel *)model rotation:(Rotation)rotation andScale:(float)scale
 {
-    self = [self initWithTexturedModel:model position:GLKVector3Make(0, 0, 0) rotation:rotation scale:scale andTextureIndex:0];
+    self = [self initWithTexturedModel:model position:simd_make_float3(0, 0, 0) rotation:rotation scale:scale andTextureIndex:0];
     
     return self;
 }
 
 - (instancetype)initWithTexturedModel:(TexturedModel *)model andRotation:(Rotation)rotation
 {
-    self = [self initWithTexturedModel:model position:GLKVector3Make(0, 0, 0) rotation:rotation scale:1.0 andTextureIndex:0];
+    self = [self initWithTexturedModel:model position:simd_make_float3(0, 0, 0) rotation:rotation scale:1.0 andTextureIndex:0];
     
     return self;
 }
 
 - (instancetype)initWithTexturedModel:(TexturedModel *)model
 {
-    self = [self initWithTexturedModel:model position:GLKVector3Make(0, 0, 0) rotation:MathUtils_ZeroRotation scale:1.0 andTextureIndex:0];
+    self = [self initWithTexturedModel:model position:simd_make_float3(0, 0, 0) rotation:MathUtils_ZeroRotation scale:1.0 andTextureIndex:0];
     
     return self;
 }
 
-#pragma mark - Methods
-- (void)increasePositionByVector:(GLKVector3)vec
+#pragma mark - Mutation (every path must invalidate the cached matrix)
+- (void)setPosition:(simd_float3)position
 {
-    self.position = GLKVector3Add(self.position, vec);
+    _position = position;
+    _transformationMatrixDirty = YES;
 }
 
-- (void)increaseRotationByX:(GLfloat)x y:(GLfloat)y andZ:(GLfloat)z
+- (void)setRotation:(Rotation)rotation
 {
-    _rotation = MathUtils_RotationMake(_rotation.x + x, _rotation.y + y, _rotation.z + z);
+    _rotation = rotation;
+    _transformationMatrixDirty = YES;
+}
+
+- (void)setScale:(float)scale
+{
+    _scale = scale;
+    _transformationMatrixDirty = YES;
+}
+
+- (void)increasePositionByVector:(simd_float3)vec
+{
+    self.position = self.position + vec;
+}
+
+- (void)increaseRotationByX:(float)x y:(float)y andZ:(float)z
+{
+    self.rotation = MathUtils_RotationMake(_rotation.x + x, _rotation.y + y, _rotation.z + z);
 }
 
 - (void)increaseRotationByRotation:(Rotation)rot
@@ -101,27 +126,31 @@
     [self increaseRotationByX:rot.x y:rot.y andZ:rot.z];
 }
 
-- (void)setRotationX:(GLfloat)x y:(GLfloat)y andZ:(GLfloat)z
+- (void)setRotationX:(float)x y:(float)y andZ:(float)z
 {
-    _rotation = MathUtils_RotationMake(x, y, z);
+    self.rotation = MathUtils_RotationMake(x, y, z);
 }
 
-- (GLKMatrix4)getCurrentTransformationMatrix
+- (simd_float4x4)getCurrentTransformationMatrix
 {
-    GLKMatrix4 mat = MathUtils_CreateTransformationMatrixr(self.position, self.rotation, self.scale);
-    return mat;
+    if (_transformationMatrixDirty) {
+        _cachedTransformationMatrix = MathUtils_CreateTransformationMatrixr(self.position, self.rotation, self.scale);
+        _transformationMatrixDirty = NO;
+    }
+
+    return _cachedTransformationMatrix;
 }
 
-- (GLfloat)getTextureXOffset
+- (float)getTextureXOffset
 {
-    GLint column = self.textureIndex % self.model.texture.numberOfRows;
-    return (GLfloat)column / (GLfloat)self.model.texture.numberOfRows;
+    int32_t column = self.textureIndex % self.model.texture.numberOfRows;
+    return (float)column / (float)self.model.texture.numberOfRows;
 }
 
-- (GLfloat)getTextureYOffset
+- (float)getTextureYOffset
 {
-    GLint row = self.textureIndex / self.model.texture.numberOfRows;
-    return (GLfloat)row / self.model.texture.numberOfRows;
+    int32_t row = self.textureIndex / self.model.texture.numberOfRows;
+    return (float)row / self.model.texture.numberOfRows;
 }
 
 - (NSString *)description

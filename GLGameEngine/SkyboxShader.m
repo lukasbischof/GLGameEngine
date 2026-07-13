@@ -9,17 +9,14 @@
 #import "SkyboxShader.h"
 #import "TimeController.h"
 #import "MathUtils.h"
+#import "MetalContext.h"
 
-NSString *const SKYBOX_VERTEX_SHADER_FILE_NAME = @"SkyboxVertexShader";
-NSString *const SKYBOX_FRAGMENT_SHADER_FILE_NAME = @"SkyboxFragmentShader";
+NSString *const SKYBOX_VERTEX_FUNCTION_NAME = @"vertex_skybox";
+NSString *const SKYBOX_FRAGMENT_FUNCTION_NAME = @"fragment_skybox";
 
 @implementation SkyboxShader {
-    GLuint uniform_projection_matrix_location,
-           uniform_view_matrix_location,
-           uniform_fog_color_location,
-           uniform_blend_factor_location,
-           uniform_cube_sampler1_location,
-           uniform_cube_sampler2_location;
+    SkyboxVertexUniforms _vertexUniforms;
+    SkyboxFragmentUniforms _fragmentUniforms;
 }
 
 + (SkyboxShader *)skyboxShaderProgram
@@ -29,60 +26,58 @@ NSString *const SKYBOX_FRAGMENT_SHADER_FILE_NAME = @"SkyboxFragmentShader";
 
 - (instancetype)init
 {
-    if ((self = [super initWithVertexShaderName:SKYBOX_VERTEX_SHADER_FILE_NAME
-                          andFragmentShaderName:SKYBOX_FRAGMENT_SHADER_FILE_NAME])) {
+    if ((self = [super initWithVertexFunctionName:SKYBOX_VERTEX_FUNCTION_NAME
+                          andFragmentFunctionName:SKYBOX_FRAGMENT_FUNCTION_NAME])) {
         self.rotation_speed = 0.f;
     }
-    
+
     return self;
 }
 
-- (void)bindAttributes
+- (MTLVertexDescriptor *)createVertexDescriptor
 {
-    [self bindAttribute:0 toVariableName:"in_position"];
+    MTLVertexDescriptor *descriptor = [MTLVertexDescriptor vertexDescriptor];
+
+    descriptor.attributes[0].format = MTLVertexFormatFloat3;
+    descriptor.attributes[0].offset = 0;
+    descriptor.attributes[0].bufferIndex = BufferIndexPositions;
+    descriptor.layouts[BufferIndexPositions].stride = sizeof(float) * 3;
+
+    return descriptor;
 }
 
-- (void)getAllUniformLocations
+- (void)uploadUniforms
 {
-    uniform_projection_matrix_location = [self getUniformLocation:"u_projectionMatrix"];
-    uniform_view_matrix_location = [self getUniformLocation:"u_viewMatrix"];
-    uniform_fog_color_location = [self getUniformLocation:"u_fogColor"];
-    uniform_blend_factor_location = [self getUniformLocation:"u_blendFactor"];
-    uniform_cube_sampler1_location = [self getUniformLocation:"u_cubeSampler1"];
-    uniform_cube_sampler2_location = [self getUniformLocation:"u_cubeSampler2"];
+    id<MTLRenderCommandEncoder> encoder = [MetalContext sharedContext].currentEncoder;
+
+    [encoder setVertexBytes:&_vertexUniforms length:sizeof(_vertexUniforms) atIndex:BufferIndexVertexUniforms];
+    [encoder setFragmentBytes:&_fragmentUniforms length:sizeof(_fragmentUniforms) atIndex:BufferIndexFragmentUniforms];
 }
 
-- (void)loadTextureUnits
+- (void)loadBlendFactor:(float)blendFactor
 {
-    [self loadInt:0 toLocation:uniform_cube_sampler1_location];
-    [self loadInt:1 toLocation:uniform_cube_sampler2_location];
+    _fragmentUniforms.blendFactor = blendFactor;
 }
 
-- (void)loadBlendFactor:(GLfloat)blendFactor
+- (void)loadProjectionMatrix:(simd_float4x4)projectionMatrix
 {
-    [self loadFloat:blendFactor toLocation:uniform_blend_factor_location];
+    _vertexUniforms.projectionMatrix = projectionMatrix;
 }
 
-- (void)loadProjectionMatrix:(GLKMatrix4)projectionMatrix
+- (void)loadViewMatrix:(simd_float4x4)viewMatrix
 {
-    [self loadMatrix4x4:projectionMatrix toLocation:uniform_projection_matrix_location];
+    // strip the translation (last column) so the skybox stays centered on the camera
+    viewMatrix.columns[3] = simd_make_float4(0.f, 0.f, 0.f, viewMatrix.columns[3].w);
+
+    float currentRotation = fmodf(([TimeController sharedController].passedTime * self.rotation_speed), 360);
+
+    viewMatrix = simd_mul(viewMatrix, MathUtils_MatrixMakeYRotation(MathUtils_DegToRad(currentRotation)));
+    _vertexUniforms.viewMatrix = viewMatrix;
 }
 
-- (void)loadViewMatrix:(GLKMatrix4)viewMatrix
+- (void)loadFogColor:(simd_float3)fogColor
 {
-    viewMatrix.m30 = 0.0;
-    viewMatrix.m31 = 0.0;
-    viewMatrix.m32 = 0.0;
-    
-    GLfloat currentRotation = fmodf(([TimeController sharedController].passedTime * self.rotation_speed), 360);
-    
-    viewMatrix = GLKMatrix4Rotate(viewMatrix, MathUtils_DegToRad(currentRotation), 0, 1, 0);
-    [self loadMatrix4x4:viewMatrix toLocation:uniform_view_matrix_location];
-}
-
-- (void)loadFogColor:(GLKVector3)fogColor
-{
-    [self loadFloatVector3:fogColor toLocation:uniform_fog_color_location];
+    _fragmentUniforms.fogColor = fogColor;
 }
 
 @end

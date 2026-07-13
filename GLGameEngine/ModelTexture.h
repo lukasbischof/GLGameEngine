@@ -12,11 +12,11 @@
 @interface ModelTexture : Texture <NSCopying>
 
 @property (assign, nonatomic) BOOL hasAlpha;
-@property (assign, nonatomic) GLuint numberOfRows; // For texture atlases
+@property (assign, nonatomic) uint32_t numberOfRows; // For texture atlases
 @property (assign, nonatomic) float shineDamper;
 @property (assign, nonatomic) float reflectivity;
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithTextureID:(GLuint)textureID andTextureTarget:(GLenum)textureTarget NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithMTLTexture:(id<MTLTexture>)texture NS_DESIGNATED_INITIALIZER;
 
 @end

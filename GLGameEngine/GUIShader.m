@@ -7,12 +7,13 @@
 //
 
 #import "GUIShader.h"
+#import "MetalContext.h"
 
-NSString *const GUI_VERTEX_SHADER_FILE_NAME = @"GUIVertexShader";
-NSString *const GUI_FRAGMENT_SHADER_FILE_NAME = @"GUIFragmentShader";
+NSString *const GUI_VERTEX_FUNCTION_NAME = @"vertex_gui";
+NSString *const GUI_FRAGMENT_FUNCTION_NAME = @"fragment_gui";
 
 @implementation GUIShader {
-    GLuint uniform_transformation_matrix_location;
+    GUIVertexUniforms _vertexUniforms;
 }
 
 + (GUIShader *)GUIShaderProgram
@@ -22,27 +23,47 @@ NSString *const GUI_FRAGMENT_SHADER_FILE_NAME = @"GUIFragmentShader";
 
 - (instancetype)init
 {
-    if ((self = [super initWithVertexShaderName:GUI_VERTEX_SHADER_FILE_NAME
-                          andFragmentShaderName:GUI_FRAGMENT_SHADER_FILE_NAME])) {
-        
+    if ((self = [super initWithVertexFunctionName:GUI_VERTEX_FUNCTION_NAME
+                          andFragmentFunctionName:GUI_FRAGMENT_FUNCTION_NAME])) {
+
     }
-    
+
     return self;
 }
 
-- (void)getAllUniformLocations
+- (MTLVertexDescriptor *)createVertexDescriptor
 {
-    uniform_transformation_matrix_location = [self getUniformLocation:"u_transformationMatrix"];
+    MTLVertexDescriptor *descriptor = [MTLVertexDescriptor vertexDescriptor];
+
+    descriptor.attributes[0].format = MTLVertexFormatFloat2;
+    descriptor.attributes[0].offset = 0;
+    descriptor.attributes[0].bufferIndex = BufferIndexPositions;
+    descriptor.layouts[BufferIndexPositions].stride = sizeof(float) * 2;
+
+    return descriptor;
 }
 
-- (void)bindAttributes
+- (void)configurePipelineDescriptor:(MTLRenderPipelineDescriptor *)descriptor
 {
-    [self bindAttribute:0 toVariableName:"in_position"];
+    // alpha blending: srcAlpha / oneMinusSrcAlpha
+    MTLRenderPipelineColorAttachmentDescriptor *colorAttachment = descriptor.colorAttachments[0];
+    colorAttachment.blendingEnabled = YES;
+    colorAttachment.sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
+    colorAttachment.destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
+    colorAttachment.sourceAlphaBlendFactor = MTLBlendFactorSourceAlpha;
+    colorAttachment.destinationAlphaBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
 }
 
-- (void)loadTransformationMatrix:(GLKMatrix4)transformationMatrix
+- (void)uploadUniforms
 {
-    [self loadMatrix4x4:transformationMatrix toLocation:uniform_transformation_matrix_location];
+    id<MTLRenderCommandEncoder> encoder = [MetalContext sharedContext].currentEncoder;
+
+    [encoder setVertexBytes:&_vertexUniforms length:sizeof(_vertexUniforms) atIndex:BufferIndexVertexUniforms];
+}
+
+- (void)loadTransformationMatrix:(simd_float4x4)transformationMatrix
+{
+    _vertexUniforms.transformationMatrix = transformationMatrix;
 }
 
 @end

@@ -7,18 +7,17 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <OpenGLES/gltypes.h>
-#import <GLKit/GLKit.h>
+#import <simd/simd.h>
 
 @interface WaterTile : NSObject
 
-@property (assign, nonatomic) GLfloat x;
-@property (assign, nonatomic) GLfloat z;
-@property (assign, nonatomic) GLfloat height;
-@property (assign, nonatomic, readonly) GLfloat size;
+@property (assign, nonatomic) float x;
+@property (assign, nonatomic) float z;
+@property (assign, nonatomic) float height;
+@property (assign, nonatomic, readonly) float size;
 
-- (instancetype)initWithX:(GLfloat)x z:(GLfloat)z height:(GLfloat)height andSize:(GLfloat)size NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithX:(float)x z:(float)z height:(float)height andSize:(float)size NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithX:(GLfloat)x z:(GLfloat)z andHeight:(GLfloat)height;
+- (instancetype)initWithX:(float)x z:(float)z andHeight:(float)height;
 
 @end

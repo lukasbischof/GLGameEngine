@@ -8,37 +8,33 @@
 
 #import "Texture.h"
 
+@interface Texture ()
+
+@property (strong, nonatomic, readwrite, nullable) id<MTLTexture> texture;
+
+@end
+
 @implementation Texture
 
 - (instancetype)init
 {
-    self = [self initWithTextureID:0 andTextureTarget:GL_INVALID_ENUM];
+    self = [self initWithMTLTexture:nil];
     return self;
 }
 
-- (instancetype)initWithTextureID:(GLuint)textureID andTextureTarget:(GLenum)textureTarget
+- (instancetype)initWithMTLTexture:(id<MTLTexture>)texture
 {
     if ((self = [super init])) {
-        _textureID = textureID;
-        _textureTarget = textureTarget;
+        _texture = texture;
     }
-    
-    return self;
-}
 
-- (instancetype)initWithTextureInfo:(GLKTextureInfo *__nonnull)info
-{
-    if ((self = [self initWithTextureID:info.name andTextureTarget:info.target])) {
-        
-    }
-    
     return self;
 }
 
 - (id)copyWithZone:(NSZone *)zone
 {
-    Texture *newTex = [[Texture alloc] initWithTextureID:self.textureID andTextureTarget:self.textureTarget];
-    
+    Texture *newTex = [[Texture alloc] initWithMTLTexture:self.texture];
+
     return newTex;
 }
 

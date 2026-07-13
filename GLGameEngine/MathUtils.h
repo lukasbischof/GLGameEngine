@@ -10,18 +10,19 @@
 #define __GLGameEngine__MathUtils__
 
 #include <stdio.h>
-#import <GLKit/GLKit.h>
+#include <stdbool.h>
+#include <simd/simd.h>
 #import "Buffer.h"
 
 struct MathUtils_Rotation {
-    GLfloat x;
-    GLfloat y;
-    GLfloat z;
+    float x;
+    float y;
+    float z;
 };
 
 /**
  @typedef Rotation
- @abstract Repräsentiert eine Rotation. Alle Winkel sind im Bogenmass
+ @abstract Repräsentiert eine Rotation. Alle Winkel sind in Grad
 */
 typedef struct MathUtils_Rotation Rotation;
 
@@ -41,7 +42,7 @@ Rotation const MathUtils_ZeroRotation;
  @return Die neue Rotation
 */
 EXPORT
-Rotation MathUtils_RotationMake(GLfloat rx, GLfloat ry, GLfloat rz);
+Rotation MathUtils_RotationMake(float rx, float ry, float rz);
 
 /**
  @function MathUtils_ConvertRotationToRadians
@@ -64,7 +65,7 @@ Rotation MathUtils_ConvertRotationToDegrees(Rotation rotation);
  @return Der konvertierte Winkel
 */
 EXPORT
-GLfloat MathUtils_DegToRad(GLfloat deg);
+float MathUtils_DegToRad(float deg);
 
 /**
  @function MathUtils_RadToDeg
@@ -73,31 +74,63 @@ GLfloat MathUtils_DegToRad(GLfloat deg);
  @return Der konvertierte Winkel
  */
 EXPORT
-GLfloat MathUtils_RadToDeg(GLfloat rad);
+float MathUtils_RadToDeg(float rad);
+
+#pragma mark Affine matrix constructors
+// simd provides multiply/inverse/transpose but no affine constructors.
+// These replicate the standard column-major (right-handed) conventions the
+// engine has always used, so all existing transforms stay bit-identical.
+
+EXPORT
+simd_float4x4 MathUtils_MatrixMakeTranslation(float tx, float ty, float tz);
+
+EXPORT
+simd_float4x4 MathUtils_MatrixMakeScale(float sx, float sy, float sz);
+
+EXPORT
+simd_float4x4 MathUtils_MatrixMakeXRotation(float radians);
+
+EXPORT
+simd_float4x4 MathUtils_MatrixMakeYRotation(float radians);
+
+EXPORT
+simd_float4x4 MathUtils_MatrixMakeZRotation(float radians);
+
+/**
+ @function MathUtils_MatrixMakePerspective
+ @abstract Right-handed perspective projection with z mapped to [-1, 1].
+           MasterRenderer multiplies its own conversion matrix on top to reach
+           Metal's [0, 1] clip space, so this stays in the historic convention.
+*/
+EXPORT
+simd_float4x4 MathUtils_MatrixMakePerspective(float fovyRadians, float aspect, float nearZ, float farZ);
+
+EXPORT
+simd_float3x3 MathUtils_Matrix4GetUpperLeft3x3(simd_float4x4 matrix);
 
 /**
  @function MathUtils_CreateTransformationMatrixrXYZ
  @abstract Generiert eine neue Transformationsmatrix
  @param translation Die translation in x,y und z Richtung
- @param rx  Die Rotation um die X-Achse in Radians
- @param ry  Die Rotation um die Y-Achse in Radians
- @param rz  Die Rotation um die Z-Achse in Radians
+ @param rx  Die Rotation um die X-Achse in Grad
+ @param ry  Die Rotation um die Y-Achse in Grad
+ @param rz  Die Rotation um die Z-Achse in Grad
  @param scale   Die Skalation, die proportional auf das Objekt wirkt
  @return Die neue Transformationsmatrix
 */
 EXPORT
-GLKMatrix4 MathUtils_CreateTransformationMatrixrXYZ(GLKVector3 translation, float rx, float ry, float rz, float scale);
+simd_float4x4 MathUtils_CreateTransformationMatrixrXYZ(simd_float3 translation, float rx, float ry, float rz, float scale);
 
 /**
  @function MathUtils_CreateTransformationMatrixr
  @abstract Generiert eine neue Transformationsmatrix
  @param translation Die translation in x,y und z Richtung
- @param rotation    Die Rotation in Radians
+ @param rotation    Die Rotation in Grad
  @param scale   Die Skalation, die proportional auf das Objekt wirkt
  @return Die neue Transformationsmatrix
 */
 EXPORT
-GLKMatrix4 MathUtils_CreateTransformationMatrixr(GLKVector3 translation, Rotation rotation, float scale);
+simd_float4x4 MathUtils_CreateTransformationMatrixr(simd_float3 translation, Rotation rotation, float scale);
 
 /**
  @function MathUtils_CreateNormalMatrix
@@ -107,7 +140,7 @@ GLKMatrix4 MathUtils_CreateTransformationMatrixr(GLKVector3 translation, Rotatio
  @return Die neue Normalenmatrix
 */
 EXPORT
-GLKMatrix3 MathUtils_CreateNormalMatrix(GLKMatrix4 transformationMatrix, GLKMatrix4 viewMatrix);
+simd_float3x3 MathUtils_CreateNormalMatrix(simd_float4x4 transformationMatrix, simd_float4x4 viewMatrix);
 
 /**
  @function MathUtils_RandomFloat
@@ -117,7 +150,7 @@ GLKMatrix3 MathUtils_CreateNormalMatrix(GLKMatrix4 transformationMatrix, GLKMatr
  @return Die Zufallszahl
 */
 EXPORT
-GLfloat MathUtils_RandomFloat(GLfloat min, GLfloat max);
+float MathUtils_RandomFloat(float min, float max);
 
 /**
  @function MathUtils_RandomMersenneTwisterFloat
@@ -127,7 +160,7 @@ GLfloat MathUtils_RandomFloat(GLfloat min, GLfloat max);
  @return Die Zufallszahl
  */
 EXPORT
-GLfloat MathUtils_RandomMersenneTwisterFloat(GLfloat min, GLfloat max);
+float MathUtils_RandomMersenneTwisterFloat(float min, float max);
 
 /**
  @function MathUtils_RandomBool
@@ -135,7 +168,7 @@ GLfloat MathUtils_RandomMersenneTwisterFloat(GLfloat min, GLfloat max);
  @return Der Zufallsboolean
 */
 EXPORT
-GLboolean MathUtils_RandomBool();
+bool MathUtils_RandomBool(void);
 
 /**
  @function MathUtils_RandomBoolProb
@@ -144,7 +177,7 @@ GLboolean MathUtils_RandomBool();
  @return Der Zufallsboolean
 */
 EXPORT
-GLboolean MathUtils_RandomBoolProb(GLfloat probability);
+bool MathUtils_RandomBoolProb(float probability);
 
 /**
  @function MathUtils_BarryCentric
@@ -156,7 +189,7 @@ GLboolean MathUtils_RandomBoolProb(GLfloat probability);
  @return Die Höhe
 */
 EXPORT
-GLfloat MathUtils_BarryCentric(GLKVector3 p1, GLKVector3 p2, GLKVector3 p3, GLKVector2 pos);
+float MathUtils_BarryCentric(simd_float3 p1, simd_float3 p2, simd_float3 p3, simd_float2 pos);
 
 /**
  @function MathUtils_CreateGUITransformationMatrix
@@ -166,6 +199,6 @@ GLfloat MathUtils_BarryCentric(GLKVector3 p1, GLKVector3 p2, GLKVector3 p3, GLKV
  @return Die Matrix
 */
 EXPORT
-GLKMatrix4 MathUtils_CreateGUITransformationMatrix(GLKVector2 translation, GLKVector2 scale);
+simd_float4x4 MathUtils_CreateGUITransformationMatrix(simd_float2 translation, simd_float2 scale);
 
 #endif /* defined(__GLGameEngine__MathUtils__) */

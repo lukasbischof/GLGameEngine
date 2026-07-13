@@ -72,7 +72,7 @@ FloatBuffer FloatBufferCreateWithDataCopy(const FLOAT_BUFFER_DATA_TYPE *data, si
     }
     
     FloatBuffer buffer;
-    buffer.data = (const GLfloat *)malloc(length);
+    buffer.data = (const float *)malloc(length);
     buffer.length = length;
     
     memcpy((void *)buffer.data, data, length);
@@ -109,7 +109,7 @@ UintBuffer UintBufferCreateWithDataCopy(const UINT_BUFFER_DATA_TYPE *data, size_
     }
     
     UintBuffer buffer;
-    buffer.data = (const GLuint *)malloc(length);
+    buffer.data = (const uint32_t *)malloc(length);
     buffer.length = length;
     
     memcpy((void *)buffer.data, data, length);
