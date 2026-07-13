@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
-#import "GLTypesShim.h"
+#import <simd/simd.h>
 
 #define RAW_MODEL_MAX_VERTEX_BUFFERS 4
 
@@ -21,14 +21,14 @@
 */
 @interface RawModel : NSObject <NSCopying>
 
-@property (assign, nonatomic) GLuint vertexCount;
+@property (assign, nonatomic) uint32_t vertexCount;
 
 @property (strong, nonatomic, nullable) id<MTLBuffer> indexBuffer;
 @property (assign, nonatomic) NSUInteger indexBufferOffset;
 @property (assign, nonatomic) MTLIndexType indexType;
 
-+ (RawModel *_Nonnull)modelWithVertexCount:(GLuint)vertexCount;
-- (_Nonnull instancetype)initWithVertexCount:(GLuint)vertexCount NS_DESIGNATED_INITIALIZER;
++ (RawModel *_Nonnull)modelWithVertexCount:(uint32_t)vertexCount;
+- (_Nonnull instancetype)initWithVertexCount:(uint32_t)vertexCount NS_DESIGNATED_INITIALIZER;
 
 - (void)setVertexBuffer:(id<MTLBuffer> _Nonnull)buffer offset:(NSUInteger)offset atIndex:(NSUInteger)index;
 

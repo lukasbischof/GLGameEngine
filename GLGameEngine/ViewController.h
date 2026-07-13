@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <Metal/Metal.h>
 #import <MetalKit/MetalKit.h>
-#import <GLKit/GLKMath.h>
+#import <simd/simd.h>
 #import <QuartzCore/QuartzCore.h>
 
 @interface ViewController : UIViewController <MTKViewDelegate>

@@ -8,8 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
-#import <GLKit/GLKMath.h>
-#import "GLTypesShim.h"
+#import <simd/simd.h>
 #import "ShaderTypes.h"
 
 #ifndef MAX_LIGHTS

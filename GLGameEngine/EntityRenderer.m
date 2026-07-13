@@ -51,16 +51,16 @@
 - (void)renderInstances:(NSMutableArray<InstanceableTexturedModel *> *)models withCamera:(Camera *)camera
 {
     id<MTLRenderCommandEncoder> encoder = [MetalContext sharedContext].currentEncoder;
-    GLKMatrix4 viewMat = camera.viewMatrix;
+    simd_float4x4 viewMat = camera.viewMatrix;
 
     for (InstanceableTexturedModel *model in models) {
         [self prepareTexturedModel:model instancingEnabled:YES];
 
         [encoder pushDebugGroup:@"Draw Instanced Entities"];
 
-        [self.instancingShaderProgram loadNormalMatrixWithModelMatrix:GLKMatrix4Identity
+        [self.instancingShaderProgram loadNormalMatrixWithModelMatrix:matrix_identity_float4x4
                                                         andViewMatrix:viewMat];
-        [self.instancingShaderProgram loadOffset:GLKVector2Make(0, 0)];
+        [self.instancingShaderProgram loadOffset:simd_make_float2(0, 0)];
 
         [self.instancingShaderProgram uploadUniforms];
         [encoder drawIndexedPrimitives:MTLPrimitiveTypeTriangle
@@ -82,7 +82,7 @@
 
     // The view matrix is identical for every entity in the pass; building it
     // per entity used to dominate the CPU frame time.
-    GLKMatrix4 viewMatrix = camera.viewMatrix;
+    simd_float4x4 viewMatrix = camera.viewMatrix;
 
     [entities enumerateKeysAndObjectsUsingBlock:^(TexturedModel *_Nonnull key,
                                                   NSMutableArray<Entity *> *_Nonnull obj,
@@ -154,14 +154,14 @@
     }
 }
 
-- (void)prepareInstance:(Entity *)entity withViewMatrix:(GLKMatrix4)viewMat
+- (void)prepareInstance:(Entity *)entity withViewMatrix:(simd_float4x4)viewMat
 {
-    GLKMatrix4 transformationMatrix = entity.currentTransformationMatrix;
+    simd_float4x4 transformationMatrix = entity.currentTransformationMatrix;
 
     [self.shaderProgram loadTransformationMatrix:transformationMatrix];
     [self.shaderProgram loadNormalMatrixWithModelMatrix:transformationMatrix
                                           andViewMatrix:viewMat];
-    [self.shaderProgram loadOffset:GLKVector2Make([entity getTextureXOffset], [entity getTextureYOffset])];
+    [self.shaderProgram loadOffset:simd_make_float2([entity getTextureXOffset], [entity getTextureYOffset])];
 }
 
 #pragma mark Old rendering

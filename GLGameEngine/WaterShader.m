@@ -8,7 +8,6 @@
 
 #import "WaterShader.h"
 #import "MetalContext.h"
-#import "SIMDBridge.h"
 
 NSString *const WATER_VERTEX_FUNCTION_NAME = @"vertex_water";
 NSString *const WATER_FRAGMENT_FUNCTION_NAME = @"fragment_water";
@@ -67,29 +66,29 @@ NSString *const WATER_FRAGMENT_FUNCTION_NAME = @"fragment_water";
 
 - (void)loadLight:(Light *)light
 {
-    _fragmentUniforms.lightColor = SIMD_Vector3(light.color);
-    _vertexUniforms.lightPosition = SIMD_Vector3(light.position);
+    _fragmentUniforms.lightColor = light.color;
+    _vertexUniforms.lightPosition = light.position;
 }
 
-- (void)loadMoveFactor:(GLfloat)moveFactor
+- (void)loadMoveFactor:(float)moveFactor
 {
     _fragmentUniforms.moveFactor = moveFactor;
 }
 
-- (void)loadTransformationMatrix:(GLKMatrix4)transformationMatrix
+- (void)loadTransformationMatrix:(simd_float4x4)transformationMatrix
 {
-    _vertexUniforms.transformationMatrix = SIMD_Matrix4(transformationMatrix);
+    _vertexUniforms.transformationMatrix = transformationMatrix;
 }
 
 - (void)loadViewMatrix:(Camera *)cam
 {
-    _vertexUniforms.viewMatrix = SIMD_Matrix4(cam.viewMatrix);
-    _vertexUniforms.cameraPosition = SIMD_Vector3(cam.position);
+    _vertexUniforms.viewMatrix = cam.viewMatrix;
+    _vertexUniforms.cameraPosition = cam.position;
 }
 
-- (void)loadProjectionMatrix:(GLKMatrix4)projectionMatrix
+- (void)loadProjectionMatrix:(simd_float4x4)projectionMatrix
 {
-    _vertexUniforms.projectionMatrix = SIMD_Matrix4(projectionMatrix);
+    _vertexUniforms.projectionMatrix = projectionMatrix;
 }
 
 @end

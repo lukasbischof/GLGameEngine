@@ -6,14 +6,14 @@
 //  Copyright © 2015 Lukas Bischof. All rights reserved.
 //
 
-#import <GLKit/GLKMath.h>
+#import <simd/simd.h>
 #import "TexturedModel.h"
 
 @interface InstanceableTexturedModel : TexturedModel
 
-@property (assign, nonatomic, readonly) GLuint instanceCount;
+@property (assign, nonatomic, readonly) uint32_t instanceCount;
 
-- (void)updateTransformationMatrix:(GLKMatrix4)matrix forInstance:(GLuint)instanceID;
+- (void)updateTransformationMatrix:(simd_float4x4)matrix forInstance:(uint32_t)instanceID;
 - (void)lock;
 - (void)bake;
 

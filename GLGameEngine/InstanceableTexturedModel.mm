@@ -14,7 +14,7 @@
 #include <iostream>
 
 @implementation InstanceableTexturedModel {
-    std::vector<GLKMatrix4> _matrices;
+    std::vector<simd_float4x4> _matrices;
     id<MTLBuffer> _buffer;
 }
 
@@ -22,13 +22,13 @@
 {
     if ((self = [super initWithRawModel:rawModel andTexture:texture])) {
         _instanceCount = 0;
-        self->_matrices = std::vector<GLKMatrix4>();
+        self->_matrices = std::vector<simd_float4x4>();
     }
 
     return self;
 }
 
-- (void)updateTransformationMatrix:(GLKMatrix4)matrix forInstance:(GLuint)instanceID
+- (void)updateTransformationMatrix:(simd_float4x4)matrix forInstance:(uint32_t)instanceID
 {
     if (instanceID == self->_matrices.size()) {
         // add
@@ -58,7 +58,7 @@
 - (void)bake
 {
     _buffer = [[MetalContext sharedContext].device newBufferWithBytes:self->_matrices.data()
-                                                               length:sizeof(GLKMatrix4) * self->_matrices.size()
+                                                               length:sizeof(simd_float4x4) * self->_matrices.size()
                                                               options:MTLResourceStorageModeShared];
 
     [self.rawModel setVertexBuffer:_buffer offset:0 atIndex:BufferIndexInstanceMatrices];

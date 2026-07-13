@@ -10,7 +10,6 @@
 #import "TimeController.h"
 #import "MathUtils.h"
 #import "MetalContext.h"
-#import "SIMDBridge.h"
 
 NSString *const SKYBOX_VERTEX_FUNCTION_NAME = @"vertex_skybox";
 NSString *const SKYBOX_FRAGMENT_FUNCTION_NAME = @"fragment_skybox";
@@ -55,31 +54,30 @@ NSString *const SKYBOX_FRAGMENT_FUNCTION_NAME = @"fragment_skybox";
     [encoder setFragmentBytes:&_fragmentUniforms length:sizeof(_fragmentUniforms) atIndex:BufferIndexFragmentUniforms];
 }
 
-- (void)loadBlendFactor:(GLfloat)blendFactor
+- (void)loadBlendFactor:(float)blendFactor
 {
     _fragmentUniforms.blendFactor = blendFactor;
 }
 
-- (void)loadProjectionMatrix:(GLKMatrix4)projectionMatrix
+- (void)loadProjectionMatrix:(simd_float4x4)projectionMatrix
 {
-    _vertexUniforms.projectionMatrix = SIMD_Matrix4(projectionMatrix);
+    _vertexUniforms.projectionMatrix = projectionMatrix;
 }
 
-- (void)loadViewMatrix:(GLKMatrix4)viewMatrix
+- (void)loadViewMatrix:(simd_float4x4)viewMatrix
 {
-    viewMatrix.m30 = 0.0;
-    viewMatrix.m31 = 0.0;
-    viewMatrix.m32 = 0.0;
+    // strip the translation (last column) so the skybox stays centered on the camera
+    viewMatrix.columns[3] = simd_make_float4(0.f, 0.f, 0.f, viewMatrix.columns[3].w);
 
-    GLfloat currentRotation = fmodf(([TimeController sharedController].passedTime * self.rotation_speed), 360);
+    float currentRotation = fmodf(([TimeController sharedController].passedTime * self.rotation_speed), 360);
 
-    viewMatrix = GLKMatrix4Rotate(viewMatrix, MathUtils_DegToRad(currentRotation), 0, 1, 0);
-    _vertexUniforms.viewMatrix = SIMD_Matrix4(viewMatrix);
+    viewMatrix = simd_mul(viewMatrix, MathUtils_MatrixMakeYRotation(MathUtils_DegToRad(currentRotation)));
+    _vertexUniforms.viewMatrix = viewMatrix;
 }
 
-- (void)loadFogColor:(GLKVector3)fogColor
+- (void)loadFogColor:(simd_float3)fogColor
 {
-    _fragmentUniforms.fogColor = SIMD_Vector3(fogColor);
+    _fragmentUniforms.fogColor = fogColor;
 }
 
 @end

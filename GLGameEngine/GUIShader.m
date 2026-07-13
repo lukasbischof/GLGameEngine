@@ -8,7 +8,6 @@
 
 #import "GUIShader.h"
 #import "MetalContext.h"
-#import "SIMDBridge.h"
 
 NSString *const GUI_VERTEX_FUNCTION_NAME = @"vertex_gui";
 NSString *const GUI_FRAGMENT_FUNCTION_NAME = @"fragment_gui";
@@ -62,9 +61,9 @@ NSString *const GUI_FRAGMENT_FUNCTION_NAME = @"fragment_gui";
     [encoder setVertexBytes:&_vertexUniforms length:sizeof(_vertexUniforms) atIndex:BufferIndexVertexUniforms];
 }
 
-- (void)loadTransformationMatrix:(GLKMatrix4)transformationMatrix
+- (void)loadTransformationMatrix:(simd_float4x4)transformationMatrix
 {
-    _vertexUniforms.transformationMatrix = SIMD_Matrix4(transformationMatrix);
+    _vertexUniforms.transformationMatrix = transformationMatrix;
 }
 
 @end

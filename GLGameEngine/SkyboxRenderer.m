@@ -13,9 +13,9 @@
 
 #define SIZE 100.f
 
-static const GLfloat WHOLE_DAY_DURATION = 28;
-static const GLfloat DAY_DURATION = 12;
-static const GLfloat NIGHT_DURATION = 11;
+static const float WHOLE_DAY_DURATION = 28;
+static const float DAY_DURATION = 12;
+static const float NIGHT_DURATION = 11;
 
 /*const float vertices[] = {
     0.0, SIZE, 0.0,
@@ -131,12 +131,12 @@ static inline NSArray<NSString *> *getNightTextureFiles() {
     return self;
 }
 
-- (void)updateProjectionMatrix:(GLKMatrix4)projMat
+- (void)updateProjectionMatrix:(simd_float4x4)projMat
 {
     [self.shader loadProjectionMatrix:projMat];
 }
 
-- (void)updateFogColor:(GLKVector3)fogColor
+- (void)updateFogColor:(simd_float3)fogColor
 {
     [self.shader loadFogColor:fogColor];
 }
@@ -182,10 +182,10 @@ static inline NSArray<NSString *> *getNightTextureFiles() {
     [self.shader cleanUp];
 }
 
-- (GLfloat)getBlendFactor
+- (float)getBlendFactor
 {
-    GLfloat currentTime = fmodf([TimeController sharedController].passedTime, WHOLE_DAY_DURATION);
-    GLfloat transitionPeriod = (WHOLE_DAY_DURATION - DAY_DURATION - NIGHT_DURATION) / 2;
+    float currentTime = fmodf([TimeController sharedController].passedTime, WHOLE_DAY_DURATION);
+    float transitionPeriod = (WHOLE_DAY_DURATION - DAY_DURATION - NIGHT_DURATION) / 2;
 
     if (currentTime < DAY_DURATION) {
         return 0.0;

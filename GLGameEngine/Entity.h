@@ -13,44 +13,44 @@
 
 @interface Entity : NSObject <NSCopying>
 
-@property (assign, nonatomic) GLuint textureIndex;
+@property (assign, nonatomic) uint32_t textureIndex;
 @property (strong, nonatomic, readonly) TexturedModel *model;
-@property (assign, nonatomic) GLKVector3 position;
+@property (assign, nonatomic) simd_float3 position;
 @property (assign, nonatomic) Rotation rotation;
-@property (assign, nonatomic) GLfloat scale;
-@property (assign, nonatomic, readonly, getter=getCurrentTransformationMatrix) GLKMatrix4 currentTransformationMatrix;
+@property (assign, nonatomic) float scale;
+@property (assign, nonatomic, readonly, getter=getCurrentTransformationMatrix) simd_float4x4 currentTransformationMatrix;
 
 // Initializer
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithTexturedModel:(TexturedModel *)model
-                             position:(GLKVector3)position
+                             position:(simd_float3)position
                              rotation:(Rotation)rotation
-                                scale:(GLfloat)scale
-                      andTextureIndex:(GLuint)index NS_DESIGNATED_INITIALIZER;
+                                scale:(float)scale
+                      andTextureIndex:(uint32_t)index NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithTexturedModel:(TexturedModel *)model
-                             position:(GLKVector3)position
+                             position:(simd_float3)position
                              rotation:(Rotation)rotation
-                             andScale:(GLfloat)scale;
+                             andScale:(float)scale;
 - (instancetype)initWithTexturedModel:(TexturedModel *)model
                              rotation:(Rotation)rotation
-                             andScale:(GLfloat)scale;
+                             andScale:(float)scale;
 - (instancetype)initWithTexturedModel:(TexturedModel *)model
                           andRotation:(Rotation)rotation;
 - (instancetype)initWithTexturedModel:(TexturedModel *)model;
 
-+ (Entity *)entityWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation scale:(GLfloat)scale andTextureIndex:(GLuint)index;
-+ (Entity *)entityWithTexturedModel:(TexturedModel *)model position:(GLKVector3)position rotation:(Rotation)rotation andScale:(GLfloat)scale;
-+ (Entity *)entityWithTexturedModel:(TexturedModel *)model rotation:(Rotation)rotation andScale:(GLfloat)scale;
++ (Entity *)entityWithTexturedModel:(TexturedModel *)model position:(simd_float3)position rotation:(Rotation)rotation scale:(float)scale andTextureIndex:(uint32_t)index;
++ (Entity *)entityWithTexturedModel:(TexturedModel *)model position:(simd_float3)position rotation:(Rotation)rotation andScale:(float)scale;
++ (Entity *)entityWithTexturedModel:(TexturedModel *)model rotation:(Rotation)rotation andScale:(float)scale;
 + (Entity *)entityWithTexturedModel:(TexturedModel *)model andRotation:(Rotation)rotation;
 + (Entity *)entityWithTexturedModel:(TexturedModel *)model;
 
 
-- (void)increasePositionByVector:(GLKVector3)vec;
+- (void)increasePositionByVector:(simd_float3)vec;
 - (void)increaseRotationByRotation:(Rotation)rot;
-- (void)increaseRotationByX:(GLfloat)x y:(GLfloat)y andZ:(GLfloat)z;
-- (void)setRotationX:(GLfloat)x y:(GLfloat)y andZ:(GLfloat)z;
+- (void)increaseRotationByX:(float)x y:(float)y andZ:(float)z;
+- (void)setRotationX:(float)x y:(float)y andZ:(float)z;
 
-- (GLfloat)getTextureXOffset;
-- (GLfloat)getTextureYOffset;
+- (float)getTextureXOffset;
+- (float)getTextureYOffset;
 
 @end

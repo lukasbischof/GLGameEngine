@@ -22,7 +22,7 @@ static NSString *const DUDV_MAP_NAME = @"waterDuDv";
 static NSString *const DUDV_MAP_EXT = @"png";
 static NSString *const NORMAL_MAP_NAME = @"waterNormal";
 static NSString *const NORMAL_MAP_EXT = @"png";
-static const GLfloat WAVE_SPEED = 0.015f;
+static const float WAVE_SPEED = 0.015f;
 
 @interface WaterRenderer ()
 
@@ -59,7 +59,7 @@ static const GLfloat WAVE_SPEED = 0.015f;
 }
 
 #pragma mark - rendering
-- (void)updateProjectionMatrix:(GLKMatrix4)projMat
+- (void)updateProjectionMatrix:(simd_float4x4)projMat
 {
     [self.shader loadProjectionMatrix:projMat];
 }
@@ -71,7 +71,7 @@ static const GLfloat WAVE_SPEED = 0.015f;
     [self prepareForRenderingWithCam:camera andLight:light];
 
     for (WaterTile *tile in tiles) {
-        GLKMatrix4 modelMatrix = MathUtils_CreateTransformationMatrixr(GLKVector3Make(tile.x, tile.height, tile.z), MathUtils_ZeroRotation, tile.size);
+        simd_float4x4 modelMatrix = MathUtils_CreateTransformationMatrixr(simd_make_float3(tile.x, tile.height, tile.z), MathUtils_ZeroRotation, tile.size);
 
         [self.shader loadTransformationMatrix:modelMatrix];
 

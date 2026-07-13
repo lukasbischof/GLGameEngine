@@ -14,16 +14,16 @@
 #import <UIKit/UIKit.h>
 
 // Field of View in degrees
-static const GLfloat FOVY = 45.0;
-static const GLfloat NEARZ = 1.5;
-static const GLfloat FARZ = 300.0;
+static const float FOVY = 45.0;
+static const float NEARZ = 1.5;
+static const float FARZ = 300.0;
 
 typedef NSMutableDictionary<TexturedModel *, NSMutableArray<Entity *> *> EntityMap;
 typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 
 @interface MasterRenderer ()
 
-@property (assign, nonatomic) GLKMatrix4 projectionMatrix;
+@property (assign, nonatomic) simd_float4x4 projectionMatrix;
 @property (strong, nonatomic, nonnull) EntityMap *entities;
 @property (strong, nonnull, nonatomic) InstancingEntityMap *instancedEntities;
 @property (strong, nonatomic, nonnull) NSMutableArray<Terrain *> *terrains;
@@ -114,7 +114,7 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
     [self.guiRenderer render:guis];
 }
 
-- (void)renderWithLights:(NSArray<Light *> *)lights camera:(Camera * _Nonnull)camera andClippingPlane:(GLKVector4)clippingPlane
+- (void)renderWithLights:(NSArray<Light *> *)lights camera:(Camera * _Nonnull)camera andClippingPlane:(simd_float4)clippingPlane
 {
     [self prepare];
 
@@ -124,12 +124,12 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
     // Clipping ([[clip_distance]]) is always active; the main pass passes a
     // plane that never clips, so glEnable(GL_CLIP_DISTANCE0_APPLE) is gone.
 
-    GLKMatrix4 viewMatrix = [camera getViewMatrix];
+    simd_float4x4 viewMatrix = [camera getViewMatrix];
 
     [self.shader activate];
     [self.shader loadClippingPlane:clippingPlane];
     [self.shader loadLights:lights];
-    [self.shader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
+    [self.shader loadSkyColor:RGBAGetsimd_float3(self.skyColor)];
     [self.shader loadViewMatrix:viewMatrix];
     [self.entityRenderer render:self.entities withCamera:camera];
 
@@ -139,7 +139,7 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
         [self.instancingShader activate];
         [self.instancingShader loadClippingPlane:clippingPlane];
         [self.instancingShader loadLights:lights];
-        [self.instancingShader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
+        [self.instancingShader loadSkyColor:RGBAGetsimd_float3(self.skyColor)];
         [self.instancingShader loadViewMatrix:viewMatrix];
         [self.entityRenderer renderInstances:self.instancedEntities withCamera:camera];
     }
@@ -147,7 +147,7 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
     [self.terrainShader activate];
     [self.terrainShader loadClippingPlane:clippingPlane];
     [self.terrainShader loadLights:lights];
-    [self.terrainShader loadSkyColor:RGBAGetGLKVector3(self.skyColor)];
+    [self.terrainShader loadSkyColor:RGBAGetsimd_float3(self.skyColor)];
     [self.terrainShader loadViewMatrix:viewMatrix];
     [self.terrainRenderer render:self.terrains withCamera:camera];
 }
@@ -235,17 +235,17 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 #pragma mark - private methods
 - (void)createProjectionMatrixWithAspect:(float)aspect
 {
-    GLKMatrix4 perspective = GLKMatrix4MakePerspective(MathUtils_DegToRad(FOVY), aspect, NEARZ, FARZ);
+    simd_float4x4 perspective = MathUtils_MatrixMakePerspective(MathUtils_DegToRad(FOVY), aspect, NEARZ, FARZ);
 
     // GL clip space has z in [-1,1], Metal in [0,1]: z' = 0.5z + 0.5w.
     // Depth buffer values then equal GL window-space depth, so all shader
     // depth math (water linearizeDepth, gl_FragCoord.z) stays unchanged.
-    const GLKMatrix4 glToMetal = GLKMatrix4Make(1, 0, 0,   0,
-                                                0, 1, 0,   0,
-                                                0, 0, 0.5, 0,
-                                                0, 0, 0.5, 1);
+    const simd_float4x4 glToMetal = simd_matrix(simd_make_float4(1, 0, 0, 0),
+                                                simd_make_float4(0, 1, 0, 0),
+                                                simd_make_float4(0, 0, 0.5, 0),
+                                                simd_make_float4(0, 0, 0.5, 1));
 
-    _projectionMatrix = GLKMatrix4Multiply(glToMetal, perspective);
+    _projectionMatrix = simd_mul(glToMetal, perspective);
 }
 
 #pragma mark - Memory
@@ -274,13 +274,13 @@ typedef NSMutableArray<InstanceableTexturedModel *> InstancingEntityMap;
 {
     _skyColor = skyColor;
     
-    [self.skyboxRenderer updateFogColor:RGBAGetGLKVector3(skyColor)];
+    [self.skyboxRenderer updateFogColor:RGBAGetsimd_float3(skyColor)];
 }
 
 @end
 
 
-EXPORT RGBA RGBAMake(GLfloat red, GLfloat green, GLfloat blue, GLfloat alpha) {
+EXPORT RGBA RGBAMake(float red, float green, float blue, float alpha) {
     return (RGBA) {
         MAX(0., MIN(red, 1.)),
         MAX(0., MIN(green, 1.)),
@@ -301,16 +301,16 @@ EXPORT RGBA RGBAMakeFromRGBHex(uint32_t hex) {
     };
 }
 
-EXPORT GLKVector4 RGBAGetGLKVector4(RGBA rgba) {
-    return GLKVector4Make(rgba.r, rgba.g, rgba.b, rgba.a);
+EXPORT simd_float4 RGBAGetsimd_float4(RGBA rgba) {
+    return simd_make_float4(rgba.r, rgba.g, rgba.b, rgba.a);
 }
 
-EXPORT GLKVector3 RGBAGetGLKVector3(RGBA rgba) {
-    return GLKVector3Make(rgba.r, rgba.g, rgba.b);
+EXPORT simd_float3 RGBAGetsimd_float3(RGBA rgba) {
+    return simd_make_float3(rgba.r, rgba.g, rgba.b);
 }
 
 
-Fog FogMake(GLfloat density, GLfloat gradient) {
+Fog FogMake(float density, float gradient) {
     return (Fog) {
         density, gradient
     };

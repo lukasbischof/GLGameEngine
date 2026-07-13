@@ -17,7 +17,7 @@
 - (Entity *)makeEntity
 {
     return [[Entity alloc] initWithTexturedModel:nil
-                                        position:GLKVector3Make(1.f, 2.f, 3.f)
+                                        position:simd_make_float3(1.f, 2.f, 3.f)
                                         rotation:MathUtils_RotationMake(10.f, 20.f, 30.f)
                                            scale:2.f
                                  andTextureIndex:0];
@@ -27,7 +27,7 @@
 {
     Entity *entity = [self makeEntity];
 
-    AssertVector3EqualWithAccuracy(entity.position, GLKVector3Make(1.f, 2.f, 3.f), 1e-6);
+    AssertVector3EqualWithAccuracy(entity.position, simd_make_float3(1.f, 2.f, 3.f), 1e-6);
     XCTAssertEqualWithAccuracy(entity.rotation.x, 10.f, 1e-6);
     XCTAssertEqualWithAccuracy(entity.rotation.y, 20.f, 1e-6);
     XCTAssertEqualWithAccuracy(entity.rotation.z, 30.f, 1e-6);
@@ -38,9 +38,9 @@
 - (void)testIncreasePositionByVector
 {
     Entity *entity = [self makeEntity];
-    [entity increasePositionByVector:GLKVector3Make(0.5f, -1.f, 4.f)];
+    [entity increasePositionByVector:simd_make_float3(0.5f, -1.f, 4.f)];
 
-    AssertVector3EqualWithAccuracy(entity.position, GLKVector3Make(1.5f, 1.f, 7.f), 1e-5);
+    AssertVector3EqualWithAccuracy(entity.position, simd_make_float3(1.5f, 1.f, 7.f), 1e-5);
 }
 
 - (void)testIncreaseRotation
@@ -72,7 +72,7 @@
 {
     Entity *entity = [self makeEntity];
 
-    GLKMatrix4 expected = MathUtils_CreateTransformationMatrixr(entity.position, entity.rotation, entity.scale);
+    simd_float4x4 expected = MathUtils_CreateTransformationMatrixr(entity.position, entity.rotation, entity.scale);
     AssertMatrix4EqualWithAccuracy(entity.currentTransformationMatrix, expected, 1e-6);
 }
 
@@ -81,14 +81,14 @@
     Entity *entity = [self makeEntity];
 
     // Every mutation path must be reflected in the next matrix read
-    [entity increasePositionByVector:GLKVector3Make(5.f, 5.f, 5.f)];
+    [entity increasePositionByVector:simd_make_float3(5.f, 5.f, 5.f)];
     [entity increaseRotationByX:5.f y:0.f andZ:0.f];
     entity.scale = 0.5f;
 
-    GLKMatrix4 expected = MathUtils_CreateTransformationMatrixr(entity.position, entity.rotation, entity.scale);
+    simd_float4x4 expected = MathUtils_CreateTransformationMatrixr(entity.position, entity.rotation, entity.scale);
     AssertMatrix4EqualWithAccuracy(entity.currentTransformationMatrix, expected, 1e-6);
 
-    entity.position = GLKVector3Make(-1.f, -2.f, -3.f);
+    entity.position = simd_make_float3(-1.f, -2.f, -3.f);
     [entity setRotationX:0.f y:45.f andZ:0.f];
 
     expected = MathUtils_CreateTransformationMatrixr(entity.position, entity.rotation, entity.scale);

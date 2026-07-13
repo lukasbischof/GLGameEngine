@@ -7,16 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <GLKit/GLKMath.h>
+#import <simd/simd.h>
 #import "Texture.h"
 
 @interface GUITexture : Texture
 
-@property (assign, nonatomic) GLKVector2 position;
-@property (assign, nonatomic) GLKVector2 scale;
+@property (assign, nonatomic) simd_float2 position;
+@property (assign, nonatomic) simd_float2 scale;
 
-+ (GUITexture *)textureWithMTLTexture:(id<MTLTexture>)texture position:(GLKVector2)position andScale:(GLKVector2)scale;
++ (GUITexture *)textureWithMTLTexture:(id<MTLTexture>)texture position:(simd_float2)position andScale:(simd_float2)scale;
 
-- (instancetype)initWithMTLTexture:(id<MTLTexture>)texture position:(GLKVector2)position andScale:(GLKVector2)scale NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithMTLTexture:(id<MTLTexture>)texture position:(simd_float2)position andScale:(simd_float2)scale NS_DESIGNATED_INITIALIZER;
 
 @end

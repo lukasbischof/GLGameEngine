@@ -13,8 +13,8 @@
 #import "Terrain.h"
 
 static const NSUInteger kMapSize = 4;
-static const GLfloat kWhiteHeight = 765.f / 768.f * 40.f - 20.f; // 19.84375
-static const GLfloat kBlackHeight = -20.f;
+static const float kWhiteHeight = 765.f / 768.f * 40.f - 20.f; // 19.84375
+static const float kBlackHeight = -20.f;
 
 @interface TerrainTests : XCTestCase
 @end
@@ -22,7 +22,7 @@ static const GLfloat kBlackHeight = -20.f;
 @implementation TerrainTests
 
 // Builds a kMapSize x kMapSize RGBA map with every pixel set to `gray`
-- (Terrain *)terrainWithUniformGray:(uint8_t)gray gridX:(GLint)gridX gridZ:(GLint)gridZ
+- (Terrain *)terrainWithUniformGray:(uint8_t)gray gridX:(int32_t)gridX gridZ:(int32_t)gridZ
 {
     uint8_t pixels[kMapSize * kMapSize * 4];
     for (NSUInteger i = 0; i < kMapSize * kMapSize; i++) {
@@ -36,7 +36,7 @@ static const GLfloat kBlackHeight = -20.f;
 }
 
 // All black except a white pixel at map coordinate (0,0)
-- (Terrain *)terrainWithWhiteOriginPixelGridX:(GLint)gridX gridZ:(GLint)gridZ
+- (Terrain *)terrainWithWhiteOriginPixelGridX:(int32_t)gridX gridZ:(int32_t)gridZ
 {
     uint8_t pixels[kMapSize * kMapSize * 4] = { 0 };
     for (NSUInteger i = 0; i < kMapSize * kMapSize; i++) {
@@ -80,8 +80,8 @@ static const GLfloat kBlackHeight = -20.f;
 
     // halfway along the first cell's top edge: barycentric mix of the white
     // (0,0) and black (1,0) grid points
-    GLfloat gridSquareSize = TERRAIN_SIZE / (kMapSize - 1);
-    GLfloat expected = (kWhiteHeight + kBlackHeight) / 2.f;
+    float gridSquareSize = TERRAIN_SIZE / (kMapSize - 1);
+    float expected = (kWhiteHeight + kBlackHeight) / 2.f;
 
     XCTAssertEqualWithAccuracy([terrain getHeightAtWorldX:gridSquareSize / 2.f worldZ:0.f], expected, 1e-3);
 }

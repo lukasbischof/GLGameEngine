@@ -13,8 +13,8 @@
 
 using namespace std;
 
-static const GLfloat MAX_HEIGHT = 20.f;
-static const GLint MAX_PIXEL_COLOR = 256 + 256 + 256;
+static const float MAX_HEIGHT = 20.f;
+static const int32_t MAX_PIXEL_COLOR = 256 + 256 + 256;
 
 @interface Terrain () <NSObject> {
     @package
@@ -30,8 +30,8 @@ static const GLint MAX_PIXEL_COLOR = 256 + 256 + 256;
 }
 
 #pragma mark - Init
-+ (Terrain *)terrainWithGridX:(GLint)gridX
-                        gridZ:(GLint)gridZ
++ (Terrain *)terrainWithGridX:(int32_t)gridX
+                        gridZ:(int32_t)gridZ
                        loader:(Loader *)loader
                   texturePack:(TerrainTexturePackage *)texturePack
                  heightMapName:(NSString *)heightMap
@@ -45,8 +45,8 @@ static const GLint MAX_PIXEL_COLOR = 256 + 256 + 256;
                               andBlendMap:blendMap];
 }
 
-- (instancetype)initWithGridX:(GLint)gridX
-                        gridZ:(GLint)gridZ
+- (instancetype)initWithGridX:(int32_t)gridX
+                        gridZ:(int32_t)gridZ
                        loader:(Loader *)loader
                   texturePack:(TerrainTexturePackage *)texturePack
                  heightMapName:(NSString *)heightMap
@@ -81,8 +81,8 @@ static const GLint MAX_PIXEL_COLOR = 256 + 256 + 256;
     return self;
 }
 
-- (instancetype)initWithGridX:(GLint)gridX
-                        gridZ:(GLint)gridZ
+- (instancetype)initWithGridX:(int32_t)gridX
+                        gridZ:(int32_t)gridZ
                 heightMapData:(const uint8_t *)data
                         width:(NSUInteger)width
                        height:(NSUInteger)height
@@ -159,120 +159,120 @@ static const GLint MAX_PIXEL_COLOR = 256 + 256 + 256;
 }
 
 #pragma mark - Height getters
-- (GLfloat)getHeightAtX:(GLint)x y:(GLint)y
+- (float)getHeightAtX:(int32_t)x y:(int32_t)y
 {
     if (x < 0 || y < 0 || x >= _width || y >= _height) {
         return 0.;
     }
     
-    //GLuint offset = _bytesPerRow * (GLfloat)y + (GLfloat)x * 4;
-    GLuint offset = 4 * (_width * y + x);
-    GLuint r = _data[offset];
-    GLuint g = _data[offset + 1];
-    GLuint b = _data[offset + 2];
+    //uint32_t offset = _bytesPerRow * (float)y + (float)x * 4;
+    uint32_t offset = 4 * (_width * y + x);
+    uint32_t r = _data[offset];
+    uint32_t g = _data[offset + 1];
+    uint32_t b = _data[offset + 2];
     
-    GLfloat sum = (GLfloat)(r + g + b);
-    sum = ((sum / (GLfloat)MAX_PIXEL_COLOR) * MAX_HEIGHT * 2) - MAX_HEIGHT;
+    float sum = (float)(r + g + b);
+    sum = ((sum / (float)MAX_PIXEL_COLOR) * MAX_HEIGHT * 2) - MAX_HEIGHT;
     
     return sum;
 }
 
-- (GLfloat)getHeightAtWorldX:(GLfloat)worldX worldZ:(GLfloat)worldZ
+- (float)getHeightAtWorldX:(float)worldX worldZ:(float)worldZ
 {
-    GLfloat terrainX = worldX - self.x;
-    GLfloat terrainZ = worldZ - self.z;
-    GLfloat gridSquareSize = TERRAIN_SIZE / (_height - 1);
-    GLint gridX = floorf(terrainX / gridSquareSize);
-    GLint gridZ = floorf(terrainZ / gridSquareSize);
+    float terrainX = worldX - self.x;
+    float terrainZ = worldZ - self.z;
+    float gridSquareSize = TERRAIN_SIZE / (_height - 1);
+    int32_t gridX = floorf(terrainX / gridSquareSize);
+    int32_t gridZ = floorf(terrainZ / gridSquareSize);
     
     if (gridX >= _height - 1 || gridZ >= _height - 1 || gridX < 0 || gridZ < 0) {
         std::cerr << "[Terrain.mm]: Out of bounds (Accessing x=" << worldX << ", z=" << worldZ << ")\n";
         return 0.f;
     }
     
-    GLfloat xCoord = fmodf(terrainX, gridSquareSize) / gridSquareSize;
-    GLfloat zCoord = fmodf(terrainZ, gridSquareSize) / gridSquareSize;
+    float xCoord = fmodf(terrainX, gridSquareSize) / gridSquareSize;
+    float zCoord = fmodf(terrainZ, gridSquareSize) / gridSquareSize;
     
-    GLfloat ret = 0.0f;
+    float ret = 0.0f;
     if (xCoord <= (1 - zCoord)) {
-        ret = MathUtils_BarryCentric(GLKVector3Make(0, [self getHeightAtX:gridX y:gridZ], 0),
-                                     GLKVector3Make(1, [self getHeightAtX:gridX + 1 y:gridZ], 0),
-                                     GLKVector3Make(0, [self getHeightAtX:gridX y:gridZ + 1], 1),
-                                     GLKVector2Make(xCoord, zCoord));
+        ret = MathUtils_BarryCentric(simd_make_float3(0, [self getHeightAtX:gridX y:gridZ], 0),
+                                     simd_make_float3(1, [self getHeightAtX:gridX + 1 y:gridZ], 0),
+                                     simd_make_float3(0, [self getHeightAtX:gridX y:gridZ + 1], 1),
+                                     simd_make_float2(xCoord, zCoord));
     } else {
-        ret = MathUtils_BarryCentric(GLKVector3Make(1, [self getHeightAtX:gridX + 1 y:gridZ], 0),
-                                     GLKVector3Make(1, [self getHeightAtX:gridX + 1 y:gridZ + 1], 1),
-                                     GLKVector3Make(0, [self getHeightAtX:gridX y:gridZ + 1], 1),
-                                     GLKVector2Make(xCoord, zCoord));
+        ret = MathUtils_BarryCentric(simd_make_float3(1, [self getHeightAtX:gridX + 1 y:gridZ], 0),
+                                     simd_make_float3(1, [self getHeightAtX:gridX + 1 y:gridZ + 1], 1),
+                                     simd_make_float3(0, [self getHeightAtX:gridX y:gridZ + 1], 1),
+                                     simd_make_float2(xCoord, zCoord));
     }
     
     return ret;
 }
 
 #pragma mark - Generation
-- (GLKVector3)calculateNormalAtX:(GLint)x y:(GLint)y
+- (simd_float3)calculateNormalAtX:(int32_t)x y:(int32_t)y
 {
-    GLfloat heightL = [self getHeightAtX:x-1 y:y];
-    GLfloat heightR = [self getHeightAtX:x+1 y:y];
-    GLfloat heightD = [self getHeightAtX:x   y:y-1];
-    GLfloat heightU = [self getHeightAtX:x   y:y+1];
-    GLKVector3 normal = GLKVector3Make(heightL - heightR, 2.f, heightD - heightU);
+    float heightL = [self getHeightAtX:x-1 y:y];
+    float heightR = [self getHeightAtX:x+1 y:y];
+    float heightD = [self getHeightAtX:x   y:y-1];
+    float heightU = [self getHeightAtX:x   y:y+1];
+    simd_float3 normal = simd_make_float3(heightL - heightR, 2.f, heightD - heightU);
     
-    return GLKVector3Normalize(normal);
+    return simd_normalize(normal);
 }
 
 - (RawModel *)generateTerrain:(Loader *)loader
 {
-    GLuint VERTEX_COUNT = _height;
-    GLuint count = VERTEX_COUNT * VERTEX_COUNT;
-    NSMutableData *vertices = [NSMutableData dataWithCapacity:count * 3 * sizeof(GLfloat)];
-    NSMutableData *normals = [NSMutableData dataWithCapacity:count * 3 * sizeof(GLfloat)];
-    NSMutableData *textureCoords = [NSMutableData dataWithCapacity:count * 2 * sizeof(GLfloat)];
-    NSMutableData *indices = [NSMutableData dataWithCapacity:6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1) * sizeof(GLuint)];
+    uint32_t VERTEX_COUNT = _height;
+    uint32_t count = VERTEX_COUNT * VERTEX_COUNT;
+    NSMutableData *vertices = [NSMutableData dataWithCapacity:count * 3 * sizeof(float)];
+    NSMutableData *normals = [NSMutableData dataWithCapacity:count * 3 * sizeof(float)];
+    NSMutableData *textureCoords = [NSMutableData dataWithCapacity:count * 2 * sizeof(float)];
+    NSMutableData *indices = [NSMutableData dataWithCapacity:6 * (VERTEX_COUNT - 1) * (VERTEX_COUNT - 1) * sizeof(uint32_t)];
     
-    for (GLuint i = 0; i < VERTEX_COUNT; i++) {
-        for (GLuint j = 0; j < VERTEX_COUNT; j++) {
-            GLfloat x = (GLfloat)j / ((GLfloat)VERTEX_COUNT - 1) * TERRAIN_SIZE;
-            GLfloat y = [self getHeightAtX:j y:i];
-            GLfloat z = (GLfloat)i / ((GLfloat)VERTEX_COUNT - 1) * TERRAIN_SIZE;
+    for (uint32_t i = 0; i < VERTEX_COUNT; i++) {
+        for (uint32_t j = 0; j < VERTEX_COUNT; j++) {
+            float x = (float)j / ((float)VERTEX_COUNT - 1) * TERRAIN_SIZE;
+            float y = [self getHeightAtX:j y:i];
+            float z = (float)i / ((float)VERTEX_COUNT - 1) * TERRAIN_SIZE;
             
-            [vertices appendBytes:&x length:sizeof(GLfloat)];
-            [vertices appendBytes:&y length:sizeof(GLfloat)];
-            [vertices appendBytes:&z length:sizeof(GLfloat)];
+            [vertices appendBytes:&x length:sizeof(float)];
+            [vertices appendBytes:&y length:sizeof(float)];
+            [vertices appendBytes:&z length:sizeof(float)];
             
-            GLKVector3 normal = [self calculateNormalAtX:j y:i];
-            [normals appendBytes:&normal.x length:sizeof(GLfloat)];
-            [normals appendBytes:&normal.y length:sizeof(GLfloat)];
-            [normals appendBytes:&normal.z length:sizeof(GLfloat)];
+            simd_float3 normal = [self calculateNormalAtX:j y:i];
+            // simd vector elements are not addressable; append packed floats
+            float normalComponents[3] = { normal.x, normal.y, normal.z };
+            [normals appendBytes:normalComponents length:sizeof(normalComponents)];
             
-            GLfloat u = (GLfloat)j / ((GLfloat)VERTEX_COUNT - 1);
-            GLfloat v = (GLfloat)i / ((GLfloat)VERTEX_COUNT - 1);
+            float u = (float)j / ((float)VERTEX_COUNT - 1);
+            float v = (float)i / ((float)VERTEX_COUNT - 1);
             
-            [textureCoords appendBytes:&u length:sizeof(GLfloat)];
-            [textureCoords appendBytes:&v length:sizeof(GLfloat)];
+            [textureCoords appendBytes:&u length:sizeof(float)];
+            [textureCoords appendBytes:&v length:sizeof(float)];
         }
     }
     
-    for (GLuint gz = 0; gz < VERTEX_COUNT - 1; gz++) {
-        for (GLuint gx = 0; gx < VERTEX_COUNT - 1; gx++) {
-            GLuint topLeft = (gz * VERTEX_COUNT) + gx;
-            GLuint topRight = topLeft + 1;
-            GLuint bottomLeft = ((gz + 1) * VERTEX_COUNT) + gx;
-            GLuint bottomRight = bottomLeft + 1;
+    for (uint32_t gz = 0; gz < VERTEX_COUNT - 1; gz++) {
+        for (uint32_t gx = 0; gx < VERTEX_COUNT - 1; gx++) {
+            uint32_t topLeft = (gz * VERTEX_COUNT) + gx;
+            uint32_t topRight = topLeft + 1;
+            uint32_t bottomLeft = ((gz + 1) * VERTEX_COUNT) + gx;
+            uint32_t bottomRight = bottomLeft + 1;
             
-            [indices appendBytes:&topLeft length:sizeof(GLuint)];
-            [indices appendBytes:&bottomLeft length:sizeof(GLuint)];
-            [indices appendBytes:&topRight length:sizeof(GLuint)];
-            [indices appendBytes:&topRight length:sizeof(GLuint)];
-            [indices appendBytes:&bottomLeft length:sizeof(GLuint)];
-            [indices appendBytes:&bottomRight length:sizeof(GLuint)];
+            [indices appendBytes:&topLeft length:sizeof(uint32_t)];
+            [indices appendBytes:&bottomLeft length:sizeof(uint32_t)];
+            [indices appendBytes:&topRight length:sizeof(uint32_t)];
+            [indices appendBytes:&topRight length:sizeof(uint32_t)];
+            [indices appendBytes:&bottomLeft length:sizeof(uint32_t)];
+            [indices appendBytes:&bottomRight length:sizeof(uint32_t)];
         }
     }
     
-    FloatBuffer positionsBuffer = FloatBufferCreateWithDataNoCopy((const GLfloat *)[vertices bytes], [vertices length]);
-    FloatBuffer normalsBuffer = FloatBufferCreateWithDataNoCopy((const GLfloat *)normals.bytes, normals.length);
-    FloatBuffer texCoordsBuffer = FloatBufferCreateWithDataNoCopy((const GLfloat *)textureCoords.bytes, textureCoords.length);
-    UintBuffer indicesBuffer = UintBufferCreateWithDataNoCopy((const GLuint *)indices.bytes, indices.length);
+    FloatBuffer positionsBuffer = FloatBufferCreateWithDataNoCopy((const float *)[vertices bytes], [vertices length]);
+    FloatBuffer normalsBuffer = FloatBufferCreateWithDataNoCopy((const float *)normals.bytes, normals.length);
+    FloatBuffer texCoordsBuffer = FloatBufferCreateWithDataNoCopy((const float *)textureCoords.bytes, textureCoords.length);
+    UintBuffer indicesBuffer = UintBufferCreateWithDataNoCopy((const uint32_t *)indices.bytes, indices.length);
     
     return [loader createRawModelWithPositions:positionsBuffer normals:normalsBuffer textureCoords:texCoordsBuffer andIndices:indicesBuffer];
 }

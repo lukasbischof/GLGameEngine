@@ -53,10 +53,10 @@ NSString *deviceName()
 @implementation ViewController {
     BOOL _pMatrixNeedsUpdate;
     BOOL _isMoving;
-    GLfloat _movingDirectionX;
-    GLfloat _movingDirectionY;
-    GLfloat _oldYaw;
-    GLfloat _oldPitch;
+    float _movingDirectionX;
+    float _movingDirectionY;
+    float _oldYaw;
+    float _oldPitch;
     CGPoint _startTouch;
     CFTimeInterval _lastUpdateTime;
 }
@@ -128,7 +128,7 @@ NSString *deviceName()
     self.guis = [NSMutableArray array];
     self.renderStartDate = [NSDate date];
 
-    [self.camera move:GLKVector3Make(TERRAIN_SIZE/2.0 + 60, 8.1, -TERRAIN_SIZE/2.0 - 30)];
+    [self.camera move:simd_make_float3(TERRAIN_SIZE/2.0 + 60, 8.1, -TERRAIN_SIZE/2.0 - 30)];
 
     [self setupEntities];
 
@@ -180,7 +180,7 @@ NSString *deviceName()
 
     // FARM
     Entity *farmEntity = [Entity entityWithTexturedModel:farmModel];
-    farmEntity.position = GLKVector3Make(TERRAIN_SIZE/2.0, 0.0, -TERRAIN_SIZE/2.0 - 40.0);
+    farmEntity.position = simd_make_float3(TERRAIN_SIZE/2.0, 0.0, -TERRAIN_SIZE/2.0 - 40.0);
     farmEntity.scale = 0.3;
     //farmEntity.rotation = MathUtils_RotationMake(0.0, 125., 0.0);
 
@@ -188,7 +188,7 @@ NSString *deviceName()
 
     // BOAT
     Entity *boatEntity = [Entity entityWithTexturedModel:boatModel];
-    boatEntity.position = GLKVector3Make(TERRAIN_SIZE/2.0 + 60, -8.0, -TERRAIN_SIZE/2.0 - 100.0);
+    boatEntity.position = simd_make_float3(TERRAIN_SIZE/2.0 + 60, -8.0, -TERRAIN_SIZE/2.0 - 100.0);
     boatEntity.scale = 0.01;
     //farmEntity.rotation = MathUtils_RotationMake(0.0, 125., 0.0);
 
@@ -196,21 +196,21 @@ NSString *deviceName()
 
     // WAGEN
     Entity *wagenEntity = [Entity entityWithTexturedModel:wagenModel];
-    wagenEntity.position = (GLKVector3){ TERRAIN_SIZE/2.0 + 10, 0.0, -TERRAIN_SIZE / 2.0 - 20 };
+    wagenEntity.position = (simd_float3){ TERRAIN_SIZE/2.0 + 10, 0.0, -TERRAIN_SIZE / 2.0 - 20 };
     wagenEntity.scale = 1.6;
 
     [self.entities addObject:wagenEntity];
 
     wagenEntity = [wagenEntity copy];
-    wagenEntity.position = (GLKVector3){ TERRAIN_SIZE/2.0 + 8.25, 0.0, -TERRAIN_SIZE / 2.0 - 20 };
+    wagenEntity.position = (simd_float3){ TERRAIN_SIZE/2.0 + 8.25, 0.0, -TERRAIN_SIZE / 2.0 - 20 };
 
     [self.entities addObject:wagenEntity];
 
     // ROCK SETUP
     for (NSUInteger i = 0; i < 50; i++) {
-        GLfloat x = MathUtils_RandomFloat(-50, 50) + TERRAIN_SIZE/2.;
-        GLfloat z = MathUtils_RandomFloat(0, -100) - TERRAIN_SIZE/2.;
-        GLKVector3 position = GLKVector3Make(x, [self.terrain getHeightAtWorldX:x worldZ:z], z);
+        float x = MathUtils_RandomFloat(-50, 50) + TERRAIN_SIZE/2.;
+        float z = MathUtils_RandomFloat(0, -100) - TERRAIN_SIZE/2.;
+        simd_float3 position = simd_make_float3(x, [self.terrain getHeightAtWorldX:x worldZ:z], z);
         Entity *entity = [Entity entityWithTexturedModel:rockModel
                                                 position:position
                                                 rotation:MathUtils_RotationMake(0.0, MathUtils_RandomFloat(0.0, 360.0), 0.0)
@@ -225,11 +225,11 @@ NSString *deviceName()
     // TREE SETUP
     NSUInteger numb = [deviceName() isEqualToString:@"iPad5,3"] ? 75 : 50;
     for (NSUInteger i = 0; i < numb; i++) {
-        GLfloat x = MathUtils_RandomFloat(-60, 40) + TERRAIN_SIZE/2.;
-        GLfloat z = MathUtils_RandomFloat(-90, 50) - TERRAIN_SIZE/2.;
-        GLKVector3 position = GLKVector3Make(x, [self.terrain getHeightAtWorldX:x worldZ:z] - 0.5, z);
+        float x = MathUtils_RandomFloat(-60, 40) + TERRAIN_SIZE/2.;
+        float z = MathUtils_RandomFloat(-90, 50) - TERRAIN_SIZE/2.;
+        simd_float3 position = simd_make_float3(x, [self.terrain getHeightAtWorldX:x worldZ:z] - 0.5, z);
 
-        GLfloat rot = MathUtils_RandomFloat(0.0, 360);
+        float rot = MathUtils_RandomFloat(0.0, 360);
         Entity *entity = [Entity entityWithTexturedModel:treeModel
                                                 position:position
                                                 rotation:MathUtils_RotationMake(0.0, rot, 0.0)
@@ -244,9 +244,9 @@ NSString *deviceName()
     // GRASS SETUP
     numb = [deviceName() isEqualToString:@"iPad5,3"] ? 850 : 650;
     for (NSUInteger i = 0; i < numb; i++) {
-        GLfloat x = MathUtils_RandomFloat(-80, 20) + TERRAIN_SIZE/2.;
-        GLfloat z = MathUtils_RandomFloat(-90, 50) - TERRAIN_SIZE/2.;
-        GLKVector3 position = GLKVector3Make(x, [self.terrain getHeightAtWorldX:x worldZ:z] - 0.3, z);
+        float x = MathUtils_RandomFloat(-80, 20) + TERRAIN_SIZE/2.;
+        float z = MathUtils_RandomFloat(-90, 50) - TERRAIN_SIZE/2.;
+        simd_float3 position = simd_make_float3(x, [self.terrain getHeightAtWorldX:x worldZ:z] - 0.3, z);
 
         Entity *entity = [Entity entityWithTexturedModel:grassModel
                                                 position:position
@@ -261,12 +261,12 @@ NSString *deviceName()
 
     // FLOWER / FERN SETUP
     for (NSUInteger i = 0; i < 80; i++) {
-        GLfloat x = MathUtils_RandomFloat(-60, 40) + TERRAIN_SIZE/2.;
-        GLfloat z = MathUtils_RandomFloat(-90, 50) - TERRAIN_SIZE/2.;
-        GLKVector3 position = GLKVector3Make(x, [self.terrain getHeightAtWorldX:x worldZ:z], z);
+        float x = MathUtils_RandomFloat(-60, 40) + TERRAIN_SIZE/2.;
+        float z = MathUtils_RandomFloat(-90, 50) - TERRAIN_SIZE/2.;
+        simd_float3 position = simd_make_float3(x, [self.terrain getHeightAtWorldX:x worldZ:z], z);
 
         BOOL isFlower = MathUtils_RandomBoolProb(.3);
-        GLuint texIndex = !isFlower ? (GLuint)floorf(MathUtils_RandomFloat(0, 3)) : 0;
+        uint32_t texIndex = !isFlower ? (uint32_t)floorf(MathUtils_RandomFloat(0, 3)) : 0;
         Entity *entity = [Entity entityWithTexturedModel:isFlower ? flowerModel : fernModel
                                                 position:position
                                                 rotation:MathUtils_RotationMake(0.0, MathUtils_RandomFloat(0.0, 360.0), 0.0)
@@ -280,20 +280,20 @@ NSString *deviceName()
     }
 
 
-    GLKVector3 sunPos1 = GLKVector3Make(TERRAIN_SIZE/2.0 + 30, 100.0, -TERRAIN_SIZE/2.0 - 10);
+    simd_float3 sunPos1 = simd_make_float3(TERRAIN_SIZE/2.0 + 30, 100.0, -TERRAIN_SIZE/2.0 - 10);
 
     [self.lights addObject:[Light lightWithPosition:sunPos1
-                                           andColor:GLKVector3Make(0.5, 0.5, 0.5)]];
+                                           andColor:simd_make_float3(0.5, 0.5, 0.5)]];
 
-    GLuint posCount = 3;
-    GLKVector3 positions[3] = {
-        GLKVector3Make(TERRAIN_SIZE/2.0 - 50, 0, -TERRAIN_SIZE/2.0 - 40.0),
-        GLKVector3Make(TERRAIN_SIZE/2.0, 0, -TERRAIN_SIZE/2.0 + 60.0),
-        GLKVector3Make(farmEntity.position.x + 7.0, 0.0, farmEntity.position.z),
+    uint32_t posCount = 3;
+    simd_float3 positions[3] = {
+        simd_make_float3(TERRAIN_SIZE/2.0 - 50, 0, -TERRAIN_SIZE/2.0 - 40.0),
+        simd_make_float3(TERRAIN_SIZE/2.0, 0, -TERRAIN_SIZE/2.0 + 60.0),
+        simd_make_float3(farmEntity.position.x + 7.0, 0.0, farmEntity.position.z),
     };
 
-    for (GLuint i = 0; i < posCount; i++) {
-        GLKVector3 pos = positions[i];
+    for (uint32_t i = 0; i < posCount; i++) {
+        simd_float3 pos = positions[i];
         pos.y = [self.terrain getHeightAtWorldX:pos.x worldZ:pos.z];
 
         Entity *lamp = [Entity entityWithTexturedModel:lampModel
@@ -303,9 +303,9 @@ NSString *deviceName()
 
         [self.entities addObject:lamp];
 
-        [self.lights addObject:[Light lightWithPosition:GLKVector3Make(pos.x, pos.y + 4.9f, pos.z)
-                                                  color:GLKVector3Make(.8f, .7f, .0f)
-                                         andAttenuation:GLKVector3Make(1.f, 0.01f, 0.002f)]];
+        [self.lights addObject:[Light lightWithPosition:simd_make_float3(pos.x, pos.y + 4.9f, pos.z)
+                                                  color:simd_make_float3(.8f, .7f, .0f)
+                                         andAttenuation:simd_make_float3(1.f, 0.01f, 0.002f)]];
     }
 
     self.renderer.skyColor = RGBAMake(.5, .5, .5, 1.);
@@ -314,8 +314,8 @@ NSString *deviceName()
 
     self.renderer.skyboxRenderer.shader.rotation_speed = .5f;
 
-    GLfloat x = TERRAIN_SIZE/2.0 + 80;
-    GLfloat z = -TERRAIN_SIZE/2.0 - 106.3;
+    float x = TERRAIN_SIZE/2.0 + 80;
+    float z = -TERRAIN_SIZE/2.0 - 106.3;
 
     self.water = [[WaterTile alloc] initWithX:x
                                             z:z
@@ -325,11 +325,11 @@ NSString *deviceName()
 
 #if WATER_DEBUG
     GUITexture *tex = [GUITexture textureWithMTLTexture:self.fbos.reflectionTexture
-                                               position:GLKVector2Make(-0.75, -0.75)
-                                               andScale:GLKVector2Make(0.25, 0.25)];
+                                               position:simd_make_float2(-0.75, -0.75)
+                                               andScale:simd_make_float2(0.25, 0.25)];
     GUITexture *tex2 = [GUITexture textureWithMTLTexture:self.fbos.refractionTexture
-                                                position:GLKVector2Make(0.75, -0.75)
-                                                andScale:GLKVector2Make(0.25, 0.25)];
+                                                position:simd_make_float2(0.75, -0.75)
+                                                andScale:simd_make_float2(0.25, 0.25)];
 
     [self.guis addObject:tex];
     [self.guis addObject:tex2];
@@ -367,11 +367,11 @@ NSString *deviceName()
         self.camera.yaw = self->_oldYaw + self->_movingDirectionX * 0.27;
         self.camera.pitch = self->_oldPitch + self->_movingDirectionY * 0.27;
 
-        GLfloat yawRadians = MathUtils_DegToRad(self.camera.yaw);
-        GLfloat pitchRadians = MathUtils_DegToRad(self.camera.pitch);
+        float yawRadians = MathUtils_DegToRad(self.camera.yaw);
+        float pitchRadians = MathUtils_DegToRad(self.camera.pitch);
 
-        GLfloat scalar = timeSinceLastUpdate * 10;
-        GLKVector3 move = GLKVector3Make(sinf(yawRadians) * scalar,
+        float scalar = timeSinceLastUpdate * 10;
+        simd_float3 move = simd_make_float3(sinf(yawRadians) * scalar,
                                          -sinf(pitchRadians) * scalar,
                                          -cosf(yawRadians) * scalar);
         [self.camera move:move];
@@ -408,23 +408,23 @@ NSString *deviceName()
     [self.renderer processWaterTile:self.water];
 
 
-    GLfloat distance = 2 * (self.camera.position.y - self.water.height);
-    [self.camera move:GLKVector3Make(0, -distance, 0)];
+    float distance = 2 * (self.camera.position.y - self.water.height);
+    [self.camera move:simd_make_float3(0, -distance, 0)];
     [self.camera invertPitch];
 
     [self.fbos bindReflectionFrameBuffer];
-    [self.renderer renderWithLights:self.lights camera:self.camera andClippingPlane:GLKVector4Make(0, 1, 0, -self.water.height + 0.5f)];
+    [self.renderer renderWithLights:self.lights camera:self.camera andClippingPlane:simd_make_float4(0, 1, 0, -self.water.height + 0.5f)];
 
-    [self.camera move:GLKVector3Make(0, distance, 0)];
+    [self.camera move:simd_make_float3(0, distance, 0)];
     [self.camera invertPitch];
 
     [self.fbos bindRefractionFrameBuffer];
-    [self.renderer renderWithLights:self.lights camera:self.camera andClippingPlane:GLKVector4Make(0, -1, 0, self.water.height + 0.5f)];
+    [self.renderer renderWithLights:self.lights camera:self.camera andClippingPlane:simd_make_float4(0, -1, 0, self.water.height + 0.5f)];
 
     [self bindDrawable];
 
     // clipping stays active; this plane never clips visible geometry
-    [self.renderer renderWithLights:self.lights camera:self.camera andClippingPlane:GLKVector4Make(0, -1, 0, 100)];
+    [self.renderer renderWithLights:self.lights camera:self.camera andClippingPlane:simd_make_float4(0, -1, 0, 100)];
     [self.renderer renderWaterWithCamera:self.camera andLight:self.lights[0]];
     #if WATER_DEBUG
         [self.renderer renderGUI:self.guis];

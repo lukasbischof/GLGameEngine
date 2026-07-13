@@ -7,18 +7,18 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <GLKit/GLKit.h>
+#import <simd/simd.h>
 
 @interface Light : NSObject
 
-@property (assign, nonatomic) GLKVector3 position;
-@property (assign, nonatomic) GLKVector3 color;
-@property (assign, nonatomic) GLKVector3 attenuation;
+@property (assign, nonatomic) simd_float3 position;
+@property (assign, nonatomic) simd_float3 color;
+@property (assign, nonatomic) simd_float3 attenuation;
 
 + (Light *)light;
-+ (Light *)lightWithPosition:(GLKVector3)position andColor:(GLKVector3)color;
-+ (Light *)lightWithPosition:(GLKVector3)position color:(GLKVector3)color andAttenuation:(GLKVector3)attenuation;
++ (Light *)lightWithPosition:(simd_float3)position andColor:(simd_float3)color;
++ (Light *)lightWithPosition:(simd_float3)position color:(simd_float3)color andAttenuation:(simd_float3)attenuation;
 
-- (instancetype)initWithPosition:(GLKVector3)position color:(GLKVector3)color andAttenuation:(GLKVector3)attenuation NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithPosition:(simd_float3)position color:(simd_float3)color andAttenuation:(simd_float3)attenuation NS_DESIGNATED_INITIALIZER;
 
 @end

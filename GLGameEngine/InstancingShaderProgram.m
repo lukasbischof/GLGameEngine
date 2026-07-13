@@ -9,7 +9,6 @@
 #import "InstancingShaderProgram.h"
 #import "MathUtils.h"
 #import "MetalContext.h"
-#import "SIMDBridge.h"
 
 NSString *const INSTANCING_VERTEX_FUNCTION_NAME = @"vertex_instancing";
 NSString *const INSTANCING_FRAGMENT_FUNCTION_NAME = @"fragment_static";
@@ -77,40 +76,40 @@ NSString *const INSTANCING_FRAGMENT_FUNCTION_NAME = @"fragment_static";
     [encoder setFragmentBytes:&_fragmentUniforms length:sizeof(_fragmentUniforms) atIndex:BufferIndexFragmentUniforms];
 }
 
-- (void)loadDamper:(GLfloat)damper andReflectivity:(GLfloat)reflectivity
+- (void)loadDamper:(float)damper andReflectivity:(float)reflectivity
 {
     _fragmentUniforms.damper = damper;
     _fragmentUniforms.reflectivity = reflectivity;
 }
 
-- (void)loadOffset:(GLKVector2)offset
+- (void)loadOffset:(simd_float2)offset
 {
-    _vertexUniforms.offset = SIMD_Vector2(offset);
+    _vertexUniforms.offset = offset;
 }
 
-- (void)loadNumberOfRows:(GLint)numberOfRows
+- (void)loadNumberOfRows:(int32_t)numberOfRows
 {
     _vertexUniforms.numberOfRows = (float)numberOfRows;
 }
 
-- (void)loadFogDensity:(GLfloat)density andGradient:(GLfloat)gradient
+- (void)loadFogDensity:(float)density andGradient:(float)gradient
 {
     _vertexUniforms.density = density;
     _vertexUniforms.gradient = gradient;
 }
 
-- (void)loadSkyColor:(GLKVector3)skyColor
+- (void)loadSkyColor:(simd_float3)skyColor
 {
-    _fragmentUniforms.skyColor = SIMD_Vector3(skyColor);
+    _fragmentUniforms.skyColor = skyColor;
 }
 
 - (void)loadLights:(NSArray<Light *> *)lights
 {
-    for (GLuint i = 0; i < MAX_LIGHTS; i++) {
+    for (uint32_t i = 0; i < MAX_LIGHTS; i++) {
         if (i < lights.count) {
-            _vertexUniforms.lightPosition[i] = SIMD_Vector3(lights[i].position);
-            _fragmentUniforms.lightColor[i] = SIMD_Vector3(lights[i].color);
-            _fragmentUniforms.attenuation[i] = SIMD_Vector3(lights[i].attenuation);
+            _vertexUniforms.lightPosition[i] = lights[i].position;
+            _fragmentUniforms.lightColor[i] = lights[i].color;
+            _fragmentUniforms.attenuation[i] = lights[i].attenuation;
         } else {
             _vertexUniforms.lightPosition[i] = simd_make_float3(0, 0, 0);
             _fragmentUniforms.lightColor[i] = simd_make_float3(0, 0, 0);
@@ -119,24 +118,24 @@ NSString *const INSTANCING_FRAGMENT_FUNCTION_NAME = @"fragment_static";
     }
 }
 
-- (void)loadProjectionMatrix:(GLKMatrix4)projectionMatrix
+- (void)loadProjectionMatrix:(simd_float4x4)projectionMatrix
 {
-    _vertexUniforms.projectionMatrix = SIMD_Matrix4(projectionMatrix);
+    _vertexUniforms.projectionMatrix = projectionMatrix;
 }
 
-- (void)loadViewMatrix:(GLKMatrix4)viewMatrix
+- (void)loadViewMatrix:(simd_float4x4)viewMatrix
 {
-    _vertexUniforms.viewMatrix = SIMD_Matrix4(viewMatrix);
+    _vertexUniforms.viewMatrix = viewMatrix;
 }
 
-- (void)loadNormalMatrixWithModelMatrix:(GLKMatrix4)modelMatrix andViewMatrix:(GLKMatrix4)viewMatrix
+- (void)loadNormalMatrixWithModelMatrix:(simd_float4x4)modelMatrix andViewMatrix:(simd_float4x4)viewMatrix
 {
-    _vertexUniforms.normalMatrix = SIMD_Matrix3(MathUtils_CreateNormalMatrix(modelMatrix, viewMatrix));
+    _vertexUniforms.normalMatrix = MathUtils_CreateNormalMatrix(modelMatrix, viewMatrix);
 }
 
-- (void)loadClippingPlane:(GLKVector4)clippingPlane
+- (void)loadClippingPlane:(simd_float4)clippingPlane
 {
-    _vertexUniforms.clippingPlane = SIMD_Vector4(clippingPlane);
+    _vertexUniforms.clippingPlane = clippingPlane;
 }
 
 @end

@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <Metal/Metal.h>
-#import "GLTypesShim.h"
+#import <simd/simd.h>
 
 @interface Texture : NSObject <NSCopying>
 

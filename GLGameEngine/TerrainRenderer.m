@@ -77,9 +77,9 @@
 
 }
 
-- (void)loadTerrainMatricesWithTerrain:(Terrain *)terrain andViewMatrix:(GLKMatrix4)viewMat
+- (void)loadTerrainMatricesWithTerrain:(Terrain *)terrain andViewMatrix:(simd_float4x4)viewMat
 {
-    GLKMatrix4 transformationMatrix = GLKMatrix4MakeTranslation(terrain.x, 0, terrain.z);
+    simd_float4x4 transformationMatrix = MathUtils_MatrixMakeTranslation(terrain.x, 0, terrain.z);
     [self.shader loadTransformationMatrix:transformationMatrix];
     [self.shader loadNormalMatrixWithModelMatrix:transformationMatrix
                                    andViewMatrix:viewMat];

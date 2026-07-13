@@ -15,12 +15,6 @@
 #include <sys/types.h>
 #include <TargetConditionals.h>
 
-#if !(TARGET_OS_IPHONE)
-#include <OpenGL/OpenGL.h>
-#else
-#include "GLTypesShim.h"
-#endif
-
 #if TARGET_OS_WIN32
     #if !defined(EXPORT)
         #if !defined(__cplusplus)
@@ -39,10 +33,10 @@
     #endif
 #endif
 
-#define FLOAT_BUFFER_DATA_TYPE GLfloat
+#define FLOAT_BUFFER_DATA_TYPE float
 #define FLOAT_BUFFER_ELEMENT_SIZE sizeof(FLOAT_BUFFER_DATA_TYPE)
 
-#define UINT_BUFFER_DATA_TYPE GLuint
+#define UINT_BUFFER_DATA_TYPE uint32_t
 #define UINT_BUFFER_ELEMENT_SIZE sizeof(UINT_BUFFER_DATA_TYPE)
 
 struct _Buffer {

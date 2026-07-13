@@ -12,7 +12,7 @@
 @interface ModelTexture : Texture <NSCopying>
 
 @property (assign, nonatomic) BOOL hasAlpha;
-@property (assign, nonatomic) GLuint numberOfRows; // For texture atlases
+@property (assign, nonatomic) uint32_t numberOfRows; // For texture atlases
 @property (assign, nonatomic) float shineDamper;
 @property (assign, nonatomic) float reflectivity;
 

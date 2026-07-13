@@ -141,7 +141,7 @@
     descriptor.attributes[0].offset = 0;
     descriptor.attributes[0].bufferIndex = 0;
 
-    NSUInteger size = sizeof(GLfloat) * 3;
+    NSUInteger size = sizeof(float) * 3;
     descriptor.layouts[0].stride = size;
 
     descriptor.attributes[1].name = MDLVertexAttributeTextureCoordinate;
@@ -149,7 +149,7 @@
     descriptor.attributes[1].offset = 0;
     descriptor.attributes[1].bufferIndex = 1;
 
-    size = sizeof(GLfloat);
+    size = sizeof(float);
     descriptor.layouts[1].stride = size;
 
     descriptor.attributes[2].name = MDLVertexAttributeNormal;
@@ -157,7 +157,7 @@
     descriptor.attributes[2].offset = 0;
     descriptor.attributes[2].bufferIndex = 2;
 
-    size = sizeof(GLfloat) * 3;
+    size = sizeof(float) * 3;
     descriptor.layouts[2].stride = size;
 
     return descriptor;

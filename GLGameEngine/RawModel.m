@@ -14,7 +14,7 @@
     NSUInteger _vertexBufferOffsets[RAW_MODEL_MAX_VERTEX_BUFFERS];
 }
 
-+ (RawModel *)modelWithVertexCount:(GLuint)vertexCount
++ (RawModel *)modelWithVertexCount:(uint32_t)vertexCount
 {
     return [[RawModel alloc] initWithVertexCount:vertexCount];
 }
@@ -24,7 +24,7 @@
     return [self initWithVertexCount:0];
 }
 
-- (instancetype)initWithVertexCount:(GLuint)vertexCount
+- (instancetype)initWithVertexCount:(uint32_t)vertexCount
 {
     if ((self = [super init])) {
         self.vertexCount = vertexCount;

@@ -12,7 +12,7 @@
 
 @implementation GUITexture
 
-+ (GUITexture *)textureWithMTLTexture:(id<MTLTexture>)texture position:(GLKVector2)position andScale:(GLKVector2)scale
++ (GUITexture *)textureWithMTLTexture:(id<MTLTexture>)texture position:(simd_float2)position andScale:(simd_float2)scale
 {
     return [[GUITexture alloc] initWithMTLTexture:texture
                                          position:position
@@ -21,10 +21,10 @@
 
 - (instancetype)init
 {
-    return [self initWithMTLTexture:nil position:GLKVector2Make(0, 0) andScale:GLKVector2Make(0, 0)];
+    return [self initWithMTLTexture:nil position:simd_make_float2(0, 0) andScale:simd_make_float2(0, 0)];
 }
 
-- (instancetype)initWithMTLTexture:(id<MTLTexture>)texture position:(GLKVector2)position andScale:(GLKVector2)scale
+- (instancetype)initWithMTLTexture:(id<MTLTexture>)texture position:(simd_float2)position andScale:(simd_float2)scale
 {
     if ((self = [super initWithMTLTexture:texture])) {
         self.position = position;

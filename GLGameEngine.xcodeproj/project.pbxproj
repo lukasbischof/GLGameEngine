@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0D49ECA60815D3314AEC5282 /* SIMDBridgeTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 9306E92DF32FB8D309ADEF6A /* SIMDBridgeTests.m */; };
 		15DB0D10697C497421D0A5A0 /* MathUtilsTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 68FF41DAD0FED6AFC0C42073 /* MathUtilsTests.m */; };
 		41C114C4D55333B8F8B34D78 /* BufferTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 27DC5A2214F1ED3C54AA60CC /* BufferTests.m */; };
 		41FCFC4CAA0D34C0C0A528AE /* EntityTests.m in Sources */ = {isa = PBXBuildFile; fileRef = D3433ED4BCA36402BC2CA435 /* EntityTests.m */; };
@@ -197,8 +196,6 @@
 		48F688391BE40CD800F9A868 /* heightmap_low.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = heightmap_low.png; sourceTree = "<group>"; };
 		48F6883C1BE41D5A00F9A868 /* fernAtlas.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = fernAtlas.png; sourceTree = "<group>"; };
 		4D450000000000000000F001 /* ShaderTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShaderTypes.h; sourceTree = "<group>"; };
-		4D450000000000000000F002 /* SIMDBridge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SIMDBridge.h; sourceTree = "<group>"; };
-		4D450000000000000000F003 /* GLTypesShim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GLTypesShim.h; sourceTree = "<group>"; };
 		4D450000000000000000F004 /* MetalContext.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MetalContext.h; sourceTree = "<group>"; };
 		4D450000000000000000F005 /* MetalContext.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MetalContext.m; sourceTree = "<group>"; };
 		4D450000000000000000F006 /* UIView+aspect.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+aspect.h"; sourceTree = "<group>"; };
@@ -309,7 +306,6 @@
 		80FFE4281B1A2C0B008DE7DB /* stallTexture.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = stallTexture.png; sourceTree = "<group>"; };
 		80FFE42B1B1A615E008DE7DB /* Light.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Light.h; sourceTree = "<group>"; };
 		80FFE42C1B1A615E008DE7DB /* Light.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Light.m; sourceTree = "<group>"; };
-		9306E92DF32FB8D309ADEF6A /* SIMDBridgeTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = SIMDBridgeTests.m; sourceTree = "<group>"; };
 		D3433ED4BCA36402BC2CA435 /* EntityTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = EntityTests.m; sourceTree = "<group>"; };
 		EB0D51FF8F15E7BF302B9C65 /* TexturedModelTests.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = TexturedModelTests.m; sourceTree = "<group>"; };
 		ECEAD828560AABDED088F312 /* MatrixAssertions.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = MatrixAssertions.h; sourceTree = "<group>"; };
@@ -452,8 +448,6 @@
 			isa = PBXGroup;
 			children = (
 				4D450000000000000000F001 /* ShaderTypes.h */,
-				4D450000000000000000F002 /* SIMDBridge.h */,
-				4D450000000000000000F003 /* GLTypesShim.h */,
 				4D450000000000000000F004 /* MetalContext.h */,
 				4D450000000000000000F005 /* MetalContext.m */,
 				4D450000000000000000F006 /* UIView+aspect.h */,
@@ -540,7 +534,6 @@
 				D3433ED4BCA36402BC2CA435 /* EntityTests.m */,
 				EB0D51FF8F15E7BF302B9C65 /* TexturedModelTests.m */,
 				27DC5A2214F1ED3C54AA60CC /* BufferTests.m */,
-				9306E92DF32FB8D309ADEF6A /* SIMDBridgeTests.m */,
 				52B20B263DB9DAD30495E26A /* TerrainTests.m */,
 				ECEAD828560AABDED088F312 /* MatrixAssertions.h */,
 			);
@@ -1022,7 +1015,6 @@
 				41FCFC4CAA0D34C0C0A528AE /* EntityTests.m in Sources */,
 				7727253F9A4256ADF1840A76 /* TexturedModelTests.m in Sources */,
 				41C114C4D55333B8F8B34D78 /* BufferTests.m in Sources */,
-				0D49ECA60815D3314AEC5282 /* SIMDBridgeTests.m in Sources */,
 				6C071182E1AB5198B259F842 /* TerrainTests.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

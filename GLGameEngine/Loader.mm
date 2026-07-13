@@ -141,12 +141,12 @@
     return [self loadTexture:textureName withExtension:extension flipped:YES];
 }
 
-- (RawModel *)createRawModelWithPositions:(FloatBuffer)positions dimensions:(GLuint)dimensions
+- (RawModel *)createRawModelWithPositions:(FloatBuffer)positions dimensions:(uint32_t)dimensions
 {
     if (positions.data == NULL)
         return nil;
 
-    GLuint vertexCount = (GLuint)(positions.length / sizeof(GLfloat) / dimensions);
+    uint32_t vertexCount = (uint32_t)(positions.length / sizeof(float) / dimensions);
     RawModel *model = [RawModel modelWithVertexCount:vertexCount];
 
     [self storeData:positions inVAOAttribIndex:0 ofModel:model];
@@ -161,7 +161,7 @@
     if (positions.data == NULL || indices.data == NULL || normals.data == NULL)
         return nil;
 
-    GLuint vertexCount = (GLuint)(indices.length / UINT_BUFFER_ELEMENT_SIZE);
+    uint32_t vertexCount = (uint32_t)(indices.length / UINT_BUFFER_ELEMENT_SIZE);
     RawModel *model = [RawModel modelWithVertexCount:vertexCount];
 
     [self bindIndicesBuffer:indices toModel:model];
@@ -179,7 +179,7 @@
     if (positions.data == NULL || indices.data == NULL || normals.data == NULL || texCoords.data == NULL)
         return nil;
 
-    GLuint vertexCount = (GLuint)(indices.length / UINT_BUFFER_ELEMENT_SIZE);
+    uint32_t vertexCount = (uint32_t)(indices.length / UINT_BUFFER_ELEMENT_SIZE);
     RawModel *model = [RawModel modelWithVertexCount:vertexCount];
 
     [self bindIndicesBuffer:indices toModel:model];
@@ -203,13 +203,13 @@
     return [[TexturedModel alloc] initWithRawModel:rawModel andTexture:texture];
 }
 
-- (TexturedModel *)createTexturedModelWithPositions:(GLfloat *)positions
+- (TexturedModel *)createTexturedModelWithPositions:(float *)positions
                                     positionsLength:(size_t)positionsLength
-                                            normals:(GLfloat *)normals
+                                            normals:(float *)normals
                                       normalsLength:(size_t)normalsLength
-                                 textureCoordinates:(GLfloat *)textureCoordinates
+                                 textureCoordinates:(float *)textureCoordinates
                            textureCoordinatesLength:(size_t)texCoordsLength
-                                            indices:(GLuint *)indices
+                                            indices:(uint32_t *)indices
                                       indicesLength:(size_t)indicesLength
                                          andTexture:(ModelTexture *)texture
 {
@@ -237,7 +237,7 @@
     }
 
     MTKSubmesh *submesh = submeshes[0];
-    RawModel *model = [RawModel modelWithVertexCount:(GLuint)submesh.indexCount];
+    RawModel *model = [RawModel modelWithVertexCount:(uint32_t)submesh.indexCount];
 
     [self setBuffer:positions inVAOAttribIndex:0 ofModel:model];
     [self setBuffer:texCoords inVAOAttribIndex:1 ofModel:model];
@@ -252,14 +252,14 @@
     return [[TexturedModel alloc] initWithRawModel:model andTexture:texture];
 }
 
-- (void)setBuffer:(MTKMeshBuffer *)buffer inVAOAttribIndex:(GLuint)attribIndex ofModel:(RawModel *)model
+- (void)setBuffer:(MTKMeshBuffer *)buffer inVAOAttribIndex:(uint32_t)attribIndex ofModel:(RawModel *)model
 {
     [buffers addObject:buffer.buffer];
 
     [model setVertexBuffer:buffer.buffer offset:buffer.offset atIndex:attribIndex];
 }
 
-- (void)storeData:(FloatBuffer)data inVAOAttribIndex:(GLuint)attribIndex ofModel:(RawModel *)model
+- (void)storeData:(FloatBuffer)data inVAOAttribIndex:(uint32_t)attribIndex ofModel:(RawModel *)model
 {
     id<MTLBuffer> buffer = [[MetalContext sharedContext].device newBufferWithBytes:data.data
                                                                             length:data.length
